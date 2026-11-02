@@ -16,62 +16,30 @@
   $$('[data-repo-link]').forEach((a) => (a.href = repoUrl));
   $$('[data-repo-path]').forEach((a) => (a.href = repoUrl + a.dataset.repoPath));
 
-  // Platform detection, download links and install tabs
+  // Direct downloads. GitHub serves `releases/latest/download/<file>` as the
+  // file itself; names must match the mac `artifactName` in package.json.
+  const latest = `${repoUrl}/releases/latest/download`;
+  $$('[data-download]').forEach((a) => {
+    a.href = `${latest}/Pingo-mac-arm64.dmg`;
+    a.setAttribute('download', '');
+  });
+  $$('[data-download-intel]').forEach((a) => {
+    a.href = `${latest}/Pingo-mac-x64.dmg`;
+    a.setAttribute('download', '');
+  });
 
-  // Asset patterns must match `artifactName` in package.json.
-  const platforms = {
-    windows: { label: 'Download for Windows', pattern: /\.exe$/i },
-    mac: { label: 'Download for macOS', pattern: /\.dmg$/i },
-    linux: { label: 'Download for Linux', pattern: /\.AppImage$/i },
-  };
-
-  function detectPlatform() {
-    const ua = navigator.userAgent;
-    if (/Windows/i.test(ua)) return 'windows';
-    if (/Mac OS X|Macintosh/i.test(ua) && !/iPhone|iPad/i.test(ua)) return 'mac';
-    if (/Linux|X11/i.test(ua) && !/Android/i.test(ua)) return 'linux';
-    return null;
-  }
-
-  const platformKey = detectPlatform();
-  const platform = platforms[platformKey];
-  const downloads = $$('[data-download]');
-  downloads.forEach((a) => (a.href = `${repoUrl}/releases/latest`));
-  if (platform) $$('[data-download-label]').forEach((el) => (el.textContent = platform.label));
-
-  // Link straight to the installer when the GitHub API is reachable; the
-  // releases page stays as the fallback (e.g. when rate-limited).
   fetch(`https://api.github.com/repos/${repo}/releases/latest`)
     .then((res) => (res.ok ? res.json() : Promise.reject(new Error(res.statusText))))
     .then((release) => {
       if (release.tag_name) {
-        $('[data-version]').textContent = `${release.tag_name} is out. Free and open source.`;
+        $('[data-version]').textContent =
+          `${release.tag_name} for Mac is here. Free and open source.`;
       }
-      const asset = platform && release.assets.find((a) => platform.pattern.test(a.name));
-      if (asset) downloads.forEach((a) => (a.href = asset.browser_download_url));
     })
     .catch(() => {});
 
-  const tabs = $$('[data-tab]');
-  function selectTab(key) {
-    tabs.forEach((tab) => {
-      const on = tab.dataset.tab === key;
-      tab.setAttribute('aria-selected', String(on));
-      tab.tabIndex = on ? 0 : -1;
-    });
-    $$('[data-panel]').forEach((panel) => (panel.hidden = panel.dataset.panel !== key));
-  }
-  tabs.forEach((tab, i) => {
-    tab.addEventListener('click', () => selectTab(tab.dataset.tab));
-    tab.addEventListener('keydown', (event) => {
-      const step = { ArrowRight: 1, ArrowLeft: -1 }[event.key];
-      if (!step) return;
-      const next = tabs[(i + step + tabs.length) % tabs.length];
-      selectTab(next.dataset.tab);
-      next.focus();
-    });
-  });
-  selectTab(platformKey ?? 'windows');
+  const year = $('[data-year]');
+  if (year) year.textContent = new Date().getFullYear();
 
   // Navigation shadow once the page scrolls
 
@@ -80,17 +48,24 @@
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
-  // Headline: reveal word by word
+  // Headline: reveal word by word, keeping styled spans (the gradient accent)
 
   const headline = $('[data-split]');
   if (headline && !reducedMotion) {
-    const words = headline.textContent.trim().split(/ +/); // keeps non-breaking pairs together
+    let index = 0;
+    const words = [];
+    for (const node of [...headline.childNodes]) {
+      const className = node.nodeType === Node.ELEMENT_NODE ? node.className : '';
+      for (const text of node.textContent.trim().split(/ +/).filter(Boolean)) {
+        words.push({ text, className });
+      }
+    }
     headline.textContent = '';
-    words.forEach((word, i) => {
+    words.forEach(({ text, className }, i) => {
       const span = document.createElement('span');
-      span.className = 'word';
-      span.style.setProperty('--i', i);
-      span.textContent = word;
+      span.className = `word ${className}`.trim();
+      span.style.setProperty('--i', index++);
+      span.textContent = text;
       headline.append(span, i < words.length - 1 ? ' ' : '');
     });
   }
@@ -117,16 +92,38 @@
     revealables.forEach((el) => observer.observe(el));
   }
 
-  // Character cards switch to their happy pose on hover
+  // Showcase: switch characters on click, and cycle until the visitor picks one
 
-  $$('img[data-hover]').forEach((img) => {
-    const idle = img.src;
-    const happy = img.dataset.hover;
-    new Image().src = happy;
-    const card = img.closest('.char');
-    card.addEventListener('pointerenter', () => (img.src = happy));
-    card.addEventListener('pointerleave', () => (img.src = idle));
-  });
+  const showcaseImg = $('[data-showcase-img]');
+  const charButtons = $$('[data-char]');
+  if (showcaseImg && charButtons.length) {
+    charButtons.forEach((btn) => (new Image().src = `assets/poses/${btn.dataset.char}-idle.webp`));
+    let current = 0;
+    const show = (i) => {
+      current = i;
+      charButtons.forEach((btn, n) => btn.setAttribute('aria-checked', String(n === i)));
+      const { char, label } = charButtons[i].dataset;
+      showcaseImg.classList.add('swap');
+      setTimeout(
+        () => {
+          showcaseImg.src = `assets/poses/${char}-idle.webp`;
+          showcaseImg.alt = label;
+          showcaseImg.classList.remove('swap');
+        },
+        reducedMotion ? 0 : 220,
+      );
+    };
+    let auto = reducedMotion
+      ? null
+      : setInterval(() => show((current + 1) % charButtons.length), 3200);
+    charButtons.forEach((btn, i) =>
+      btn.addEventListener('click', () => {
+        clearInterval(auto);
+        auto = null;
+        show(i);
+      }),
+    );
+  }
 
   // Product demo
 

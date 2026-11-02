@@ -104,7 +104,9 @@
       "icon": "build/icon.png",
       "extendInfo": {
         "LSUIElement": true
-      }
+      },
+      "artifactName": "Pingo-mac-${arch}.${ext}",
+      "identity": null
     },
     "linux": {
       "target": [
@@ -125,6 +127,7 @@
       "icon": "build/icon.png",
       "maintainer": "sharada-dev",
       "synopsis": "Friendly desktop reminder buddy"
-    }
+    },
+    "afterPack": "scripts/adhoc-sign.js"
   }
 }

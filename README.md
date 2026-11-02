@@ -37,16 +37,17 @@ Get it from **[pingo-flax.vercel.app](https://pingo-flax.vercel.app)**, which pi
 installer for your OS, or download it directly from the
 [latest release](https://github.com/MadhavanAR/Pingo/releases/latest):
 
-| Platform | File                        |
-| -------- | --------------------------- |
-| Windows  | `Pingo-Setup-<version>.exe` |
-| macOS    | `Pingo-<version>-mac-*.dmg` |
-| Linux    | `.AppImage` or `.deb`       |
+| Platform | File                                                                 |
+| -------- | -------------------------------------------------------------------- |
+| Windows  | `Pingo-Setup-<version>.exe`                                          |
+| macOS    | `Pingo-mac-arm64.dmg` (Apple Silicon) or `Pingo-mac-x64.dmg` (Intel) |
+| Linux    | `.AppImage` or `.deb`                                                |
 
 Builds are not code-signed yet, so the first launch needs one extra click:
 
 - **Windows:** on "Windows protected your PC", choose **More info → Run anyway**.
-- **macOS:** right-click Pingo in Applications, choose **Open**, then **Open** again.
+- **macOS:** open the DMG and drag Pingo into Applications. On first launch, if macOS
+  blocks it, go to **System Settings → Privacy & Security → Open Anyway**.
 - **Linux:** make the AppImage executable, or run `sudo apt install ./Pingo-*.deb`.
 
 On first launch, a short three-step setup asks for your name, what to remind you
