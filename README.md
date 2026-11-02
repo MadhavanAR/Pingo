@@ -17,21 +17,24 @@
 ![Pingo walks in, reminds you to drink water, celebrates, and walks off](docs/demo.gif)
 
 Pingo lives in your system tray. On your schedule, a cartoon character walks into
-the corner of your screen and reminds you to drink water. Press **Yes, I drank**
-and it celebrates. Press **Snooze** and it comes back in 10 minutes. Then it gets
-out of your way.
+the corner of your screen with a reminder: drink water by default, or anything
+you write yourself. Press **Done** and it celebrates. Press **Snooze** and it
+comes back later. Then it gets out of your way.
 
-- **Configurable cadence**: any interval from 1 minute to 12 hours, active only
-  during waking hours.
-- **Personal**: greets you by name. You can import your own character and the
-  background is removed automatically.
+- **Remind you about anything**: water, stretching, medicine, calls.
+- **Your schedule**: any interval from 1 minute to 12 hours, only during the
+  hours you choose, in your own time zone.
+- **Personal**: greets you by name. Pick a bundled character or import your own;
+  the background is removed automatically.
+- **No code needed**: everything is set from the Settings window.
 - **Private**: no accounts, no telemetry, no network access. Settings stay on
   your machine.
 - **Cross-platform**: Windows, macOS and Linux.
 
 ## Install
 
-Download the installer for your platform from the
+Get it from **[pingo-flax.vercel.app](https://pingo-flax.vercel.app)**, which picks the right
+installer for your OS, or download it directly from the
 [latest release](https://github.com/MadhavanAR/Pingo/releases/latest):
 
 | Platform | File                        |
@@ -40,40 +43,53 @@ Download the installer for your platform from the
 | macOS    | `Pingo-<version>-mac-*.dmg` |
 | Linux    | `.AppImage` or `.deb`       |
 
-Builds are not code-signed yet. On Windows, SmartScreen will warn you, so choose
-**More info → Run anyway**. On macOS, right-click the app and choose **Open** the
-first time.
+Builds are not code-signed yet, so the first launch needs one extra click:
 
-On first launch, a short three-step setup asks for your name, your reminder
-interval and a character. You can change any of these later from the tray icon.
+- **Windows:** on "Windows protected your PC", choose **More info → Run anyway**.
+- **macOS:** right-click Pingo in Applications, choose **Open**, then **Open** again.
+- **Linux:** make the AppImage executable, or run `sudo apt install ./Pingo-*.deb`.
+
+On first launch, a short three-step setup asks for your name, what to remind you
+about, how often, and a character.
 
 <p align="center">
   <img src="docs/setup-name.png" width="400" height="308" alt="Setup step 1: your name" />
-  <img src="docs/setup-interval.png" width="400" height="308" alt="Setup step 2: reminder interval" />
+  <img src="docs/setup-interval.png" width="400" height="308" alt="Setup step 2: what to remind you about, and how often" />
 </p>
 
 ## Usage
 
 Right-click the tray icon for:
 
-| Menu item              | Action                                      |
-| ---------------------- | ------------------------------------------- |
-| Drink now              | Show a reminder immediately                 |
-| Set up…                | Re-run the first-launch setup               |
-| Set your name…         | Change how Pingo greets you                 |
-| Reminder every _N_ min | Choose a preset or custom interval          |
-| Change character…      | Pick a bundled character or import your own |
-| Pause reminders        | Stop reminders until unpaused               |
-| Start at login         | Launch automatically (installed builds)     |
+| Menu item              | Action                                              |
+| ---------------------- | --------------------------------------------------- |
+| Remind me now          | Show a reminder immediately                         |
+| Reminder every _N_ min | Quick interval presets                              |
+| Change character…      | Pick a bundled character or import your own         |
+| Settings…              | Name, reminder text, interval, active hours, snooze |
+| Run setup again…       | Re-open the first-launch wizard                     |
+| Pause reminders        | Stop reminders until unpaused                       |
+| Start at login         | Launch automatically (installed builds)             |
+
+### Settings
+
+| Setting         | Default     | Notes                                             |
+| --------------- | ----------- | ------------------------------------------------- |
+| Your name       | blank       | Used in greetings                                 |
+| Remind me to…   | Drink water | Any text up to 120 characters                     |
+| Every           | 45 minutes  | 1 minute to 12 hours                              |
+| Active hours    | 10:00–23:00 | Your computer's time zone; can wrap past midnight |
+| Any time of day | off         | Ignore active hours                               |
+| Snooze for      | 10 minutes  | 1 to 120 minutes                                  |
 
 To use your own character, see [Make your own character](docs/make-your-own-character.md).
 
 ## Troubleshooting
 
-- **The character never appears.** Reminders only show during active hours
-  (10:00 to 23:00 IST by default). Use **Drink now** from the tray to test.
-- **No welcome screen after upgrading.** Your settings were kept. Use **Set up…**
-  from the tray to run it again.
+- **The character never appears.** Reminders only show during your active hours
+  (10:00 to 23:00 by default). Check **Settings…**, or use **Remind me now** to test.
+- **No welcome screen after upgrading.** Your settings were kept. Use **Run setup
+  again…** from the tray.
 - **An imported character shows as a rectangle.** The source image needs a plain,
   solid-colour background.
 - **Start at login when running from source (Windows).** Run
@@ -104,17 +120,11 @@ npm start
 The codebase layout and design decisions are described in
 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-### Configuration
+### Defaults
 
-Timing defaults live in [`src/main/config.js`](src/main/config.js):
-
-| Setting                | Default        | Meaning                         |
-| ---------------------- | -------------- | ------------------------------- |
-| `TIME_ZONE`            | `Asia/Kolkata` | Zone used for active hours      |
-| `ACTIVE_START_HOUR`    | `10`           | First hour reminders may appear |
-| `ACTIVE_END_HOUR`      | `23`           | Reminders stop at this hour     |
-| `DEFAULT_INTERVAL_MIN` | `45`           | Interval for new users          |
-| `SNOOZE_MIN`           | `10`           | Snooze length                   |
+Defaults and limits for user settings live in
+[`src/main/settings.js`](src/main/settings.js). Fixed timings, such as the poll
+interval, are in [`src/main/config.js`](src/main/config.js).
 
 ## Releasing
 

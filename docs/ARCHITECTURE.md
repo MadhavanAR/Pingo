@@ -7,6 +7,7 @@ src/
   main/            Electron main process (Node.js)
     index.js       App bootstrap and PingoApp controller
     config.js      Static configuration and constants
+    settings.js    User settings: defaults, limits, validation
     scheduler.js   Decides when a reminder is due
     clock.js       Time-zone-aware active-hours check
     store.js       Per-user settings (atomic JSON file)
@@ -14,7 +15,7 @@ src/
     windows.js     Pet window and settings dialogs
     tray.js        System tray icon and menu
     ipc.js         IPC handlers (validated, sender-checked)
-    validation.js  Input normalisation shared by IPC and storage
+    validation.js  Image data-URL validation
   preload/
     index.js       contextBridge API exposed as window.pingo
   renderer/        HTML/CSS/JS for the pet and settings windows
@@ -48,9 +49,10 @@ Renderer content is treated as untrusted:
 - Navigation and `window.open` are blocked. External `https:` links open in the
   system browser.
 - IPC handlers reject senders outside the bundled `src/renderer/` directory.
-- All IPC input is validated in the main process: names are length-capped and
-  stripped of control characters, intervals are clamped, character keys are
-  whitelisted, and imported images are size-limited and must be image data URLs.
+- All IPC input is validated in the main process. Settings go through
+  `normalizeSettings`, which cleans text, clamps numbers and drops unknown
+  fields. Character keys are whitelisted, and imported images are size-limited
+  and must be image data URLs.
 - Each page sets a restrictive Content-Security-Policy. The app makes no network
   requests, and fonts are bundled.
 
@@ -62,11 +64,11 @@ names from `src/shared/channels.js`. `test/channels.test.js` fails if they drift
 Settings live in the OS user-data folder (`%APPDATA%\Pingo`,
 `~/Library/Application Support/Pingo` or `~/.config/Pingo`):
 
-| File                  | Contents                                     |
-| --------------------- | -------------------------------------------- |
-| `config.json`         | name, interval, active character, setup flag |
-| `custom-idle.png`     | Imported standing sprite                     |
-| `custom-drinking.png` | Imported drinking sprite                     |
+| File                  | Contents                               |
+| --------------------- | -------------------------------------- |
+| `config.json`         | settings, active character, setup flag |
+| `custom-idle.png`     | Imported standing sprite               |
+| `custom-drinking.png` | Imported drinking sprite               |
 
 On first launch after the rename from Hydrate Buddy, these files are copied from
 the old folder, so upgrading users keep their settings.

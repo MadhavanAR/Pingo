@@ -6,7 +6,7 @@ const { app, powerMonitor } = require('electron');
 const { APP_NAME, LEGACY_USER_DATA_DIRS, SCHEDULE } = require('./config');
 const { CHANNELS } = require('../shared/channels');
 const { isWithinHours } = require('./clock');
-const { normalizeInterval, normalizeName } = require('./validation');
+const { normalizeSettings, readSettings } = require('./settings');
 const { Store } = require('./store');
 const { Scheduler } = require('./scheduler');
 const { Characters } = require('./characters');
@@ -15,18 +15,10 @@ const { AppTray } = require('./tray');
 const { registerIpc } = require('./ipc');
 
 const DIALOGS = Object.freeze({
-  name: { page: 'name.html', title: 'Your name', width: 380, height: 240 },
-  interval: { page: 'interval.html', title: 'Reminder interval', width: 380, height: 250 },
+  settings: { page: 'settings.html', title: `${APP_NAME} settings`, width: 440, height: 600 },
   onboarding: { page: 'onboarding.html', title: `Welcome to ${APP_NAME}`, width: 430, height: 450 },
   character: { page: 'character.html', title: 'Change character', width: 470, height: 640 },
 });
-
-const isActiveHours = () =>
-  isWithinHours({
-    timeZone: SCHEDULE.TIME_ZONE,
-    startHour: SCHEDULE.ACTIVE_START_HOUR,
-    endHour: SCHEDULE.ACTIVE_END_HOUR,
-  });
 
 /**
  * Users upgrading from "Hydrate Buddy" keep their name, interval and custom
@@ -61,11 +53,11 @@ class PingoApp {
     this.store = new Store(path.join(userDataDir, 'config.json'));
     this.characters = new Characters({ userDataDir, store: this.store });
     this.dialogs = new DialogManager();
-    this.name = normalizeName(this.store.get('name', ''));
+    this.settings = readSettings(this.store);
     this.scheduler = new Scheduler({
-      intervalMin: normalizeInterval(this.store.get('intervalMin')),
+      intervalMin: this.settings.intervalMin,
       tickMs: SCHEDULE.TICK_MS,
-      isActiveHours,
+      isActiveHours: () => this.isActiveHours(),
       isReminderVisible: () => this.pet.isVisible(),
     });
     this.pet = createPetWindow({ shouldHideOnClose: () => !this.quitting });
@@ -84,7 +76,7 @@ class PingoApp {
     if (!this.store.get('askedName', false)) {
       this.store.set({ askedName: true });
       setTimeout(() => this.openDialog('onboarding'), SCHEDULE.ONBOARDING_DELAY_MS);
-    } else if (isActiveHours()) {
+    } else if (this.isActiveHours()) {
       // Returning user: say hello shortly after launch so they see it works.
       this.scheduler.scheduleIn(SCHEDULE.GREETING_DELAY_MS);
       setTimeout(() => this.scheduler.tick(), SCHEDULE.GREETING_DELAY_MS + 300);
@@ -96,23 +88,28 @@ class PingoApp {
     }
   }
 
+  isActiveHours() {
+    return isWithinHours({
+      startHour: this.settings.activeStartHour,
+      endHour: this.settings.activeEndHour,
+    });
+  }
+
   /** Show the reminder now (if reminders are allowed) and restart the countdown. */
   remind() {
     if (!this.scheduler.canRemind()) return;
     this.scheduler.restart();
 
-    // Re-read the name each time: at login the roaming profile may not have
-    // been ready when settings were first loaded.
+    // Re-read each time: at login the roaming profile may not have been ready
+    // when settings were first loaded.
     this.store.reload();
-    this.name = normalizeName(this.store.get('name', ''));
+    this.settings = readSettings(this.store);
 
     positionPetWindow(this.pet);
     this.pet.showInactive(); // appear without stealing keyboard focus
     this.pet.setAlwaysOnTop(true, 'screen-saver');
-    this.pet.webContents.send(CHANNELS.REMINDER_SHOW, {
-      name: this.name,
-      snoozeMin: SCHEDULE.SNOOZE_MIN,
-    });
+    const { name, message, snoozeMin } = this.settings;
+    this.pet.webContents.send(CHANNELS.REMINDER_SHOW, { name, message, snoozeMin });
   }
 
   acknowledge() {
@@ -120,25 +117,23 @@ class PingoApp {
   }
 
   snooze() {
-    this.scheduler.snooze(SCHEDULE.SNOOZE_MIN);
+    this.scheduler.snooze(this.settings.snoozeMin);
   }
 
   hidePet() {
     this.pet.hide();
   }
 
-  setName(value) {
-    this.name = normalizeName(value);
-    this.store.set({ name: this.name });
+  /** Validate, persist and apply any subset of settings; returns the result. */
+  updateSettings(patch) {
+    const previous = this.settings;
+    this.settings = normalizeSettings(patch, previous);
+    this.store.set(this.settings);
+    if (this.settings.intervalMin !== previous.intervalMin) {
+      this.scheduler.setIntervalMinutes(this.settings.intervalMin);
+    }
     this.tray.refresh();
-    return this.name;
-  }
-
-  setInterval(value) {
-    const minutes = normalizeInterval(value);
-    this.store.set({ intervalMin: minutes });
-    this.scheduler.setIntervalMinutes(minutes);
-    return minutes;
+    return this.settings;
   }
 
   setPaused(paused) {
@@ -169,16 +164,14 @@ class PingoApp {
   /** @returns {import('./tray').TrayController} */
   trayController() {
     return {
-      getName: () => this.name,
-      getIntervalMin: () => this.scheduler.intervalMin,
+      getIntervalMin: () => this.settings.intervalMin,
       isPaused: () => this.scheduler.paused,
       minutesUntilNext: () => this.scheduler.minutesUntilNext(),
       remindNow: () => this.remind(),
       openOnboarding: () => this.openDialog('onboarding'),
-      openName: () => this.openDialog('name'),
-      openInterval: () => this.openDialog('interval'),
+      openSettings: () => this.openDialog('settings'),
       openCharacter: () => this.openDialog('character'),
-      setInterval: (m) => this.setInterval(m),
+      setInterval: (intervalMin) => this.updateSettings({ intervalMin }),
       setPaused: (p) => this.setPaused(p),
       quit: () => this.quit(),
     };

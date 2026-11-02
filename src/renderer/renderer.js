@@ -25,12 +25,16 @@ const confetti = document.getElementById('confetti');
 /** Pose name -> data URL for multi-pose characters; null for idle/drinking-only ones. */
 let poses = null;
 let busy = false;
-let reminder = { name: '', snoozeMin: 10 };
+let reminder = { name: '', message: '', snoozeMin: 10 };
 
 const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-function promptFor(name) {
+// An empty message means the built-in drink-water reminder.
+const isCustom = ({ message }) => Boolean(message);
+
+function promptFor({ name, message }) {
+  if (message) return name ? `Hey ${name}! ${message}` : message;
   if (name) {
     return pick([
       `${name}, time to drink water to keep your skin glowing!`,
@@ -49,7 +53,12 @@ function promptFor(name) {
   ]);
 }
 
-function cheerFor(name) {
+function cheerFor({ name, message }) {
+  if (message) {
+    return name
+      ? pick([`Nice work, ${name}! ✨`, `Done and dusted, ${name}! 🙌`, `Great job, ${name}! ⭐`])
+      : pick(['Nice work! ✨', 'Done and dusted! 🙌', 'Great job! ⭐']);
+  }
   if (name) {
     return pick([
       `Yay ${name}! Stay glowing ✨`,
@@ -141,9 +150,11 @@ function burstConfetti() {
 }
 
 async function celebrate() {
-  showBubble(cheerFor(reminder.name), false);
-  setPose('drink');
-  await wait(POSE_HOLD_MS);
+  showBubble(cheerFor(reminder), false);
+  if (!isCustom(reminder)) {
+    setPose('drink');
+    await wait(POSE_HOLD_MS);
+  }
   setPose('happy');
   pet.classList.add('celebrate');
   burstConfetti();
@@ -165,9 +176,10 @@ async function exclusive(sequence) {
 function runReminder(payload) {
   return exclusive(async () => {
     reminder = { ...reminder, ...payload };
+    yesBtn.textContent = isCustom(reminder) ? 'DONE' : 'YES, I DRANK';
     await walkIn();
     setPose('point');
-    showBubble(promptFor(reminder.name), true);
+    showBubble(promptFor(reminder), true);
     pet.classList.add('chatty');
   });
 }

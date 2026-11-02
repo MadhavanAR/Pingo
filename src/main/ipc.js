@@ -42,19 +42,15 @@ function registerIpc({ pingo }) {
   on(CHANNELS.REMINDER_SNOOZE, () => pingo.snooze());
   on(CHANNELS.REMINDER_HIDE, () => pingo.hidePet());
 
-  // Name
-  handle(CHANNELS.NAME_GET, () => pingo.name);
-  handle(CHANNELS.NAME_SAVE, (value) => pingo.setName(value));
-  on(CHANNELS.NAME_CLOSE, () => dialogs.close('name.html'));
-
-  // Interval
-  handle(CHANNELS.INTERVAL_GET, () => pingo.scheduler.intervalMin);
-  handle(CHANNELS.INTERVAL_SAVE, (value) => pingo.setInterval(value));
-  on(CHANNELS.INTERVAL_CLOSE, () => dialogs.close('interval.html'));
+  // Settings
+  handle(CHANNELS.SETTINGS_GET, () => pingo.settings);
+  handle(CHANNELS.SETTINGS_SAVE, (patch) => pingo.updateSettings(patch));
+  on(CHANNELS.SETTINGS_CLOSE, () => dialogs.close('settings.html'));
 
   on(CHANNELS.ONBOARDING_CLOSE, () => dialogs.close('onboarding.html'));
 
   // Characters
+  on(CHANNELS.CHARACTER_OPEN, () => pingo.openDialog('character'));
   handle(CHANNELS.DIALOG_PICK_IMAGE, async () => {
     const parent = dialogs.get('character.html') ?? undefined;
     const res = await dialog.showOpenDialog(parent, {

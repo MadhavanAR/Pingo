@@ -6,6 +6,23 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-11-02
+
+### Added
+
+- **Settings window** (tray → Settings…) for name, reminder text, interval,
+  active hours and snooze length. Nothing needs code changes any more.
+- **Custom reminders**: write your own message ("Take your medicine"). The popup
+  shows a **Done** button and a matching celebration.
+- Active hours can wrap past midnight, or be turned off ("Any time of day").
+- The website has a step-by-step install guide for each OS.
+
+### Changed
+
+- Active hours use the computer's own time zone instead of always using IST.
+- The tray menu is simpler. The separate name and interval windows are replaced
+  by Settings.
+
 ## [2.0.0] - 2026-11-02
 
 ### Changed
@@ -45,5 +62,6 @@ All notable changes to this project are documented here. The format follows
 
 - Last release as Hydrate Buddy.
 
-[Unreleased]: https://github.com/MadhavanAR/Pingo/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/MadhavanAR/Pingo/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/MadhavanAR/Pingo/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/MadhavanAR/Pingo/compare/v1.0.8...v2.0.0

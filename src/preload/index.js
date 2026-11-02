@@ -24,20 +24,16 @@ contextBridge.exposeInMainWorld('pingo', {
   snooze: () => send('reminder:snooze'),
   hide: () => send('reminder:hide'),
 
-  // Name
-  getName: () => invoke('name:get'),
-  saveName: (value) => invoke('name:save', value),
-  closeNameWindow: () => send('name:close'),
-
-  // Reminder interval
-  getInterval: () => invoke('interval:get'),
-  saveInterval: (value) => invoke('interval:save', value),
-  closeIntervalWindow: () => send('interval:close'),
+  // Settings (any subset of fields; returns the full, validated settings)
+  getSettings: () => invoke('settings:get'),
+  saveSettings: (patch) => invoke('settings:save', patch),
+  closeSettings: () => send('settings:close'),
 
   // First-run onboarding
   closeOnboarding: () => send('onboarding:close'),
 
   // Character gallery + custom import
+  openCharacterWindow: () => send('character:open'),
   getPresets: () => invoke('presets:get'),
   selectCharacter: (key) => invoke('character:select', key),
   pickImage: () => invoke('dialog:pickImage'),

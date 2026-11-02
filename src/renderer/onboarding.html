@@ -164,6 +164,11 @@
       .hidden {
         display: none !important;
       }
+      p.sub.label {
+        margin: 16px 0 6px;
+        font-weight: 600;
+        color: #1c1c1c;
+      }
       p.hint {
         font-size: 11px;
         color: #888;
@@ -187,8 +192,16 @@
     <!-- Step 2: interval -->
     <div id="step2" class="hidden">
       <div class="steps">STEP 2 OF 3</div>
-      <h1>How often should your buddy nudge you?</h1>
-      <p class="sub">Pick a reminder interval — tap a preset or type your own.</p>
+      <h1>What should Pingo remind you about?</h1>
+      <input
+        id="message"
+        type="text"
+        maxlength="120"
+        placeholder="Drink water (default)"
+        autocomplete="off"
+      />
+      <p class="hint">Or anything else: “Stretch and rest your eyes”, “Take your medicine”.</p>
+      <p class="sub label">How often?</p>
       <div class="chips" id="chips">
         <button class="chip" data-min="15">15 min</button>
         <button class="chip" data-min="30">30 min</button>

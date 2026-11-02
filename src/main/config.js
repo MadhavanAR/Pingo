@@ -16,14 +16,9 @@ const PRELOAD_PATH = path.join(ROOT_DIR, 'src', 'preload', 'index.js');
 
 const MINUTE_MS = 60_000;
 
+/** Timing that is not user-configurable. User defaults live in `settings.js`. */
 const SCHEDULE = Object.freeze({
-  TIME_ZONE: 'Asia/Kolkata', // reminders follow IST regardless of the machine's zone
-  ACTIVE_START_HOUR: 10, // first hour reminders may appear
-  ACTIVE_END_HOUR: 23, // reminders stop at 23:00
-  DEFAULT_INTERVAL_MIN: 45, // used until the user picks their own
-  MAX_INTERVAL_MIN: 720, // 12 hours
   INTERVAL_OPTIONS: Object.freeze([15, 30, 45, 60, 90]), // tray menu presets
-  SNOOZE_MIN: 10,
   GREETING_DELAY_MS: 6000, // first hello after launch, so you can see it work
   ONBOARDING_DELAY_MS: 1500,
   POST_ONBOARDING_DELAY_MS: 800,
@@ -31,8 +26,6 @@ const SCHEDULE = Object.freeze({
 });
 
 const PET_WINDOW = Object.freeze({ WIDTH: 360, HEIGHT: 430, EDGE_MARGIN: 8 });
-
-const NAME_MAX_LENGTH = 24;
 
 /** Upper bound on a single custom sprite, to stop a renderer flooding the disk. */
 const MAX_SPRITE_BYTES = 10 * 1024 * 1024;
@@ -86,7 +79,6 @@ module.exports = {
   MINUTE_MS,
   SCHEDULE,
   PET_WINDOW,
-  NAME_MAX_LENGTH,
   MAX_SPRITE_BYTES,
   IMAGE_EXTENSIONS,
   POSE_NAMES,

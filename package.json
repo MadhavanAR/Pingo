@@ -1,7 +1,7 @@
 {
   "name": "pingo",
   "productName": "Pingo",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Pingo — a friendly cartoon desktop buddy that walks onto your screen to remind you, starting with drinking water.",
   "main": "src/main/index.js",
   "private": true,
@@ -40,7 +40,7 @@
     "type": "git",
     "url": "https://github.com/MadhavanAR/Pingo.git"
   },
-  "homepage": "https://github.com/MadhavanAR/Pingo#readme",
+  "homepage": "https://pingo-flax.vercel.app",
   "bugs": {
     "url": "https://github.com/MadhavanAR/Pingo/issues"
   },

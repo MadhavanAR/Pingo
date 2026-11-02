@@ -9,14 +9,12 @@ const { APP_NAME, ASSETS_DIR, SCHEDULE } = require('./config');
  * controller reports and forwards clicks back to it.
  *
  * @typedef {object} TrayController
- * @property {() => string} getName
  * @property {() => number} getIntervalMin
  * @property {() => boolean} isPaused
  * @property {() => number} minutesUntilNext
  * @property {() => void} remindNow
  * @property {() => void} openOnboarding
- * @property {() => void} openName
- * @property {() => void} openInterval
+ * @property {() => void} openSettings
  * @property {() => void} openCharacter
  * @property {(minutes: number) => void} setInterval
  * @property {(paused: boolean) => void} setPaused
@@ -46,14 +44,11 @@ class AppTray {
 
   buildTemplate() {
     const c = this.controller;
-    const name = c.getName();
     const intervalMin = c.getIntervalMin();
 
     const template = [
-      { label: 'Drink now 💧', click: () => c.remindNow() },
-      { label: 'Set up…', click: () => c.openOnboarding() },
+      { label: 'Remind me now', click: () => c.remindNow() },
       { type: 'separator' },
-      { label: name ? `Set your name… (${name})` : 'Set your name…', click: () => c.openName() },
       {
         label: `Reminder every ${intervalMin} min`,
         submenu: [
@@ -68,11 +63,13 @@ class AppTray {
             label: 'Custom…',
             type: 'radio',
             checked: !SCHEDULE.INTERVAL_OPTIONS.includes(intervalMin),
-            click: () => c.openInterval(),
+            click: () => c.openSettings(),
           },
         ],
       },
       { label: 'Change character…', click: () => c.openCharacter() },
+      { label: 'Settings…', click: () => c.openSettings() },
+      { label: 'Run setup again…', click: () => c.openOnboarding() },
       {
         label: 'Pause reminders',
         type: 'checkbox',

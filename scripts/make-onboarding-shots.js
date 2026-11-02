@@ -132,10 +132,20 @@ function step2(fonts) {
   let y = 56;
   img.print(fonts.small, pad, y, 'STEP 2 OF 3');
   y += 26;
-  img.print(fonts.h1, pad, y, 'How often should your buddy nudge you?');
-  y += 28;
-  img.print(fonts.body, pad, y, 'Tap a preset or type your own.');
-  y += 32;
+  img.print(fonts.h1, pad, y, 'What should Pingo remind you about?');
+  y += 30;
+  roundBox(img, pad, y, W - 2 * pad, 40, WHITE, INK, 8, 2);
+  img.print(
+    fonts.body,
+    pad + 14,
+    y,
+    { text: 'Stretch and rest your eyes', alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE },
+    W - 2 * pad - 20,
+    40,
+  );
+  y += 52;
+  img.print(fonts.body, pad, y, 'How often?');
+  y += 26;
   // chips
   const chips = ['15 min', '30 min', '45 min', '60 min', '90 min'];
   let cx = pad;
@@ -161,9 +171,9 @@ function step2(fonts) {
     );
     cx += cw + 8;
   });
-  y += 56;
+  y += 48;
   // number field
-  roundBox(img, pad, y, 90, 44, WHITE, INK, 8, 2);
+  roundBox(img, pad, y, 90, 40, WHITE, INK, 8, 2);
   img.print(
     fonts.body,
     pad,
@@ -174,7 +184,7 @@ function step2(fonts) {
       alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE,
     },
     90,
-    44,
+    40,
   );
   img.print(
     fonts.body,
@@ -182,9 +192,9 @@ function step2(fonts) {
     y,
     { text: 'minutes', alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE },
     120,
-    44,
+    40,
   );
-  y += 64;
+  y += 56;
   // Back + Next
   const doneW = 110,
     doneX = W - pad - doneW;
@@ -216,8 +226,8 @@ function step2(fonts) {
     backW,
     42,
   );
-  y += 58;
-  img.print(fonts.small, pad, y, 'You can change this anytime from the tray icon.');
+  y += 56;
+  img.print(fonts.small, pad, y, 'Change it anytime from Settings in the tray menu.');
   return img;
 }
 

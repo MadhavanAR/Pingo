@@ -4,19 +4,19 @@ const step1 = document.getElementById('step1');
 const step2 = document.getElementById('step2');
 const step3 = document.getElementById('step3');
 const nameInput = document.getElementById('name');
+const messageInput = document.getElementById('message');
 const minsInput = document.getElementById('mins');
 const chips = document.getElementById('chips');
 const charCards = document.getElementById('charCards');
 
-// Pre-fill from whatever's already saved.
-window.pingo.getName().then((n) => {
-  nameInput.value = n || '';
+// Pre-fill from whatever's already saved, so re-running setup edits in place.
+window.pingo.getSettings().then((settings) => {
+  nameInput.value = settings.name;
+  messageInput.value = settings.message;
+  minsInput.value = settings.intervalMin;
+  syncChips();
   nameInput.focus();
   nameInput.select();
-});
-window.pingo.getInterval().then((m) => {
-  minsInput.value = m || '';
-  syncChips();
 });
 
 function show(el) {
@@ -42,24 +42,24 @@ function renderChars() {
 }
 
 document.getElementById('to2').addEventListener('click', () => {
-  window.pingo.saveName(nameInput.value);
+  window.pingo.saveSettings({ name: nameInput.value });
   show(step2);
-  minsInput.focus();
-  minsInput.select();
+  messageInput.focus();
 });
 document.getElementById('b2to1').addEventListener('click', () => {
   show(step1);
   nameInput.focus();
 });
 document.getElementById('to3').addEventListener('click', () => {
-  const n = Math.round(Number(minsInput.value));
-  if (Number.isFinite(n) && n >= 1) window.pingo.saveInterval(n);
+  const patch = { message: messageInput.value };
+  if (minsInput.value !== '') patch.intervalMin = minsInput.value;
+  window.pingo.saveSettings(patch);
   show(step3);
   renderChars();
 });
 document.getElementById('b3to2').addEventListener('click', () => {
   show(step2);
-  minsInput.focus();
+  messageInput.focus();
 });
 document.getElementById('finish').addEventListener('click', () => {
   window.pingo.closeOnboarding();
@@ -70,7 +70,9 @@ nameInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') document.getElementById('to2').click();
   if (e.key === 'Escape') window.pingo.closeOnboarding();
 });
-minsInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') document.getElementById('to3').click();
-  if (e.key === 'Escape') window.pingo.closeOnboarding();
-});
+for (const input of [messageInput, minsInput]) {
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') document.getElementById('to3').click();
+    if (e.key === 'Escape') window.pingo.closeOnboarding();
+  });
+}
