@@ -1,6 +1,6 @@
 /**
  * Renders clean PNGs of the two onboarding steps for the README (jimp, no
- * browser). Output: docs/onboarding-1.png, docs/onboarding-2.png
+ * browser). Output: docs/setup-name.png, docs/setup-interval.png
  *
  *   node scripts/make-onboarding-shots.js
  */
@@ -226,7 +226,7 @@ function step2(fonts) {
   fontsRef = fonts;
   const outDir = path.join(__dirname, '..', 'docs');
   fs.mkdirSync(outDir, { recursive: true });
-  await step1(fonts).writeAsync(path.join(outDir, 'onboarding-1.png'));
-  await step2(fonts).writeAsync(path.join(outDir, 'onboarding-2.png'));
-  console.log('Wrote docs/onboarding-1.png and docs/onboarding-2.png');
+  await step1(fonts).writeAsync(path.join(outDir, 'setup-name.png'));
+  await step2(fonts).writeAsync(path.join(outDir, 'setup-interval.png'));
+  console.log('Wrote docs/setup-name.png and docs/setup-interval.png');
 })();

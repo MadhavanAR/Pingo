@@ -48,8 +48,8 @@ On first launch, a short three-step setup asks for your name, your reminder
 interval and a character. You can change any of these later from the tray icon.
 
 <p align="center">
-  <img src="docs/onboarding-1.png" width="49%" alt="Setup step 1: your name" />
-  <img src="docs/onboarding-2.png" width="49%" alt="Setup step 2: reminder interval" />
+  <img src="docs/setup-name.png" width="400" height="308" alt="Setup step 1: your name" />
+  <img src="docs/setup-interval.png" width="400" height="308" alt="Setup step 2: reminder interval" />
 </p>
 
 ## Usage
