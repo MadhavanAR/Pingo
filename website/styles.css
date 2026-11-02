@@ -357,7 +357,7 @@ code {
 .headline {
   margin-top: 0;
   max-width: 13ch;
-  font-size: clamp(2.75rem, 7.2vw, 5.5rem);
+  font-size: clamp(2.3rem, 7.6vw, 5.5rem);
   line-height: 1;
   font-weight: 650;
   letter-spacing: -0.045em;
@@ -1530,6 +1530,21 @@ code {
   .footer-row {
     flex-direction: column;
     gap: 16px;
+  }
+}
+
+@media (max-width: 380px) {
+  .hide-xs {
+    display: none;
+  }
+}
+
+@media (min-width: 1600px) {
+  :root {
+    --container: 1200px;
+  }
+  .headline {
+    font-size: 6rem;
   }
 }
 
