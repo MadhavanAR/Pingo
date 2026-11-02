@@ -15,6 +15,7 @@ const WHITE = C(255, 255, 255);
 const GREEN = C(55, 194, 74);
 const BAR = C(240, 240, 240);
 const W = 520;
+const H = 400; // both steps share one window size, like the real wizard
 
 function fillRect(img, x, y, w, h, color) {
   const x0 = Math.max(0, x | 0),
@@ -82,7 +83,6 @@ function titleBar(img) {
 let fontsRef;
 
 function step1(fonts) {
-  const H = 320;
   const img = new Jimp(W, H, CREAM);
   titleBar(img);
   const pad = 28;
@@ -126,7 +126,6 @@ function step1(fonts) {
 }
 
 function step2(fonts) {
-  const H = 400;
   const img = new Jimp(W, H, CREAM);
   titleBar(img);
   const pad = 28;
