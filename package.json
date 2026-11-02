@@ -1,0 +1,130 @@
+{
+  "name": "pingo",
+  "productName": "Pingo",
+  "version": "2.0.0",
+  "description": "Pingo — a friendly cartoon desktop buddy that walks onto your screen to remind you, starting with drinking water.",
+  "main": "src/main/index.js",
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "electron .",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "node --test \"test/**/*.test.js\"",
+    "check": "npm run lint && npm run format:check && npm test",
+    "make-icon": "node scripts/make-icon.js",
+    "make-gif": "node scripts/make-gif.js",
+    "autostart:enable": "node scripts/install-autostart.js",
+    "autostart:disable": "node scripts/uninstall-autostart.js",
+    "dist": "electron-builder --publish never",
+    "dist:win": "electron-builder --win --publish never",
+    "dist:mac": "electron-builder --mac --publish never",
+    "dist:linux": "electron-builder --linux --publish never"
+  },
+  "keywords": [
+    "electron",
+    "desktop-pet",
+    "reminder",
+    "habit",
+    "desktop-reminder",
+    "hydration",
+    "wellbeing"
+  ],
+  "author": "sharada-dev",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MadhavanAR/Pingo.git"
+  },
+  "homepage": "https://github.com/MadhavanAR/Pingo#readme",
+  "bugs": {
+    "url": "https://github.com/MadhavanAR/Pingo/issues"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8",
+    "eslint": "^9.39.5",
+    "gifenc": "^1.0.3",
+    "globals": "^17.14.0",
+    "jimp": "0.22.12",
+    "prettier": "^3.9.10"
+  },
+  "build": {
+    "appId": "com.sharadadev.hydratebuddy",
+    "productName": "Pingo",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "src/**/*",
+      "assets/tray.png",
+      "assets/fonts/**/*",
+      "assets/characters/**/*",
+      "!assets/characters/**/raw/**",
+      "LICENSE"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Pingo",
+      "artifactName": "Pingo-Setup-${version}.${ext}"
+    },
+    "artifactName": "Pingo-${version}-${os}-${arch}.${ext}",
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "category": "public.app-category.healthcare-fitness",
+      "icon": "build/icon.png",
+      "extendInfo": {
+        "LSUIElement": true
+      }
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "category": "Utility",
+      "icon": "build/icon.png",
+      "maintainer": "sharada-dev",
+      "synopsis": "Friendly desktop reminder buddy"
+    }
+  }
+}

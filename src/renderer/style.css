@@ -1,0 +1,409 @@
+/* Bundled locally (SIL OFL 1.1, see assets/fonts/OFL.txt): works offline and
+   makes no third-party requests. */
+@font-face {
+  font-family: 'Press Start 2P';
+  src: url('../../assets/fonts/PressStart2P.woff2') format('woff2');
+  font-display: swap;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  overflow: hidden;
+  cursor: default;
+}
+
+#stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* Character */
+#pet {
+  position: absolute;
+  right: 18px;
+  bottom: 0;
+  width: 155px;
+  height: 272px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  transition:
+    transform 1.15s cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 0.4s ease;
+  transform: translateX(0);
+  opacity: 1;
+  filter: drop-shadow(0 6px 6px rgba(0, 0, 0, 0.28));
+}
+
+/* Off to the right, ready to walk in. */
+#pet.offstage {
+  transform: translateX(230px);
+  opacity: 0;
+}
+
+/* Gentle bob while walking. */
+#pet.walking {
+  animation: walk-bob 0.36s steps(2, end) infinite;
+}
+
+@keyframes walk-bob {
+  0%,
+  100% {
+    margin-bottom: 0;
+  }
+  50% {
+    margin-bottom: 7px;
+  }
+}
+
+#pet img {
+  height: 100%;
+  width: auto;
+  image-rendering: auto; /* smooth: the head is a real photo */
+}
+
+/* Face right when exiting. */
+#pet.face-right img {
+  transform: scaleX(-1);
+}
+
+/* Hop on celebration. */
+#pet.celebrate {
+  animation: happy-hop 0.5s ease-in-out 2;
+}
+
+@keyframes happy-hop {
+  0%,
+  100% {
+    transform: translateX(0) translateY(0);
+  }
+  30% {
+    transform: translateX(0) translateY(-18px);
+  }
+  60% {
+    transform: translateX(0) translateY(0);
+  }
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Speech bubble */
+#bubble {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  right: 14px;
+  background: #fdfdf7;
+  border: 4px solid #1c1c1c;
+  border-radius: 6px;
+  padding: 16px 16px 14px;
+  box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.18);
+  transform-origin: bottom right;
+  transition:
+    transform 0.28s cubic-bezier(0.18, 0.89, 0.32, 1.28),
+    opacity 0.2s ease;
+}
+
+#bubble.hidden {
+  display: block !important;
+  opacity: 0;
+  transform: scale(0.4);
+  pointer-events: none;
+}
+
+#bubble-text {
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  font-size: 11px;
+  line-height: 1.7;
+  color: #1c1c1c;
+  text-transform: uppercase;
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+/* Bubble tail pointing down toward the character. */
+#bubble-tail {
+  position: absolute;
+  right: 46px;
+  bottom: -18px;
+  width: 0;
+  height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-top: 18px solid #1c1c1c;
+}
+
+#bubble-tail::after {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: -18px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 12px solid #fdfdf7;
+}
+
+/* Buttons */
+#buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.btn {
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  font-size: 9px;
+  letter-spacing: 0.5px;
+  padding: 9px 10px;
+  border: 3px solid #1c1c1c;
+  border-radius: 4px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition:
+    transform 0.05s ease,
+    box-shadow 0.05s ease;
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.35);
+}
+
+.btn:active {
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0.35);
+}
+
+.btn-yes {
+  background: #37c24a;
+  color: #fff;
+}
+
+.btn-yes:hover {
+  background: #2fae41;
+}
+
+.btn-snooze {
+  background: #fdfdf7;
+  color: #1c1c1c;
+}
+
+.btn-snooze:hover {
+  background: #ececec;
+}
+
+/* Confetti */
+#confetti {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.confetti-piece {
+  position: absolute;
+  top: -20px;
+  font-size: 16px;
+  will-change: transform, opacity;
+  animation: confetti-fall var(--dur) linear forwards;
+}
+
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(var(--fall)) rotate(var(--spin));
+    opacity: 0;
+  }
+}
+
+/* Portrait (photo) mode */
+/* These use the independent rotate/translate/scale properties so they never
+   fight the slide-in `transform` transition on #pet. */
+#pet.portrait {
+  width: 190px;
+  height: 190px;
+  right: 24px;
+  bottom: 14px;
+  align-items: center;
+  transform-origin: 50% 90%;
+  filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.35));
+}
+
+#pet.portrait img {
+  width: 100%;
+  height: 100%;
+  image-rendering: auto; /* smooth photo, not pixelated */
+}
+
+/* Rocking walk while sliding in or out. */
+#pet.portrait.walking {
+  animation: portrait-bounce 0.42s ease-in-out infinite;
+}
+@keyframes portrait-bounce {
+  0%,
+  100% {
+    translate: 0 0;
+    rotate: -4deg;
+  }
+  50% {
+    translate: 0 -14px;
+    rotate: 4deg;
+  }
+}
+
+/* Never mirror a photo on exit. */
+#pet.portrait.face-right img {
+  transform: none;
+}
+
+/* Attention wiggle while awaiting an answer. */
+#pet.portrait.chatty {
+  animation: portrait-wave 1.8s ease-in-out infinite;
+}
+@keyframes portrait-wave {
+  0%,
+  60%,
+  100% {
+    rotate: 0deg;
+    scale: 1;
+  }
+  15% {
+    rotate: -6deg;
+    scale: 1.05;
+  }
+  30% {
+    rotate: 5deg;
+    scale: 1.05;
+  }
+  45% {
+    rotate: -3deg;
+    scale: 1.02;
+  }
+}
+
+/* Sip: tilt back and bob like drinking from the glass. */
+#pet.portrait.sipping {
+  animation: portrait-sip 0.95s ease-in-out;
+}
+@keyframes portrait-sip {
+  0%,
+  100% {
+    rotate: 0deg;
+    translate: 0 0;
+  }
+  35%,
+  60% {
+    rotate: -9deg;
+    translate: 0 -6px;
+  }
+  80% {
+    rotate: 2deg;
+    translate: 0 2px;
+  }
+}
+
+/* Happy hop on celebration. */
+#pet.portrait.celebrate {
+  animation: portrait-hop 0.5s ease-in-out 2;
+}
+@keyframes portrait-hop {
+  0%,
+  100% {
+    translate: 0 0;
+    scale: 1;
+    rotate: 0deg;
+  }
+  35% {
+    translate: 0 -26px;
+    scale: 1.07;
+    rotate: -4deg;
+  }
+  65% {
+    translate: 0 0;
+    scale: 0.97;
+  }
+}
+
+/* Multi-pose cartoon mode */
+#pet.poses {
+  width: auto;
+  min-width: 232px;
+  height: 275px;
+  right: 6px;
+  bottom: 0;
+  transform-origin: 50% 100%;
+}
+#pet.poses img {
+  height: 100%;
+  width: auto;
+  image-rendering: auto;
+}
+#pet.poses.face-right img {
+  transform: none;
+} /* never mirror the face */
+#pet.poses.walking {
+  animation: pose-bounce 0.42s ease-in-out infinite;
+}
+@keyframes pose-bounce {
+  0%,
+  100% {
+    translate: 0 0;
+    rotate: -2deg;
+  }
+  50% {
+    translate: 0 -10px;
+    rotate: 2deg;
+  }
+}
+#pet.poses.chatty {
+  animation: pose-chatty 2.2s ease-in-out infinite;
+}
+@keyframes pose-chatty {
+  0%,
+  100% {
+    translate: 0 0;
+    scale: 1;
+  }
+  50% {
+    translate: 0 -4px;
+    scale: 1.015;
+  }
+}
+#pet.poses.sipping {
+  animation: none;
+}
+#pet.poses.celebrate {
+  animation: pose-hop 0.5s ease-in-out 2;
+}
+@keyframes pose-hop {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  35% {
+    translate: 0 -22px;
+  }
+  65% {
+    translate: 0 0;
+  }
+}
+
+#pet.poses.flipped img {
+  transform: scaleX(-1);
+}
