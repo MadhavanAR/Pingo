@@ -28,16 +28,6 @@
     a.setAttribute('download', '');
   });
 
-  fetch(`https://api.github.com/repos/${repo}/releases/latest`)
-    .then((res) => (res.ok ? res.json() : Promise.reject(new Error(res.statusText))))
-    .then((release) => {
-      if (release.tag_name) {
-        $('[data-version]').textContent =
-          `${release.tag_name} for Mac is here. Free and open source.`;
-      }
-    })
-    .catch(() => {});
-
   const year = $('[data-year]');
   if (year) year.textContent = new Date().getFullYear();
 
@@ -92,30 +82,67 @@
     revealables.forEach((el) => observer.observe(el));
   }
 
-  // Showcase: switch characters on click, and cycle until the visitor picks one
+  // Interactive cards: a light that follows the cursor, and a gentle tilt
 
+  $$('.spot').forEach((card) => {
+    card.addEventListener('pointermove', (event) => {
+      const rect = card.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      card.style.setProperty('--mx', `${x}px`);
+      card.style.setProperty('--my', `${y}px`);
+      if (card.hasAttribute('data-tilt') && !reducedMotion) {
+        card.style.setProperty('--ry', `${(x / rect.width - 0.5) * 4}deg`);
+        card.style.setProperty('--rx', `${(0.5 - y / rect.height) * 4}deg`);
+      }
+    });
+    card.addEventListener('pointerleave', () => {
+      card.style.setProperty('--rx', '0deg');
+      card.style.setProperty('--ry', '0deg');
+    });
+  });
+
+  // Showcase: switch characters on click, cycle until the visitor picks one,
+  // and act out each feature row on hover
+
+  const showcase = $('.showcase');
   const showcaseImg = $('[data-showcase-img]');
   const charButtons = $$('[data-char]');
-  if (showcaseImg && charButtons.length) {
+  if (showcase && showcaseImg && charButtons.length) {
+    const poseSrc = (char, pose) =>
+      // Only the classic character has the full pose set; others use happy.
+      char === 'boy' ? `assets/poses/${pose}.webp` : `assets/poses/${char}-happy.webp`;
     charButtons.forEach((btn) => (new Image().src = `assets/poses/${btn.dataset.char}-idle.webp`));
+    ['point', 'think', 'happy', 'wave'].forEach(
+      (p) => (new Image().src = `assets/poses/${p}.webp`),
+    );
+
     let current = 0;
+    let hovering = false;
+    const setImage = (src, alt) => {
+      if (showcaseImg.getAttribute('src') === src) return;
+      showcaseImg.classList.add('swap');
+      setTimeout(
+        () => {
+          showcaseImg.src = src;
+          if (alt) showcaseImg.alt = alt;
+          showcaseImg.classList.remove('swap');
+        },
+        reducedMotion ? 0 : 200,
+      );
+    };
     const show = (i) => {
       current = i;
       charButtons.forEach((btn, n) => btn.setAttribute('aria-checked', String(n === i)));
       const { char, label } = charButtons[i].dataset;
-      showcaseImg.classList.add('swap');
-      setTimeout(
-        () => {
-          showcaseImg.src = `assets/poses/${char}-idle.webp`;
-          showcaseImg.alt = label;
-          showcaseImg.classList.remove('swap');
-        },
-        reducedMotion ? 0 : 220,
-      );
+      setImage(`assets/poses/${char}-idle.webp`, label);
     };
+
     let auto = reducedMotion
       ? null
-      : setInterval(() => show((current + 1) % charButtons.length), 3200);
+      : setInterval(() => {
+          if (!hovering) show((current + 1) % charButtons.length);
+        }, 3200);
     charButtons.forEach((btn, i) =>
       btn.addEventListener('click', () => {
         clearInterval(auto);
@@ -123,6 +150,20 @@
         show(i);
       }),
     );
+
+    const rows = $$('[data-pose]', showcase);
+    const actOut = (row) => {
+      hovering = Boolean(row);
+      rows.forEach((r) => r.classList.toggle('active', r === row));
+      const { char } = charButtons[current].dataset;
+      setImage(row ? poseSrc(char, row.dataset.pose) : `assets/poses/${char}-idle.webp`);
+    };
+    rows.forEach((row) => {
+      row.addEventListener('pointerenter', () => actOut(row));
+      row.addEventListener('focus', () => actOut(row));
+      row.addEventListener('blur', () => actOut(null));
+    });
+    $('.showcase-list', showcase).addEventListener('pointerleave', () => actOut(null));
   }
 
   // Product demo
