@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pingo: your desktop reminder buddy</title>
+    <meta
+      name="description"
+      content="Pingo is a free, open-source cartoon companion that walks onto your screen to remind you to drink water and take care of yourself."
+    />
+    <meta property="og:title" content="Pingo" />
+    <meta
+      property="og:description"
+      content="A friendly desktop buddy that walks onto your screen to remind you."
+    />
+    <meta property="og:image" content="assets/icon.png" />
+    <link rel="icon" type="image/png" href="assets/icon.png" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="nav">
+      <a class="brand" href="./"
+        ><img src="assets/icon.png" alt="" width="32" height="32" />Pingo</a
+      >
+      <nav>
+        <a href="#features">Features</a>
+        <a data-repo-link href="#">GitHub</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <h1>Your desktop reminder buddy.</h1>
+          <p class="lede">
+            Pingo walks onto your screen, reminds you to drink water, cheers when you do, and gets
+            out of your way. Free and open source.
+          </p>
+          <div class="cta">
+            <a class="btn primary" data-download href="#">Download</a>
+            <a class="btn" data-repo-link href="#">View source</a>
+          </div>
+          <p class="fine" data-platform-note>Windows, macOS and Linux.</p>
+        </div>
+        <img class="hero-art" src="assets/pingo.png" alt="Pingo, a cartoon boy pointing" />
+      </section>
+
+      <section class="demo">
+        <img
+          src="assets/demo.gif"
+          alt="Pingo walks in, reminds you to drink water and celebrates"
+        />
+      </section>
+
+      <section id="features" class="features">
+        <article>
+          <h2>Gentle, on schedule</h2>
+          <p>Pick any interval from 1 minute to 12 hours. Quiet outside your active hours.</p>
+        </article>
+        <article>
+          <h2>Personal</h2>
+          <p>Greets you by name. Bring your own character with automatic background removal.</p>
+        </article>
+        <article>
+          <h2>Private by design</h2>
+          <p>No accounts, no analytics, no network calls. Settings stay on your machine.</p>
+        </article>
+        <article>
+          <h2>Stays out of the way</h2>
+          <p>Lives in the system tray. Snooze, pause or quit with one click.</p>
+        </article>
+      </section>
+    </main>
+
+    <footer>
+      <p>MIT licensed. <a data-repo-link href="#">Contribute on GitHub</a>.</p>
+    </footer>
+
+    <script src="config.js"></script>
+    <script src="main.js"></script>
+  </body>
+</html>

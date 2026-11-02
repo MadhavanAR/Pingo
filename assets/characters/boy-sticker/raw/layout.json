@@ -1,0 +1,11 @@
+{
+  "method": "flood",
+  "poses": ["idle", "walking", "wave", "point", "drink", "happy", null, "working", "rest"],
+  "rowSplit": 4,
+  "minArea": 20000,
+  "eraseRects": [
+    [1352, 55, 1520, 263],
+    [1328, 100, 1352, 132]
+  ],
+  "scaleOverride": { "walking": 0.92, "drink": 0.95 }
+}

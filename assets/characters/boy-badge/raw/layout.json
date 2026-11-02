@@ -1,0 +1,9 @@
+{
+  "method": "matte",
+  "poses": ["idle", "walking", "typing", "think", "wave", "point", "drink", "happy", "stretch", "working", "rest"],
+  "rowSplit": 6,
+  "headX": [137, 400, 637, 905, 1075, 1330, 190, 445, 772, 1045, null],
+  "minArea": 20000,
+  "cleanRoi": { "wave": [200, 90, 285, 250], "point": [200, 100, 255, 250] },
+  "scaleOverride": { "point": 1.1 }
+}
