@@ -3,17 +3,17 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Pingo — The desktop reminder you can’t ignore</title>
+    <title>Pingo — Reminders you’ll actually notice</title>
     <meta
       name="description"
-      content="Pingo is a free, open-source desktop companion that walks onto your screen with the reminders that matter: water, breaks, medicine, anything. Private, offline, cross-platform."
+      content="A friendly character walks onto your screen, reminds you, and leaves. Free and open source for Windows, macOS and Linux."
     />
-    <meta name="theme-color" content="#07080c" />
+    <meta name="theme-color" content="#fafaf9" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Pingo — The desktop reminder you can’t ignore" />
+    <meta property="og:title" content="Pingo — Reminders you’ll actually notice" />
     <meta
       property="og:description"
-      content="A friendly character walks onto your screen with your reminders. Free, open source, offline."
+      content="A friendly character walks onto your screen, reminds you, and leaves."
     />
     <meta property="og:image" content="assets/icon.png" />
     <link rel="icon" type="image/png" href="assets/icon.png" />
@@ -24,279 +24,165 @@
     <a class="skip" href="#main">Skip to content</a>
 
     <header class="nav" data-nav>
-      <div class="nav-inner">
+      <div class="container nav-inner">
         <a class="brand" href="./" aria-label="Pingo home">
-          <img src="assets/icon.png" alt="" width="28" height="28" />
+          <img src="assets/icon.png" alt="" width="26" height="26" />
           <span>Pingo</span>
         </a>
         <nav class="nav-links" aria-label="Primary">
-          <a href="#product">Product</a>
           <a href="#features">Features</a>
-          <a href="#characters">Characters</a>
           <a href="#install">Install</a>
           <a data-repo-link href="#">GitHub</a>
         </nav>
-        <a class="btn btn-sm btn-primary" data-download href="#">Download</a>
+        <a class="btn btn-dark btn-sm" data-download href="#">Download</a>
       </div>
     </header>
 
     <main id="main">
-      <section class="hero">
-        <div class="hero-bg" aria-hidden="true">
-          <div class="grid"></div>
-          <div class="glow glow-a"></div>
-          <div class="glow glow-b"></div>
-        </div>
-
-        <div class="container hero-copy">
-          <a class="pill reveal" data-repo-link href="#">
-            <span class="pill-dot"></span>
-            <span data-version>Free &amp; open source</span>
-            <span class="pill-arrow" aria-hidden="true">→</span>
+      <section class="hero container">
+        <p class="eyebrow reveal">
+          <span class="eyebrow-dot" aria-hidden="true"></span>
+          <span data-version>Free and open source</span>
+        </p>
+        <h1 class="headline" data-split>Reminders you’ll actually notice.</h1>
+        <p class="lede reveal">
+          A friendly character walks onto your screen, reminds you, and leaves.
+        </p>
+        <div class="actions reveal">
+          <a class="btn btn-dark btn-lg" data-download href="#">
+            <svg viewBox="0 0 20 20" aria-hidden="true">
+              <path d="M10 3v10m0 0 4-4m-4 4-4-4M4 16h12" />
+            </svg>
+            <span data-download-label>Download</span>
           </a>
-          <h1 class="headline" data-split>The reminder you can’t&nbsp;ignore.</h1>
-          <p class="sub reveal">
-            Pingo walks onto your screen with the things that matter — water, breaks, medicine,
-            anything you choose. Then he gets out of your way.
-          </p>
-          <div class="cta reveal">
-            <a class="btn btn-primary btn-lg" data-download href="#">
-              <svg viewBox="0 0 20 20" aria-hidden="true">
-                <path d="M10 3v10m0 0 4-4m-4 4-4-4M4 16h12" />
-              </svg>
-              <span data-download-label>Download Pingo</span>
-            </a>
-            <a class="btn btn-ghost btn-lg" href="#product">See it in action</a>
-          </div>
-          <p class="meta reveal" data-platform-note>Windows · macOS · Linux — free forever</p>
+          <a class="btn btn-light btn-lg" data-repo-link href="#">View on GitHub</a>
         </div>
+        <p class="platforms reveal">Windows · macOS · Linux</p>
+      </section>
 
-        <!-- Product demo: a scripted, looping reminder on a mock desktop. -->
-        <div class="container" id="product">
-          <div class="stage reveal" data-stage>
-            <div
-              class="window"
-              role="img"
-              aria-label="Animated demo: Pingo walks onto a desktop, shows a reminder, celebrates when it is marked done, and walks off"
-            >
-              <div class="window-bar">
-                <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-                <span class="window-title">Q4 Roadmap — Docs</span>
+      <!-- Product demo: a scripted, looping reminder on a mock desktop. -->
+      <section class="container" aria-label="Product demo">
+        <div class="stage reveal" data-stage>
+          <div
+            class="window"
+            role="img"
+            aria-label="Pingo walks onto a desktop, shows a reminder, celebrates when it is marked done, and walks off"
+          >
+            <div class="window-bar" aria-hidden="true">
+              <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            </div>
+            <div class="window-body" aria-hidden="true">
+              <aside class="sk-side"><i></i><i></i><i></i><i></i></aside>
+              <div class="sk-doc">
+                <b class="w50"></b>
+                <i class="w90"></i><i class="w80"></i><i class="w85"></i><i class="w60"></i>
+                <b class="w35"></b>
+                <i class="w90"></i><i class="w70"></i>
               </div>
-              <div class="window-body" aria-hidden="true">
-                <aside class="sk-side"><i></i><i></i><i></i><i></i><i></i></aside>
-                <div class="sk-doc">
-                  <b class="w60"></b>
-                  <i class="w90"></i><i class="w80"></i><i class="w95"></i><i class="w70"></i>
-                  <b class="w40"></b>
-                  <i class="w85"></i><i class="w90"></i><i class="w60"></i>
-                  <div class="sk-chart">
-                    <span></span><span></span><span></span><span></span><span></span><span></span>
-                  </div>
+            </div>
+
+            <div class="demo" aria-hidden="true">
+              <div class="bubble" data-bubble>
+                <p data-bubble-text></p>
+                <div class="bubble-actions">
+                  <span class="bbtn bbtn-yes" data-done>Done</span>
+                  <span class="bbtn">Snooze</span>
                 </div>
               </div>
-
-              <div class="demo" aria-hidden="true">
-                <div class="bubble" data-bubble>
-                  <p data-bubble-text></p>
-                  <div class="bubble-actions">
-                    <span class="bbtn bbtn-yes" data-done>Done</span>
-                    <span class="bbtn">Snooze</span>
-                  </div>
-                </div>
-                <div class="pet" data-pet>
-                  <img data-sprite src="assets/poses/walking.webp" alt="" />
-                </div>
-                <div class="confetti" data-confetti></div>
-                <svg class="cursor" data-cursor viewBox="0 0 24 24">
-                  <path d="M4 2l16 9-7 2-3 7z" />
-                </svg>
+              <div class="pet" data-pet>
+                <img data-sprite src="assets/poses/walking.webp" alt="" />
               </div>
+              <div class="confetti" data-confetti></div>
+              <svg class="cursor" data-cursor viewBox="0 0 24 24">
+                <path d="M4 2l16 9-7 2-3 7z" />
+              </svg>
+            </div>
 
-              <div class="toast" data-toast aria-hidden="true">
-                <span class="toast-check">✓</span>
-                <span data-toast-text>Done · next reminder in 45 min</span>
-              </div>
+            <div class="toast" data-toast aria-hidden="true">
+              <svg viewBox="0 0 20 20"><path d="M5 10.5l3 3 7-7" /></svg>
+              <span data-toast-text>Done. Next reminder in 45 min</span>
             </div>
           </div>
         </div>
-      </section>
-
-      <section class="marquee" aria-label="Example reminders">
-        <div class="marquee-track" data-marquee>
-          <span>💧 Drink water</span><span>🧘 Stretch your back</span><span>👀 Rest your eyes</span
-          ><span>💊 Take your medicine</span><span>📞 Call Mom</span
-          ><span>🚶 Take a short walk</span><span>🧍 Fix your posture</span
-          ><span>📝 Log your hours</span><span>🍎 Grab a snack</span
-          ><span>🌬️ Breathe for a minute</span>
-        </div>
-      </section>
-
-      <section class="container stats" aria-label="At a glance">
-        <div class="stat reveal"><strong>0</strong><span>trackers or accounts</span></div>
-        <div class="stat reveal"><strong>100%</strong><span>offline &amp; on-device</span></div>
-        <div class="stat reveal"><strong>3</strong><span>platforms, one app</span></div>
-        <div class="stat reveal"><strong>MIT</strong><span>open-source licence</span></div>
       </section>
 
       <section class="container section" id="features">
-        <div class="section-head reveal">
-          <p class="eyebrow">Features</p>
-          <h2>
-            Built to be noticed.<br /><span class="muted">Designed to stay out of the way.</span>
-          </h2>
-        </div>
-
-        <div class="bento">
-          <article class="card card-lg spot reveal">
-            <div class="card-icon">
-              <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h7" /></svg>
-            </div>
-            <h3>Remind you about anything</h3>
-            <p>
-              Water by default. Or write your own — “Take your medicine”, “Stand up and stretch”.
-              Pingo says it, you tap Done.
-            </p>
-            <div class="chips-demo" aria-hidden="true">
-              <span>Drink water</span><span class="on">Stretch &amp; rest your eyes</span
-              ><span>Take medicine</span>
-            </div>
+        <div class="features">
+          <article class="feature reveal">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h10M4 18h7" /></svg>
+            <h2>Any reminder</h2>
+            <p>Water, stretching, medicine. Write your own.</p>
           </article>
-          <article class="card spot reveal">
-            <div class="card-icon">
-              <svg viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="8" />
-                <path d="M12 8v4l3 2" />
-              </svg>
-            </div>
-            <h3>Your schedule</h3>
-            <p>Every 1 minute to 12 hours, only during the hours you choose, in your time zone.</p>
+          <article class="feature reveal">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="8.5" />
+              <path d="M12 7.5V12l3 2" />
+            </svg>
+            <h2>Your schedule</h2>
+            <p>Any interval, only during your hours.</p>
           </article>
-          <article class="card spot reveal">
-            <div class="card-icon">
-              <svg viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6z" /></svg>
-            </div>
-            <h3>Private by design</h3>
-            <p>
-              No accounts, no analytics, no network calls. Your settings never leave your machine.
-            </p>
-          </article>
-          <article class="card spot reveal">
-            <div class="card-icon">
-              <svg viewBox="0 0 24 24"><path d="M5 12l4 4 10-10" /></svg>
-            </div>
-            <h3>One-tap actions</h3>
-            <p>Done, snooze or pause from the tray. Survives sleep, lock screens and restarts.</p>
-          </article>
-          <article class="card spot reveal">
-            <div class="card-icon">
-              <svg viewBox="0 0 24 24">
-                <rect x="3" y="4" width="18" height="12" rx="2" />
-                <path d="M8 20h8M12 16v4" />
-              </svg>
-            </div>
-            <h3>Everywhere you work</h3>
-            <p>Native installers for Windows, macOS and Linux. Starts at login if you want.</p>
-          </article>
-          <article class="card card-lg spot reveal">
-            <div class="card-icon">
-              <svg viewBox="0 0 24 24">
-                <path d="M12 4a4 4 0 110 8 4 4 0 010-8zM4 20c1-4 4-6 8-6s7 2 8 6" />
-              </svg>
-            </div>
-            <h3>Personal, not robotic</h3>
-            <p>
-              Greets you by name, wears the character you pick, or uses your own picture with
-              automatic background removal.
-            </p>
-            <div class="greet" aria-hidden="true">
-              <span class="greet-av">P</span><span>Hey Priya! Time to rest your eyes 👀</span>
-            </div>
-          </article>
-          <article class="card spot reveal">
-            <div class="card-icon">
-              <svg viewBox="0 0 24 24"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5" /></svg>
-            </div>
-            <h3>Open source</h3>
-            <p>MIT licensed, built in the open. Read every line, file an issue, or contribute.</p>
+          <article class="feature reveal">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 3l7.5 3v5.5c0 4.5-3.2 7.8-7.5 9.5-4.3-1.7-7.5-5-7.5-9.5V6z" />
+            </svg>
+            <h2>Private</h2>
+            <p>Runs offline. No accounts, no tracking.</p>
           </article>
         </div>
       </section>
 
-      <section class="container section" id="how">
+      <section class="container section" aria-labelledby="characters-title">
         <div class="section-head reveal">
-          <p class="eyebrow">How it works</p>
-          <h2>Set up in under a minute.</h2>
-        </div>
-        <ol class="steps">
-          <li class="step reveal">
-            <span class="step-n">01</span>
-            <h3>Install</h3>
-            <p>Download for your OS and open it. Pingo lives quietly in your tray.</p>
-          </li>
-          <li class="step reveal">
-            <span class="step-n">02</span>
-            <h3>Tell Pingo what matters</h3>
-            <p>Your name, what to remind you about, and how often. That’s the whole setup.</p>
-          </li>
-          <li class="step reveal">
-            <span class="step-n">03</span>
-            <h3>Get on with your day</h3>
-            <p>He walks in on schedule. Tap Done, he celebrates, and he’s gone.</p>
-          </li>
-        </ol>
-      </section>
-
-      <section class="container section" id="characters">
-        <div class="section-head reveal">
-          <p class="eyebrow">Characters</p>
-          <h2>Pick your Pingo.<br /><span class="muted">Or bring your own.</span></h2>
+          <h2 id="characters-title">Pick a character.</h2>
+          <p>Or use your own picture.</p>
         </div>
         <div class="chars">
-          <figure class="char spot reveal">
+          <figure class="char reveal">
             <div class="char-art">
               <img
                 src="assets/poses/boy-idle.webp"
                 data-hover="assets/poses/boy-happy.webp"
                 alt="Classic Pingo"
                 loading="lazy"
+                width="292"
+                height="360"
               />
             </div>
-            <figcaption><strong>Classic</strong><span>The original</span></figcaption>
+            <figcaption>Classic</figcaption>
           </figure>
-          <figure class="char spot reveal">
+          <figure class="char reveal">
             <div class="char-art">
               <img
                 src="assets/poses/boy-badge-idle.webp"
                 data-hover="assets/poses/boy-badge-happy.webp"
                 alt="Pingo wearing an ID badge"
                 loading="lazy"
+                width="297"
+                height="360"
               />
             </div>
-            <figcaption><strong>ID badge</strong><span>Ready for the office</span></figcaption>
+            <figcaption>ID badge</figcaption>
           </figure>
-          <figure class="char spot reveal">
+          <figure class="char reveal">
             <div class="char-art">
               <img
                 src="assets/poses/boy-sticker-idle.webp"
                 data-hover="assets/poses/boy-sticker-happy.webp"
                 alt="Sticker-style Pingo"
                 loading="lazy"
+                width="318"
+                height="360"
               />
             </div>
-            <figcaption><strong>Sticker</strong><span>Bold outlines</span></figcaption>
+            <figcaption>Sticker</figcaption>
           </figure>
         </div>
       </section>
 
-      <section class="container section" id="install">
+      <section class="container section" id="install" aria-labelledby="install-title">
         <div class="section-head reveal">
-          <p class="eyebrow">Install</p>
-          <h2>Up and running in a minute.</h2>
-          <p class="section-sub">
-            Pingo is free and not yet code-signed, so your computer asks you to confirm once. That’s
-            expected.
-          </p>
+          <h2 id="install-title">Install in a minute.</h2>
+          <p>Builds aren’t code-signed yet, so confirm once on first launch.</p>
         </div>
         <div class="tabs reveal" data-tabs>
           <div class="tab-list" role="tablist" aria-label="Operating system">
@@ -308,22 +194,17 @@
               Linux
             </button>
           </div>
-          <div
+          <ol
             class="tab-panel"
             role="tabpanel"
             id="panel-windows"
             aria-labelledby="tab-windows"
             data-panel="windows"
           >
-            <ol>
-              <li><span>1</span>Download and open <code>Pingo-Setup.exe</code>.</li>
-              <li>
-                <span>2</span>On “Windows protected your PC”, choose <b>More info → Run anyway</b>.
-              </li>
-              <li><span>3</span>Pingo appears in the system tray, near the clock.</li>
-            </ol>
-          </div>
-          <div
+            <li>Run <code>Pingo-Setup.exe</code></li>
+            <li>Choose <b>More info</b>, then <b>Run anyway</b></li>
+          </ol>
+          <ol
             class="tab-panel"
             role="tabpanel"
             id="panel-mac"
@@ -331,16 +212,10 @@
             data-panel="mac"
             hidden
           >
-            <ol>
-              <li><span>1</span>Open the <code>.dmg</code> and drag Pingo into Applications.</li>
-              <li>
-                <span>2</span>First launch: right-click Pingo, choose <b>Open</b>, then
-                <b>Open</b> again.
-              </li>
-              <li><span>3</span>Pingo appears in the menu bar.</li>
-            </ol>
-          </div>
-          <div
+            <li>Drag Pingo into Applications</li>
+            <li>Right-click Pingo, choose <b>Open</b></li>
+          </ol>
+          <ol
             class="tab-panel"
             role="tabpanel"
             id="panel-linux"
@@ -348,29 +223,27 @@
             data-panel="linux"
             hidden
           >
-            <ol>
-              <li><span>1</span>AppImage: mark it executable, then run it.</li>
-              <li><span>2</span>Debian / Ubuntu: <code>sudo apt install ./Pingo-*.deb</code></li>
-              <li><span>3</span>Pingo appears in the system tray.</li>
-            </ol>
-          </div>
-          <p class="tab-foot">
-            Then right-click the Pingo icon → <b>Settings…</b> to make it yours.
-          </p>
+            <li>Make the AppImage executable and run it</li>
+            <li>Or <code>sudo apt install ./Pingo-*.deb</code></li>
+          </ol>
         </div>
       </section>
 
-      <section class="container">
-        <div class="final spot reveal">
-          <div class="final-glow" aria-hidden="true"></div>
-          <img class="final-art" src="assets/poses/wave.webp" alt="" loading="lazy" />
-          <h2>Your future self says thanks.</h2>
-          <p>Free, open source, and ready in a minute.</p>
-          <div class="cta">
-            <a class="btn btn-primary btn-lg" data-download href="#">
-              <span data-download-label>Download Pingo</span>
+      <section class="container section">
+        <div class="final reveal">
+          <img
+            class="final-art"
+            src="assets/poses/wave.webp"
+            alt=""
+            loading="lazy"
+            width="292"
+            height="360"
+          />
+          <h2>Free. Open source. Ready in a minute.</h2>
+          <div class="actions">
+            <a class="btn btn-dark btn-lg" data-download href="#">
+              <span data-download-label>Download</span>
             </a>
-            <a class="btn btn-ghost btn-lg" data-repo-link href="#">Star on GitHub</a>
           </div>
         </div>
       </section>
@@ -378,16 +251,14 @@
 
     <footer class="footer">
       <div class="container footer-inner">
-        <a class="brand" href="./">
-          <img src="assets/icon.png" alt="" width="22" height="22" /><span>Pingo</span>
-        </a>
+        <span class="brand"
+          ><img src="assets/icon.png" alt="" width="20" height="20" /><span>Pingo</span></span
+        >
         <nav aria-label="Footer">
-          <a data-repo-link href="#">Source</a>
+          <a data-repo-link href="#">GitHub</a>
           <a data-repo-path="/releases" href="#">Releases</a>
-          <a data-repo-path="/blob/main/CHANGELOG.md" href="#">Changelog</a>
-          <a data-repo-path="/security/policy" href="#">Security</a>
+          <a data-repo-path="/blob/main/LICENSE" href="#">MIT License</a>
         </nav>
-        <p>MIT licensed · Made with care in India</p>
       </div>
     </footer>
 

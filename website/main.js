@@ -45,7 +45,7 @@
     .then((res) => (res.ok ? res.json() : Promise.reject(new Error(res.statusText))))
     .then((release) => {
       if (release.tag_name) {
-        $('[data-version]').textContent = `${release.tag_name} is out — free & open source`;
+        $('[data-version]').textContent = `${release.tag_name} is out. Free and open source.`;
       }
       const asset = platform && release.assets.find((a) => platform.pattern.test(a.name));
       if (asset) downloads.forEach((a) => (a.href = asset.browser_download_url));
@@ -117,27 +117,6 @@
     revealables.forEach((el) => observer.observe(el));
   }
 
-  // Cursor-following spotlight on cards
-
-  $$('.spot').forEach((card) => {
-    card.addEventListener('pointermove', (event) => {
-      const rect = card.getBoundingClientRect();
-      card.style.setProperty('--mx', `${event.clientX - rect.left}px`);
-      card.style.setProperty('--my', `${event.clientY - rect.top}px`);
-    });
-  });
-
-  // Seamless marquee: duplicate the items once so the loop never shows a gap
-
-  const marquee = $('[data-marquee]');
-  if (marquee && !reducedMotion) {
-    [...marquee.children].forEach((item) => {
-      const clone = item.cloneNode(true);
-      clone.setAttribute('aria-hidden', 'true');
-      marquee.append(clone);
-    });
-  }
-
   // Character cards switch to their happy pose on hover
 
   $$('img[data-hover]').forEach((img) => {
@@ -171,9 +150,9 @@
   const setPose = (pose) => (sprite.src = poseUrl(pose));
 
   const SCRIPT = [
-    { text: 'Hey Priya! Time to drink some water 💧', water: true, next: 45 },
-    { text: 'Hey Arjun! Stand up, stretch and rest your eyes 🧘', next: 60 },
-    { text: 'Hey Meera! Time for your evening medicine 💊', next: 120 },
+    { text: 'Hey Priya! Time to drink some water.', water: true, next: 45 },
+    { text: 'Hey Arjun! Stand up, stretch and rest your eyes.', next: 60 },
+    { text: 'Hey Meera! Time for your evening medicine.', next: 120 },
   ];
 
   if (reducedMotion) {
@@ -215,7 +194,7 @@
   }
 
   function burst() {
-    const colors = ['#3ddc84', '#4cc3ff', '#a78bfa', '#ffd166', '#ff7a59'];
+    const colors = ['#1c1917', '#16a34a', '#a8a29e', '#86efac', '#57534e'];
     for (let i = 0; i < 28; i++) {
       const piece = document.createElement('i');
       piece.style.background = colors[i % colors.length];
@@ -267,7 +246,7 @@
     setPose('happy');
     pet.classList.add('hop');
     burst();
-    toastText.textContent = `Done · next reminder in ${next} min`;
+    toastText.textContent = `Done. Next reminder in ${next} min`;
     toast.classList.add('show');
     await wait(1500);
     pet.classList.remove('hop');
