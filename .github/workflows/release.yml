@@ -28,7 +28,11 @@ jobs:
   build:
     needs: verify
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
     strategy:
+      # Hosted macOS runners are sometimes unavailable; don't let that cancel
+      # the Windows and Linux builds.
+      fail-fast: false
       matrix:
         include:
           - os: windows-latest
@@ -60,8 +64,11 @@ jobs:
           path: ${{ matrix.files }}
           if-no-files-found: error
 
+  # Publishes whatever built. A failed platform can be re-run on its own
+  # ("Re-run failed jobs"); its installer is then added to the same release.
   publish:
     needs: build
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
