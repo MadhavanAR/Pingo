@@ -1,5 +1,5 @@
 /**
- * Generates the app / installer icon (build/icon.png, 256x256 — his face on a
+ * Generates the app / installer icon (build/icon.png, 512x512 — his face on a
  * rounded blue tile) and the tray icon (assets/tray.png, 64x64 — just his face)
  * from the boy's idle sprite.
  *
@@ -9,8 +9,9 @@ const fs = require('fs');
 const path = require('path');
 const Jimp = require('jimp');
 
-const SIZE = 256;
-const RADIUS = 52;
+// macOS builds require at least 512x512.
+const SIZE = 512;
+const RADIUS = 104;
 const BG = { r: 74, g: 163, b: 223 }; // #4aa3df
 const SPRITE = path.join(__dirname, '..', 'assets', 'characters', 'boy', 'idle.png');
 
@@ -49,7 +50,7 @@ function cropFace(sprite) {
       this.bitmap.data[idx + 3] = 255;
     }
   });
-  const big = face.clone().resize(210, Jimp.AUTO);
+  const big = face.clone().resize(Math.round(SIZE * 0.82), Jimp.AUTO, Jimp.RESIZE_BICUBIC);
   icon.composite(
     big,
     Math.round((SIZE - big.bitmap.width) / 2),
@@ -59,7 +60,7 @@ function cropFace(sprite) {
   const outDir = path.join(__dirname, '..', 'build');
   fs.mkdirSync(outDir, { recursive: true });
   await icon.writeAsync(path.join(outDir, 'icon.png'));
-  console.log('Wrote build/icon.png (256x256).');
+  console.log(`Wrote build/icon.png (${SIZE}x${SIZE}).`);
 
   await face
     .clone()
