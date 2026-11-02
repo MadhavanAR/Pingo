@@ -45,13 +45,13 @@
     "url": "https://github.com/MadhavanAR/Pingo/issues"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.5",
-    "electron": "^33.2.0",
-    "electron-builder": "^25.1.8",
-    "eslint": "^9.39.5",
+    "@eslint/js": "^10.0.1",
+    "electron": "^45.1.0",
+    "electron-builder": "^26.18.0",
+    "eslint": "^10.14.0",
     "gifenc": "^1.0.3",
     "globals": "^17.14.0",
-    "jimp": "0.22.12",
+    "jimp": "1.6.1",
     "prettier": "^3.9.10"
   },
   "build": {
