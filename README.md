@@ -2,7 +2,7 @@
   <img src="build/icon.png" width="88" alt="Pingo" />
 </p>
 
-<h1 align="center">Reminders that walk in.</h1>
+<h1 align="center">Walk-in reminders.</h1>
 
 <p align="center">
   <b>Pingo</b>, your little buddy for Mac and Windows.
