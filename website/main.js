@@ -1,13 +1,15 @@
 'use strict';
 
 (function () {
-  const { downloads } = window.PINGO_SITE;
+  const { downloads, repo } = window.PINGO_SITE;
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const $ = (sel, el = document) => el.querySelector(sel);
   const $$ = (sel, el = document) => [...el.querySelectorAll(sel)];
   const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
   const EASE_OUT = 'cubic-bezier(0.23, 1, 0.32, 1)';
   const EASE_IN_OUT = 'cubic-bezier(0.77, 0, 0.175, 1)';
+
+  $$('[data-repo-link]').forEach((a) => (a.href = `https://github.com/${repo}`));
 
   // Downloads. Every installer has a fixed name (the mac and nsis `artifactName` in
   // package.json), so each button links straight to its file and the download starts at once.
