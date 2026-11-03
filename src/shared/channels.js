@@ -9,27 +9,33 @@
 const CHANNELS = Object.freeze({
   // main -> renderer
   REMINDER_SHOW: 'reminder:show',
-  SPRITES_CHANGED: 'sprites:changed',
+  STATE_CHANGED: 'state:changed',
+  APP_NAVIGATE: 'app:navigate',
 
   // renderer -> main (fire-and-forget)
-  REMINDER_YES: 'reminder:yes',
+  REMINDER_DONE: 'reminder:done',
   REMINDER_SNOOZE: 'reminder:snooze',
   REMINDER_HIDE: 'reminder:hide',
-  SETTINGS_CLOSE: 'settings:close',
   ONBOARDING_CLOSE: 'onboarding:close',
-  CHARACTER_OPEN: 'character:open',
-  CHARACTER_CLOSE: 'character:close',
+  APP_OPEN: 'app:open',
 
   // renderer -> main (request/response)
-  SETTINGS_GET: 'settings:get',
+  STATE_GET: 'state:get',
   SETTINGS_SAVE: 'settings:save',
+  REMINDER_SAVE: 'reminder:save',
+  REMINDER_DELETE: 'reminder:delete',
+  REMINDER_PREVIEW: 'reminder:preview',
+  AVATARS_GET: 'avatars:get',
+  AVATAR_GET: 'avatar:get',
+  AVATAR_SAVE: 'avatar:save',
+  AVATAR_DELETE: 'avatar:delete',
+  AVATAR_SELECT: 'avatar:select',
   DIALOG_PICK_IMAGE: 'dialog:pickImage',
-  CHARACTER_SAVE: 'character:save',
-  CHARACTER_RESET: 'character:reset',
-  CHARACTER_SELECT: 'character:select',
-  CHARACTER_HAS_CUSTOM: 'character:hasCustom',
-  PRESETS_GET: 'presets:get',
-  SPRITES_GET: 'sprites:get',
+  PAUSE_SET: 'pause:set',
+  LOGIN_SET: 'login:set',
 });
 
-module.exports = { CHANNELS };
+/** Channels the main process sends; every other channel is handled in ipc.js. */
+const MAIN_TO_RENDERER = Object.freeze(['REMINDER_SHOW', 'STATE_CHANGED', 'APP_NAVIGATE']);
+
+module.exports = { CHANNELS, MAIN_TO_RENDERER };

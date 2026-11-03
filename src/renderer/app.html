@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self';"
+    />
+    <title>Pingo</title>
+    <link rel="stylesheet" href="ui.css" />
+    <link rel="stylesheet" href="app.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <img class="brand-mark" src="../../assets/tray.png" alt="" />
+          <span class="brand-name">Pingo</span>
+        </div>
+        <nav class="nav" aria-label="Sections">
+          <a class="nav-item" href="#home" data-route="home"></a>
+          <a class="nav-item" href="#reminders" data-route="reminders"></a>
+          <a class="nav-item" href="#avatars" data-route="avatars"></a>
+          <a class="nav-item" href="#appearance" data-route="appearance"></a>
+          <a class="nav-item" href="#general" data-route="general"></a>
+        </nav>
+        <div class="sidebar-foot" id="status"></div>
+      </aside>
+
+      <main class="sheet">
+        <div class="view" id="view" tabindex="-1"></div>
+      </main>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script src="common.js"></script>
+    <script src="image-tools.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

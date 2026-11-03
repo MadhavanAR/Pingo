@@ -10,39 +10,31 @@ test('defaults are returned for an empty patch', () => {
 });
 
 test('a patch only changes the fields it contains', () => {
-  const base = normalizeSettings({ name: 'Alex', intervalMin: 30 });
-  const next = normalizeSettings({ snoozeMin: 5 }, base);
+  const base = normalizeSettings({ name: 'Alex', theme: 'dark' });
+  const next = normalizeSettings({ size: 120 }, base);
   assert.equal(next.name, 'Alex');
-  assert.equal(next.intervalMin, 30);
-  assert.equal(next.snoozeMin, 5);
+  assert.equal(next.theme, 'dark');
+  assert.equal(next.size, 120);
 });
 
-test('text fields are cleaned and length-capped', () => {
-  const s = normalizeSettings({
-    name: '  Al\nex\u0007  ',
-    message: `  Take   your\tmedicine  ${'x'.repeat(500)}`,
-  });
-  assert.equal(s.name, 'Al ex');
-  assert.ok(s.message.startsWith('Take your medicine'));
-  assert.equal(s.message.length, LIMITS.MESSAGE_MAX_LENGTH);
+test('names are cleaned and length-capped', () => {
+  assert.equal(normalizeSettings({ name: '  Al\nex\u0007  ' }).name, 'Al ex');
   assert.equal(normalizeSettings({ name: 'x'.repeat(100) }).name.length, LIMITS.NAME_MAX_LENGTH);
 });
 
-test('numbers are rounded and clamped, and junk falls back to defaults', () => {
-  const s = normalizeSettings({
-    intervalMin: '44.6',
-    snoozeMin: 9999,
-    activeStartHour: -3,
-    activeEndHour: 30,
-  });
-  assert.equal(s.intervalMin, 45);
-  assert.equal(s.snoozeMin, LIMITS.MAX_SNOOZE_MIN);
-  assert.equal(s.activeStartHour, 0);
-  assert.equal(s.activeEndHour, 23);
-  for (const bad of ['', 'abc', NaN, undefined, null]) {
-    assert.equal(normalizeSettings({ intervalMin: bad }).intervalMin, DEFAULTS.intervalMin);
-  }
-  assert.equal(normalizeSettings({ intervalMin: 0 }).intervalMin, 1);
+test('choices outside the allowed set fall back to defaults', () => {
+  const s = normalizeSettings({ theme: 'neon', accent: 'violet', side: 'top', sound: 'airhorn' });
+  assert.equal(s.theme, DEFAULTS.theme);
+  assert.equal(s.accent, DEFAULTS.accent);
+  assert.equal(s.side, DEFAULTS.side);
+  assert.equal(s.sound, DEFAULTS.sound);
+});
+
+test('numbers are rounded and clamped', () => {
+  const s = normalizeSettings({ size: 999, autoHideMin: '4.6' });
+  assert.equal(s.size, LIMITS.MAX_SIZE);
+  assert.equal(s.autoHideMin, 5);
+  assert.equal(normalizeSettings({ size: 'abc' }).size, DEFAULTS.size);
 });
 
 test('unknown fields are dropped', () => {
@@ -50,10 +42,10 @@ test('unknown fields are dropped', () => {
 });
 
 test('readSettings validates whatever is on disk', () => {
-  const data = { name: 'Priya', intervalMin: 'garbage', askedName: true };
+  const data = { name: 'Priya', size: 'garbage', askedName: true };
   const store = { get: (key) => data[key] };
   const s = readSettings(store);
   assert.equal(s.name, 'Priya');
-  assert.equal(s.intervalMin, DEFAULTS.intervalMin);
+  assert.equal(s.size, DEFAULTS.size);
   assert.equal('askedName' in s, false);
 });

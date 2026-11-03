@@ -1,19 +1,26 @@
 'use strict';
 
+/* global typeInfo, pickFrom, playSound */
+
 const WALK_MS = 1150; // must match the #pet transition duration in style.css
 const POSE_HOLD_MS = 1100;
 const GOODBYE_MS = 600;
 const SNOOZE_GOODBYE_MS = 1400;
-const CONFETTI_COUNT = 42;
+const CONFETTI_COUNT = 36;
 const CONFETTI_LIFETIME_MS = 2200;
 const FALLBACK_SPRITES = {
+  kind: 'preset',
   idle: '../../assets/characters/boy/idle.png',
-  drinking: '../../assets/characters/boy/drink.png',
+  celebrate: '../../assets/characters/boy/drink.png',
+  flip: false,
+  scale: 100,
 };
 
+const root = document.documentElement;
+const stage = document.getElementById('stage');
 const pet = document.getElementById('pet');
 const spriteIdle = document.getElementById('sprite-idle');
-const spriteDrinking = document.getElementById('sprite-drinking');
+const spriteCelebrate = document.getElementById('sprite-drinking');
 const spritePose = document.getElementById('sprite-pose');
 const bubble = document.getElementById('bubble');
 const bubbleText = document.getElementById('bubble-text');
@@ -22,57 +29,26 @@ const yesBtn = document.getElementById('yes-btn');
 const snoozeBtn = document.getElementById('snooze-btn');
 const confetti = document.getElementById('confetti');
 
-/** Pose name -> data URL for multi-pose characters; null for idle/drinking-only ones. */
+/** Pose name -> data URL for multi-pose characters; null for one-image avatars. */
 let poses = null;
 let busy = false;
-let reminder = { name: '', message: '', snoozeMin: 10 };
+let autoHideTimer = null;
+let reminder = { type: 'water', message: '', name: '', snoozeMin: 10, look: {} };
 
-const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-// An empty message means the built-in drink-water reminder.
-const isCustom = ({ message }) => Boolean(message);
+/** Lower-case the first letter so a prompt can follow "Name, ". */
+const lead = (text) => text.charAt(0).toLowerCase() + text.slice(1);
 
-function promptFor({ name, message }) {
+function promptFor({ type, name, message }) {
   if (message) return name ? `Hey ${name}! ${message}` : message;
-  if (name) {
-    return pick([
-      `${name}, time to drink water to keep your skin glowing!`,
-      `${name}, hydration check! Take a sip 💧`,
-      `Water break, ${name}! Your body will thank you.`,
-      `Psst ${name}… a few sips of water? Stay glowing!`,
-      `Don't forget me, ${name} — drink some water!`,
-    ]);
-  }
-  return pick([
-    'Time to drink water to keep your skin glowing!',
-    'Hydration check! Take a sip of water 💧',
-    'Water break! Your body will thank you.',
-    'Psst… a few sips of water? Stay glowing!',
-    "Don't forget me — drink some water!",
-  ]);
+  const prompt = pickFrom(typeInfo(type).prompts);
+  return name ? `${name}, ${lead(prompt)}` : prompt;
 }
 
-function cheerFor({ name, message }) {
-  if (message) {
-    return name
-      ? pick([`Nice work, ${name}! ✨`, `Done and dusted, ${name}! 🙌`, `Great job, ${name}! ⭐`])
-      : pick(['Nice work! ✨', 'Done and dusted! 🙌', 'Great job! ⭐']);
-  }
-  if (name) {
-    return pick([
-      `Yay ${name}! Stay glowing ✨`,
-      `Amazing, ${name}! Keep it up 💧`,
-      `That's the spirit, ${name}! 🥤`,
-      `Hydrated and happy, ${name}! ✨`,
-    ]);
-  }
-  return pick([
-    'Yay! Stay glowing ✨',
-    'Amazing! Keep it up 💧',
-    "That's the spirit! 🥤",
-    'Hydrated and happy! ✨',
-  ]);
+function cheerFor({ type, name }) {
+  const cheer = pickFrom(typeInfo(type).cheers);
+  return name ? `${cheer.replace(/[!.]$/, '')}, ${name}!` : cheer;
 }
 
 function snoozeMessage({ name, snoozeMin }) {
@@ -80,9 +56,12 @@ function snoozeMessage({ name, snoozeMin }) {
   return name ? `I'll come back in ${when}, ${name}!` : `I'll come back in ${when}!`;
 }
 
+/** Which way the character faces while walking in, given the corner it uses. */
+const entersFromLeft = () => reminder.look.side === 'left';
+
 /**
  * Multi-pose characters swap to the named sprite (falling back to wave/idle).
- * Simple characters only distinguish drinking from everything else.
+ * One-image avatars only distinguish celebrating from everything else.
  */
 function setPose(name, { mirrored = false } = {}) {
   pet.classList.toggle('flipped', mirrored);
@@ -91,19 +70,21 @@ function setPose(name, { mirrored = false } = {}) {
     if (spritePose.getAttribute('src') !== src) spritePose.src = src;
     spritePose.classList.remove('hidden');
     spriteIdle.classList.add('hidden');
-    spriteDrinking.classList.add('hidden');
+    spriteCelebrate.classList.add('hidden');
   } else {
-    const drinking = name === 'drink';
-    spriteIdle.classList.toggle('hidden', drinking);
-    spriteDrinking.classList.toggle('hidden', !drinking);
+    const celebrating = name === 'celebrate';
+    spritePose.classList.add('hidden');
+    spriteIdle.classList.toggle('hidden', celebrating);
+    spriteCelebrate.classList.toggle('hidden', !celebrating);
   }
   pet.classList.toggle('sipping', name === 'drink');
 }
 
 async function walkIn() {
-  if (poses?.walking) setPose('walking', { mirrored: true });
+  // The walking sprite faces right; mirror it when arriving from the right.
+  if (poses?.walking) setPose('walking', { mirrored: !entersFromLeft() });
   else setPose('wave');
-  pet.classList.remove('celebrate', 'face-right');
+  pet.classList.remove('celebrate', 'face-away');
   pet.classList.add('offstage');
   void pet.offsetWidth; // flush styles so the transition starts from offstage
   pet.classList.add('walking');
@@ -113,12 +94,12 @@ async function walkIn() {
 }
 
 async function walkOut(fallbackPose) {
-  if (poses?.walking) setPose('walking');
+  if (poses?.walking) setPose('walking', { mirrored: entersFromLeft() });
   else setPose(fallbackPose);
   bubble.classList.add('hidden');
-  pet.classList.add('face-right', 'walking', 'offstage');
+  pet.classList.add('face-away', 'walking', 'offstage');
   await wait(WALK_MS);
-  pet.classList.remove('walking', 'face-right');
+  pet.classList.remove('walking', 'face-away');
 }
 
 function showBubble(text, withButtons) {
@@ -128,20 +109,16 @@ function showBubble(text, withButtons) {
 }
 
 function burstConfetti() {
-  const glyphs = ['💧', '✨', '💙', '🫧', '⭐'];
-  const colors = ['#37c24a', '#4aa3df', '#ffd447', '#ff7a59', '#8ad6ff'];
+  const accent = getComputedStyle(root).getPropertyValue('--accent').trim() || '#1b6e66';
+  const colors = [accent, '#4aa3df', '#ffd447', '#ff7a59', '#8ad6ff', '#7bd389'];
   for (let i = 0; i < CONFETTI_COUNT; i++) {
     const piece = document.createElement('div');
-    piece.className = 'confetti-piece';
-    if (Math.random() < 0.5) {
-      piece.textContent = pick(glyphs);
-    } else {
-      piece.textContent = '■';
-      piece.style.color = pick(colors);
-    }
+    piece.className = `confetti-piece${Math.random() < 0.4 ? ' round' : ''}`;
+    piece.style.background = pickFrom(colors);
     piece.style.left = `${Math.random() * 100}%`;
     piece.style.setProperty('--dur', `${0.9 + Math.random() * 0.9}s`);
     piece.style.setProperty('--fall', `${280 + Math.random() * 160}px`);
+    piece.style.setProperty('--drift', `${Math.random() * 60 - 30}px`);
     piece.style.setProperty('--spin', `${Math.random() * 720 - 360}deg`);
     piece.style.animationDelay = `${Math.random() * 0.25}s`;
     confetti.appendChild(piece);
@@ -151,11 +128,12 @@ function burstConfetti() {
 
 async function celebrate() {
   showBubble(cheerFor(reminder), false);
-  if (!isCustom(reminder)) {
-    setPose('drink');
+  const pose = { water: 'drink', stretch: 'stretch', eyes: 'rest' }[reminder.type];
+  if (poses && pose && poses[pose]) {
+    setPose(pose);
     await wait(POSE_HOLD_MS);
   }
-  setPose('happy');
+  setPose(poses ? 'happy' : 'celebrate');
   pet.classList.add('celebrate');
   burstConfetti();
   await wait(POSE_HOLD_MS);
@@ -173,23 +151,57 @@ async function exclusive(sequence) {
   }
 }
 
+function applySprites(sprites) {
+  const s = sprites?.idle ? sprites : FALLBACK_SPRITES;
+  poses = s.kind === 'preset' && s.poses && Object.keys(s.poses).length ? s.poses : null;
+  pet.classList.toggle('poses', Boolean(poses));
+  pet.classList.remove('portrait'); // re-detected once the new image loads
+  pet.classList.toggle('custom', s.kind === 'custom');
+  pet.classList.toggle('mirror', Boolean(s.flip));
+  pet.style.setProperty('--avatar-scale', String((s.scale ?? 100) / 100));
+  for (const url of Object.values(poses ?? {})) new Image().src = url;
+  spriteIdle.src = s.idle;
+  spriteCelebrate.src = s.celebrate || s.idle;
+}
+
+function applyLook(look) {
+  root.style.zoom = String((look.size ?? 100) / 100);
+  root.dataset.accent = look.accent ?? 'teal';
+  root.dataset.theme = look.dark ? 'dark' : 'light';
+  stage.classList.toggle('pixel', look.bubbleStyle === 'pixel');
+  stage.classList.toggle('modern', look.bubbleStyle !== 'pixel');
+  stage.classList.toggle('left', look.side === 'left');
+}
+
 function runReminder(payload) {
   return exclusive(async () => {
-    reminder = { ...reminder, ...payload };
-    yesBtn.textContent = isCustom(reminder) ? 'DONE' : 'YES, I DRANK';
+    clearTimeout(autoHideTimer);
+    reminder = { ...reminder, ...payload, look: payload.look ?? {} };
+    applyLook(reminder.look);
+    applySprites(payload.sprites);
+    yesBtn.textContent = typeInfo(reminder.type).done;
+    snoozeBtn.textContent = 'Snooze';
+    snoozeBtn.title = `Remind me in ${reminder.snoozeMin} min`;
+    bubble.classList.add('hidden');
+    playSound(reminder.look.sound);
     await walkIn();
     setPose('point');
     showBubble(promptFor(reminder), true);
     pet.classList.add('chatty');
+    yesBtn.focus({ preventScroll: true });
+    if (reminder.look.autoHideMin > 0) {
+      autoHideTimer = setTimeout(onSnooze, reminder.look.autoHideMin * 60_000);
+    }
   });
 }
 
 function onYes() {
   return exclusive(async () => {
+    clearTimeout(autoHideTimer);
     pet.classList.remove('chatty');
-    window.pingo.yes();
+    window.pingo.done();
     await celebrate();
-    showBubble('See you in a bit! 👋', false);
+    showBubble('See you in a bit!', false);
     setPose('wave');
     await wait(GOODBYE_MS);
     await walkOut('wave');
@@ -199,6 +211,7 @@ function onYes() {
 
 function onSnooze() {
   return exclusive(async () => {
+    clearTimeout(autoHideTimer);
     pet.classList.remove('chatty');
     window.pingo.snooze();
     setPose('think');
@@ -209,44 +222,18 @@ function onSnooze() {
   });
 }
 
-// Square custom images (e.g. a photo) get the livelier portrait animations.
+// Square one-image avatars (e.g. a photo or a GIF) get the livelier portrait animations.
 function markPortrait() {
   if (poses || !spriteIdle.naturalWidth) return;
   const ratio = spriteIdle.naturalWidth / spriteIdle.naturalHeight;
   pet.classList.toggle('portrait', ratio > 0.85 && ratio < 1.18);
 }
 
-function preload(urls) {
-  for (const src of urls) new Image().src = src;
-}
-
-async function loadSprites() {
-  try {
-    const sprites = await window.pingo.getSprites();
-    if (sprites?.idle && sprites?.drinking) {
-      poses = sprites.poses && Object.keys(sprites.poses).length ? sprites.poses : null;
-      pet.classList.toggle('poses', Boolean(poses));
-      if (poses) {
-        pet.classList.remove('portrait');
-        preload(Object.values(poses));
-      }
-      spriteIdle.src = sprites.idle;
-      spriteDrinking.src = sprites.drinking;
-      setPose('wave');
-      return;
-    }
-  } catch (err) {
-    console.error('Could not load sprites, using defaults:', err);
-  }
-  poses = null;
-  pet.classList.remove('poses');
-  spriteIdle.src = FALLBACK_SPRITES.idle;
-  spriteDrinking.src = FALLBACK_SPRITES.drinking;
-}
-
 yesBtn.addEventListener('click', onYes);
 snoozeBtn.addEventListener('click', onSnooze);
 spriteIdle.addEventListener('load', markPortrait);
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') onSnooze();
+});
 window.pingo.onShow(runReminder);
-window.pingo.onSpritesChanged(loadSprites);
-loadSprites();
+applySprites(FALLBACK_SPRITES);

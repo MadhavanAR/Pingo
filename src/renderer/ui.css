@@ -1,0 +1,539 @@
+/*
+ * Pingo design system for the control center and the setup wizard.
+ *
+ * One grotesk (Instrument Sans), with Instrument Serif kept to the greeting.
+ * Tonal panels instead of boxes, near-black primary actions, and the accent
+ * kept to small marks: the selected state, a chart's "today", a link.
+ * Fonts are bundled (SIL OFL 1.1, see assets/fonts/OFL.txt); no network.
+ */
+@font-face {
+  font-family: 'Instrument Sans';
+  src: url('../../assets/fonts/InstrumentSans.woff2') format('woff2');
+  font-weight: 400 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Instrument Serif';
+  src: url('../../assets/fonts/InstrumentSerif.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: light dark;
+  --chrome: #f3f5f4; /* the frame: one step toward water-washed stone */
+  --ground: #ffffff; /* the sheet */
+  --surface: #f6f7f6; /* tonal panels */
+  --surface-2: #eef0ef; /* a panel inside a panel, hover */
+  --raised: #ffffff;
+  --border: #e6e8e7;
+  --rule: #eff1f0;
+  --control: #d5d9d7;
+  --text: #1f201d;
+  --muted: #5e605c;
+  --faint: #6b6d69;
+  --primary: #1f201d;
+  --on-primary: #ffffff;
+  --negative: #b42318;
+  --pill-neutral-bg: #eef0ef;
+  --pill-neutral-ink: #3d3d3a;
+  --pill-positive-bg: #dcfae5;
+  --pill-positive-ink: #04250e;
+  --pill-warning-bg: #fffbeb;
+  --pill-warning-ink: #92400e;
+  --focus: 0 0 0 3px color-mix(in srgb, var(--accent) 32%, transparent);
+  --float-shadow: 0 12px 32px rgba(17, 20, 18, 0.14), 0 2px 6px rgba(17, 20, 18, 0.06);
+
+  --accent: #1b6e66;
+  --accent-soft: color-mix(in srgb, var(--accent) 12%, var(--ground));
+
+  --radius-sheet: 16px;
+  --radius-card: 22px;
+  --radius-inner: 14px;
+  --radius-control: 999px;
+  --radius-field: 10px;
+  --gap: 16px;
+  --pad: 20px;
+  --control-height: 38px;
+
+  --font: 'Instrument Sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-greeting: 'Instrument Serif', Georgia, serif;
+  --fs-greeting: 48px;
+  --fs-title: 24px;
+  --fs-kpi: 32px;
+  --fs-section: 14px;
+  --fs-body: 14px;
+  --fs-small: 12px;
+
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+/* Accent choices (Appearance → Accent). Light values hold 4.5:1 on white. */
+:root[data-accent='ocean'] {
+  --accent: #1d5fbf;
+}
+:root[data-accent='grass'] {
+  --accent: #2e7d32;
+}
+:root[data-accent='sun'] {
+  --accent: #9a6400;
+}
+:root[data-accent='coral'] {
+  --accent: #c23a4b;
+}
+:root[data-accent='ink'] {
+  --accent: #1f201d;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --chrome: #0b0c0c;
+    --ground: #121313;
+    --surface: #1b1c1c;
+    --surface-2: #242525;
+    --raised: #1b1c1c;
+    --border: #262828;
+    --rule: #202222;
+    --control: #3f4241;
+    --text: #f4f5f4;
+    --muted: #b4b6b4;
+    --faint: #959795;
+    --primary: #f4f5f4;
+    --on-primary: #111111;
+    --negative: #f0717e;
+    --pill-neutral-bg: #262828;
+    --pill-neutral-ink: #d6d8d6;
+    --pill-positive-bg: #172a1d;
+    --pill-positive-ink: #5fd38d;
+    --pill-warning-bg: #2b2111;
+    --pill-warning-ink: #f2b45a;
+    --float-shadow: 0 12px 32px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.3);
+    --accent: #4fb8ac;
+  }
+  :root[data-accent='ocean'] {
+    --accent: #6aa2f0;
+  }
+  :root[data-accent='grass'] {
+    --accent: #66bb6a;
+  }
+  :root[data-accent='sun'] {
+    --accent: #f0b13c;
+  }
+  :root[data-accent='coral'] {
+    --accent: #f2788a;
+  }
+  :root[data-accent='ink'] {
+    --accent: #f4f5f4;
+  }
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font);
+  font-size: var(--fs-body);
+  line-height: 20px;
+  color: var(--text);
+  background: var(--chrome);
+  -webkit-font-smoothing: antialiased;
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: default;
+}
+
+img {
+  display: block;
+  -webkit-user-drag: none;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.small {
+  font-size: var(--fs-small);
+  line-height: 16px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+a,
+.link {
+  color: var(--accent);
+  text-decoration: none;
+  background: none;
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+  border-radius: 4px;
+}
+a:hover,
+.link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus);
+}
+
+/* --- Buttons ------------------------------------------------------------ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: var(--control-height);
+  padding: 0 16px;
+  border-radius: var(--radius-control);
+  border: 1px solid var(--control);
+  background: var(--ground);
+  color: var(--text);
+  font: 500 var(--fs-body) / 1 var(--font);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 160ms var(--ease-out),
+    border-color 160ms var(--ease-out),
+    transform 160ms var(--ease-out);
+}
+.btn svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+.btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+.btn:disabled {
+  color: var(--faint);
+  cursor: not-allowed;
+}
+.btn.primary {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--on-primary);
+}
+.btn.quiet {
+  border-color: transparent;
+  background: transparent;
+  padding: 0 10px;
+}
+.btn.danger {
+  color: var(--negative);
+  border-color: color-mix(in srgb, var(--negative) 40%, var(--control));
+}
+.btn.small {
+  height: 30px;
+  padding: 0 12px;
+  font-size: 13px;
+}
+.btn.icon {
+  width: var(--control-height);
+  padding: 0;
+}
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover:not(:disabled) {
+    background: var(--surface-2);
+  }
+  .btn.primary:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--primary) 86%, var(--ground));
+  }
+}
+
+/* --- Fields ------------------------------------------------------------- */
+
+.field {
+  display: grid;
+  gap: 8px;
+}
+.field + .field {
+  margin-top: 16px;
+}
+.label {
+  font-weight: 500;
+}
+.hint {
+  font-size: var(--fs-small);
+  line-height: 16px;
+  color: var(--muted);
+}
+
+.input,
+select.input {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-field);
+  background: var(--raised);
+  color: var(--text);
+  font: 400 15px/1 var(--font);
+  -webkit-user-select: text;
+  user-select: text;
+  transition: border-color 160ms var(--ease-out);
+}
+.input::placeholder {
+  color: var(--faint);
+}
+.input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: var(--focus);
+}
+.input.narrow {
+  width: 96px;
+}
+.input[type='time'] {
+  width: 128px;
+  font-variant-numeric: tabular-nums;
+}
+.input[type='time']::-webkit-calendar-picker-indicator {
+  filter: var(--icon-filter, none);
+}
+@media (prefers-color-scheme: dark) {
+  .input[type='time'] {
+    --icon-filter: invert(1);
+  }
+}
+
+.inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Choice chips: one row of pills, one selected. */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.chip {
+  height: 32px;
+  padding: 0 14px;
+  border-radius: var(--radius-control);
+  border: 1px solid var(--control);
+  background: var(--raised);
+  color: var(--text);
+  font: 500 13px/1 var(--font);
+  cursor: pointer;
+  transition:
+    background-color 160ms var(--ease-out),
+    border-color 160ms var(--ease-out),
+    color 160ms var(--ease-out),
+    transform 160ms var(--ease-out);
+}
+.chip:active {
+  transform: scale(0.96);
+}
+.chip[aria-pressed='true'],
+.chip[aria-checked='true'] {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--on-primary);
+}
+@media (hover: hover) and (pointer: fine) {
+  .chip:hover:not([aria-pressed='true']):not([aria-checked='true']) {
+    background: var(--surface-2);
+  }
+}
+
+/* Segmented control: equal options inside one track. */
+.segmented {
+  display: inline-flex;
+  justify-self: start;
+  width: fit-content;
+  max-width: 100%;
+  flex-wrap: wrap;
+  padding: 3px;
+  gap: 2px;
+  border-radius: var(--radius-control);
+  background: var(--surface-2);
+}
+.segmented button {
+  height: 32px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--muted);
+  font: 500 13px/1 var(--font);
+  cursor: pointer;
+  transition:
+    background-color 200ms var(--ease-out),
+    color 200ms var(--ease-out);
+}
+.segmented button[aria-checked='true'] {
+  background: var(--raised);
+  color: var(--text);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+/* Switch: 34x20; on is near-black (or white on dark), never the accent. */
+.switch {
+  position: relative;
+  flex: none;
+  width: 34px;
+  height: 20px;
+  border-radius: 999px;
+  border: 0;
+  background: var(--control);
+  cursor: pointer;
+  transition: background-color 200ms var(--ease-out);
+}
+.switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  transition: transform 220ms var(--ease-out);
+}
+.switch[aria-checked='true'] {
+  background: var(--primary);
+}
+.switch[aria-checked='true']::after {
+  transform: translateX(14px);
+  background: var(--ground);
+}
+.switch:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 20px;
+  background: transparent;
+  cursor: pointer;
+}
+input[type='range']::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 999px;
+  background:
+    linear-gradient(var(--primary), var(--primary)) 0 / var(--fill, 50%) 100% no-repeat,
+    var(--control);
+}
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  margin-top: -7px;
+  border-radius: 50%;
+  background: var(--ground);
+  border: 1px solid var(--control);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+  transition: transform 160ms var(--ease-out);
+}
+input[type='range']:active::-webkit-slider-thumb {
+  transform: scale(1.12);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1;
+  background: var(--pill-neutral-bg);
+  color: var(--pill-neutral-ink);
+  white-space: nowrap;
+}
+.pill.positive {
+  background: var(--pill-positive-bg);
+  color: var(--pill-positive-ink);
+}
+.pill.warning {
+  background: var(--pill-warning-bg);
+  color: var(--pill-warning-ink);
+}
+
+/* Tonal panel: one step off the sheet, no border, no shadow. */
+.panel {
+  background: var(--surface);
+  border-radius: var(--radius-card);
+  padding: var(--pad);
+}
+.panel-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: var(--fs-section);
+  font-weight: 600;
+  margin-bottom: 12px;
+  min-height: 24px;
+}
+
+/* A character on a soft stage, used in pickers, cards and previews. */
+.portrait {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: var(--radius-inner);
+  background: var(--surface-2);
+}
+.portrait img {
+  max-width: 88%;
+  max-height: 92%;
+  object-fit: contain;
+}
+
+/* The stamp that confirms an autosave. */
+.stamp {
+  font-size: var(--fs-small);
+  color: var(--muted);
+  opacity: 0;
+  transition: opacity 200ms var(--ease-out);
+}
+.stamp.show {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 1ms !important;
+    animation-duration: 1ms !important;
+  }
+}

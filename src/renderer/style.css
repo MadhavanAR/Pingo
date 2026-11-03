@@ -5,6 +5,64 @@
   src: url('../../assets/fonts/PressStart2P.woff2') format('woff2');
   font-display: swap;
 }
+@font-face {
+  font-family: 'Instrument Sans';
+  src: url('../../assets/fonts/InstrumentSans.woff2') format('woff2');
+  font-weight: 400 600;
+  font-display: swap;
+}
+
+:root {
+  --accent: #1b6e66;
+  --on-accent: #ffffff;
+  --bubble-bg: #ffffff;
+  --bubble-ink: #1f201d;
+  --bubble-muted: #eef0ef;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+}
+:root[data-accent='ocean'] {
+  --accent: #1d5fbf;
+}
+:root[data-accent='grass'] {
+  --accent: #2e7d32;
+}
+:root[data-accent='sun'] {
+  --accent: #9a6400;
+}
+:root[data-accent='coral'] {
+  --accent: #c23a4b;
+}
+:root[data-accent='ink'] {
+  --accent: #1f201d;
+}
+
+:root[data-theme='dark'] {
+  --bubble-bg: #1d1e1e;
+  --bubble-ink: #f4f5f4;
+  --bubble-muted: #2c2d2d;
+  --accent: #3fa597;
+  --on-accent: #0b1513;
+}
+:root[data-theme='dark'][data-accent='ocean'] {
+  --accent: #6aa2f0;
+  --on-accent: #0b1220;
+}
+:root[data-theme='dark'][data-accent='grass'] {
+  --accent: #66bb6a;
+  --on-accent: #0c160d;
+}
+:root[data-theme='dark'][data-accent='sun'] {
+  --accent: #f0b13c;
+  --on-accent: #1d1404;
+}
+:root[data-theme='dark'][data-accent='coral'] {
+  --accent: #f2788a;
+  --on-accent: #22090d;
+}
+:root[data-theme='dark'][data-accent='ink'] {
+  --accent: #f4f5f4;
+  --on-accent: #111111;
+}
 
 * {
   margin: 0;
@@ -29,7 +87,12 @@ body {
   height: 100%;
 }
 
-/* Character */
+.hidden {
+  display: none !important;
+}
+
+/* --- Character ------------------------------------------------------------ */
+
 #pet {
   position: absolute;
   right: 18px;
@@ -46,18 +109,24 @@ body {
   opacity: 1;
   filter: drop-shadow(0 6px 6px rgba(0, 0, 0, 0.28));
 }
+#stage.left #pet {
+  right: auto;
+  left: 18px;
+}
 
-/* Off to the right, ready to walk in. */
+/* Off to the side, ready to walk in. */
 #pet.offstage {
   transform: translateX(230px);
   opacity: 0;
+}
+#stage.left #pet.offstage {
+  transform: translateX(-230px);
 }
 
 /* Gentle bob while walking. */
 #pet.walking {
   animation: walk-bob 0.36s steps(2, end) infinite;
 }
-
 @keyframes walk-bob {
   0%,
   100% {
@@ -71,61 +140,161 @@ body {
 #pet img {
   height: 100%;
   width: auto;
-  image-rendering: auto; /* smooth: the head is a real photo */
+  max-width: 100%;
+  object-fit: contain;
+  object-position: bottom;
+  image-rendering: auto;
 }
 
-/* Face right when exiting. */
-#pet.face-right img {
+/* Mirroring: the walking pose faces the way it travels; an avatar may be
+   mirrored by its owner. The two cancel out. */
+#pet.flipped img,
+#pet.mirror img {
   transform: scaleX(-1);
+}
+#pet.flipped.mirror img {
+  transform: none;
 }
 
 /* Hop on celebration. */
 #pet.celebrate {
   animation: happy-hop 0.5s ease-in-out 2;
 }
-
 @keyframes happy-hop {
   0%,
   100% {
-    transform: translateX(0) translateY(0);
+    translate: 0 0;
   }
   30% {
-    transform: translateX(0) translateY(-18px);
+    translate: 0 -18px;
   }
   60% {
-    transform: translateX(0) translateY(0);
+    translate: 0 0;
   }
 }
 
-.hidden {
-  display: none !important;
+/* One-image avatars (the user's own picture or GIF), sized by their owner. */
+#pet.custom {
+  width: 230px;
+  height: min(calc(250px * var(--avatar-scale, 1)), 380px);
+}
+#stage.left #pet.custom {
+  left: 10px;
+}
+#stage:not(.left) #pet.custom {
+  right: 10px;
 }
 
-/* Speech bubble */
+/* --- Speech bubble: modern -------------------------------------------------- */
+
 #bubble {
   position: absolute;
+  z-index: 2;
   top: 14px;
   left: 14px;
   right: 14px;
+  transform-origin: bottom right;
+}
+#stage.left #bubble {
+  transform-origin: bottom left;
+}
+
+#stage.modern #bubble {
+  background: var(--bubble-bg);
+  color: var(--bubble-ink);
+  border-radius: 20px;
+  padding: 18px 18px 16px;
+  box-shadow:
+    0 14px 30px rgba(0, 0, 0, 0.2),
+    0 2px 6px rgba(0, 0, 0, 0.08);
+  transition:
+    transform 320ms var(--ease-out),
+    opacity 200ms var(--ease-out);
+}
+#stage.modern #bubble.hidden {
+  display: block !important;
+  opacity: 0;
+  transform: translateY(8px) scale(0.94);
+  pointer-events: none;
+}
+#stage.modern #bubble-text {
+  font-family: 'Instrument Sans', system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 24px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  margin-bottom: 14px;
+}
+#stage.modern #bubble-tail {
+  position: absolute;
+  right: 56px;
+  bottom: -7px;
+  width: 16px;
+  height: 16px;
+  background: var(--bubble-bg);
+  border-radius: 3px;
+  transform: rotate(45deg);
+}
+#stage.modern.left #bubble-tail {
+  right: auto;
+  left: 56px;
+}
+#stage.modern #buttons {
+  display: flex;
+  gap: 8px;
+}
+#stage.modern .btn {
+  height: 38px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 999px;
+  font:
+    600 14px/1 'Instrument Sans',
+    system-ui,
+    sans-serif;
+  cursor: pointer;
+  transition:
+    transform 160ms var(--ease-out),
+    filter 160ms var(--ease-out);
+}
+#stage.modern .btn:active {
+  transform: scale(0.96);
+}
+#stage.modern .btn-yes {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+#stage.modern .btn-snooze {
+  background: var(--bubble-muted);
+  color: var(--bubble-ink);
+}
+#stage.modern .btn:hover {
+  filter: brightness(0.95);
+}
+#stage.modern .btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+/* --- Speech bubble: retro pixel ---------------------------------------------- */
+
+#stage.pixel #bubble {
   background: #fdfdf7;
   border: 4px solid #1c1c1c;
   border-radius: 6px;
   padding: 16px 16px 14px;
   box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.18);
-  transform-origin: bottom right;
   transition:
     transform 0.28s cubic-bezier(0.18, 0.89, 0.32, 1.28),
     opacity 0.2s ease;
 }
-
-#bubble.hidden {
+#stage.pixel #bubble.hidden {
   display: block !important;
   opacity: 0;
   transform: scale(0.4);
   pointer-events: none;
 }
-
-#bubble-text {
+#stage.pixel #bubble-text {
   font-family: 'Press Start 2P', 'Courier New', monospace;
   font-size: 11px;
   line-height: 1.7;
@@ -134,9 +303,7 @@ body {
   text-align: center;
   margin-bottom: 14px;
 }
-
-/* Bubble tail pointing down toward the character. */
-#bubble-tail {
+#stage.pixel #bubble-tail {
   position: absolute;
   right: 46px;
   bottom: -18px;
@@ -146,8 +313,11 @@ body {
   border-right: 12px solid transparent;
   border-top: 18px solid #1c1c1c;
 }
-
-#bubble-tail::after {
+#stage.pixel.left #bubble-tail {
+  right: auto;
+  left: 46px;
+}
+#stage.pixel #bubble-tail::after {
   content: '';
   position: absolute;
   left: -8px;
@@ -158,15 +328,12 @@ body {
   border-right: 8px solid transparent;
   border-top: 12px solid #fdfdf7;
 }
-
-/* Buttons */
-#buttons {
+#stage.pixel #buttons {
   display: flex;
   gap: 10px;
   justify-content: center;
 }
-
-.btn {
+#stage.pixel .btn {
   font-family: 'Press Start 2P', 'Courier New', monospace;
   font-size: 9px;
   letter-spacing: 0.5px;
@@ -180,31 +347,24 @@ body {
     box-shadow 0.05s ease;
   box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.35);
 }
-
-.btn:active {
+#stage.pixel .btn:active {
   transform: translate(3px, 3px);
   box-shadow: 0 0 0 rgba(0, 0, 0, 0.35);
 }
-
-.btn-yes {
-  background: #37c24a;
+#stage.pixel .btn-yes {
+  background: var(--accent);
   color: #fff;
 }
-
-.btn-yes:hover {
-  background: #2fae41;
-}
-
-.btn-snooze {
+#stage.pixel .btn-snooze {
   background: #fdfdf7;
   color: #1c1c1c;
 }
-
-.btn-snooze:hover {
+#stage.pixel .btn-snooze:hover {
   background: #ececec;
 }
 
-/* Confetti */
+/* --- Confetti ------------------------------------------------------------------ */
+
 #confetti {
   position: absolute;
   inset: 0;
@@ -212,43 +372,52 @@ body {
   pointer-events: none;
   z-index: 5;
 }
-
 .confetti-piece {
   position: absolute;
   top: -20px;
-  font-size: 16px;
+  width: 8px;
+  height: 12px;
+  border-radius: 2px;
   will-change: transform, opacity;
   animation: confetti-fall var(--dur) linear forwards;
 }
-
+.confetti-piece.round {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
 @keyframes confetti-fall {
   0% {
-    transform: translateY(0) rotate(0deg);
+    transform: translate(0, 0) rotate(0deg);
     opacity: 1;
   }
   100% {
-    transform: translateY(var(--fall)) rotate(var(--spin));
+    transform: translate(var(--drift), var(--fall)) rotate(var(--spin));
     opacity: 0;
   }
 }
 
-/* Portrait (photo) mode */
+/* --- Portrait (square photo or GIF) mode ------------------------------------------ */
 /* These use the independent rotate/translate/scale properties so they never
    fight the slide-in `transform` transition on #pet. */
 #pet.portrait {
-  width: 190px;
-  height: 190px;
+  width: calc(190px * var(--avatar-scale, 1));
+  height: calc(190px * var(--avatar-scale, 1));
+  max-width: 300px;
+  max-height: 300px;
   right: 24px;
   bottom: 14px;
   align-items: center;
   transform-origin: 50% 90%;
   filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.35));
 }
-
+#stage.left #pet.portrait {
+  right: auto;
+  left: 24px;
+}
 #pet.portrait img {
   width: 100%;
   height: 100%;
-  image-rendering: auto; /* smooth photo, not pixelated */
 }
 
 /* Rocking walk while sliding in or out. */
@@ -267,13 +436,9 @@ body {
   }
 }
 
-/* Never mirror a photo on exit. */
-#pet.portrait.face-right img {
-  transform: none;
-}
-
 /* Attention wiggle while awaiting an answer. */
-#pet.portrait.chatty {
+#pet.portrait.chatty,
+#pet.custom.chatty {
   animation: portrait-wave 1.8s ease-in-out infinite;
 }
 @keyframes portrait-wave {
@@ -296,30 +461,26 @@ body {
     scale: 1.02;
   }
 }
-
-/* Sip: tilt back and bob like drinking from the glass. */
-#pet.portrait.sipping {
-  animation: portrait-sip 0.95s ease-in-out;
+#pet.custom:not(.portrait).chatty {
+  animation-name: custom-sway;
+  transform-origin: 50% 100%;
 }
-@keyframes portrait-sip {
+@keyframes custom-sway {
   0%,
   100% {
     rotate: 0deg;
-    translate: 0 0;
   }
-  35%,
-  60% {
-    rotate: -9deg;
-    translate: 0 -6px;
+  25% {
+    rotate: -2.5deg;
   }
-  80% {
-    rotate: 2deg;
-    translate: 0 2px;
+  75% {
+    rotate: 2.5deg;
   }
 }
 
 /* Happy hop on celebration. */
-#pet.portrait.celebrate {
+#pet.portrait.celebrate,
+#pet.custom.celebrate {
   animation: portrait-hop 0.5s ease-in-out 2;
 }
 @keyframes portrait-hop {
@@ -340,7 +501,8 @@ body {
   }
 }
 
-/* Multi-pose cartoon mode */
+/* --- Multi-pose cartoon mode -------------------------------------------------------- */
+
 #pet.poses {
   width: auto;
   min-width: 232px;
@@ -349,14 +511,15 @@ body {
   bottom: 0;
   transform-origin: 50% 100%;
 }
+#stage.left #pet.poses {
+  right: auto;
+  left: 6px;
+}
 #pet.poses img {
   height: 100%;
   width: auto;
-  image-rendering: auto;
+  max-width: none;
 }
-#pet.poses.face-right img {
-  transform: none;
-} /* never mirror the face */
 #pet.poses.walking {
   animation: pose-bounce 0.42s ease-in-out infinite;
 }
@@ -404,6 +567,18 @@ body {
   }
 }
 
-#pet.poses.flipped img {
-  transform: scaleX(-1);
+@media (prefers-reduced-motion: reduce) {
+  #pet {
+    transition: opacity 0.4s ease;
+  }
+  #pet.offstage,
+  #stage.left #pet.offstage {
+    transform: none;
+  }
+  #pet.walking,
+  #pet.chatty,
+  #pet.celebrate,
+  .confetti-piece {
+    animation: none !important;
+  }
 }

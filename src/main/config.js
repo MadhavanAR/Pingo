@@ -18,7 +18,7 @@ const MINUTE_MS = 60_000;
 
 /** Timing that is not user-configurable. User defaults live in `settings.js`. */
 const SCHEDULE = Object.freeze({
-  INTERVAL_OPTIONS: Object.freeze([15, 30, 45, 60, 90]), // tray menu presets
+  PAUSE_OPTIONS_MIN: Object.freeze([30, 60, 120]), // tray "Pause for…" presets
   GREETING_DELAY_MS: 6000, // first hello after launch, so you can see it work
   ONBOARDING_DELAY_MS: 1500,
   POST_ONBOARDING_DELAY_MS: 800,
@@ -29,6 +29,10 @@ const PET_WINDOW = Object.freeze({ WIDTH: 360, HEIGHT: 430, EDGE_MARGIN: 8 });
 
 /** Upper bound on a single custom sprite, to stop a renderer flooding the disk. */
 const MAX_SPRITE_BYTES = 10 * 1024 * 1024;
+const MAX_CUSTOM_AVATARS = 24;
+
+/** Days of done/snooze counts kept for the Home view. */
+const STATS_DAYS = 14;
 
 const IMAGE_EXTENSIONS = Object.freeze(['png', 'jpg', 'jpeg', 'webp', 'bmp', 'gif']);
 
@@ -46,7 +50,8 @@ const POSE_NAMES = Object.freeze([
   'rest',
 ]);
 
-const CUSTOM_CHARACTER = 'custom';
+/** Keys of user-made avatars are this prefix plus the avatar's id. */
+const CUSTOM_PREFIX = 'custom:';
 const DEFAULT_CHARACTER = 'boy';
 
 /**
@@ -80,9 +85,11 @@ module.exports = {
   SCHEDULE,
   PET_WINDOW,
   MAX_SPRITE_BYTES,
+  MAX_CUSTOM_AVATARS,
+  STATS_DAYS,
   IMAGE_EXTENSIONS,
   POSE_NAMES,
-  CUSTOM_CHARACTER,
+  CUSTOM_PREFIX,
   DEFAULT_CHARACTER,
   PRESETS,
 };

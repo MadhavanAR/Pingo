@@ -20,27 +20,32 @@ const subscribe = (channel, cb) => {
 contextBridge.exposeInMainWorld('pingo', {
   // Reminder popup
   onShow: (cb) => subscribe('reminder:show', (payload) => cb(payload ?? {})),
-  yes: () => send('reminder:yes'),
+  done: () => send('reminder:done'),
   snooze: () => send('reminder:snooze'),
   hide: () => send('reminder:hide'),
 
-  // Settings (any subset of fields; returns the full, validated settings)
-  getSettings: () => invoke('settings:get'),
+  // App state: settings, reminders, what's next, today's counts
+  getState: () => invoke('state:get'),
+  onStateChanged: (cb) => subscribe('state:changed', () => cb()),
+  onNavigate: (cb) => subscribe('app:navigate', (route) => cb(String(route ?? ''))),
+  openApp: (route) => send('app:open', route),
   saveSettings: (patch) => invoke('settings:save', patch),
-  closeSettings: () => send('settings:close'),
+  setPaused: (minutes) => invoke('pause:set', minutes),
+  setOpenAtLogin: (on) => invoke('login:set', on),
+
+  // Reminders (any subset of fields; returns the saved, validated reminder)
+  saveReminder: (reminder) => invoke('reminder:save', reminder),
+  deleteReminder: (id) => invoke('reminder:delete', id),
+  previewReminder: (reminder) => invoke('reminder:preview', reminder),
+
+  // Characters: bundled ones and the user's own avatars
+  getAvatars: () => invoke('avatars:get'),
+  getAvatar: (id) => invoke('avatar:get', id),
+  saveAvatar: (avatar) => invoke('avatar:save', avatar),
+  deleteAvatar: (id) => invoke('avatar:delete', id),
+  selectAvatar: (key) => invoke('avatar:select', key),
+  pickImage: () => invoke('dialog:pickImage'),
 
   // First-run onboarding
   closeOnboarding: () => send('onboarding:close'),
-
-  // Character gallery + custom import
-  openCharacterWindow: () => send('character:open'),
-  getPresets: () => invoke('presets:get'),
-  selectCharacter: (key) => invoke('character:select', key),
-  pickImage: () => invoke('dialog:pickImage'),
-  saveCharacter: (idle, drinking) => invoke('character:save', idle, drinking),
-  resetCharacter: () => invoke('character:reset'),
-  hasCustomCharacter: () => invoke('character:hasCustom'),
-  getSprites: () => invoke('sprites:get'),
-  onSpritesChanged: (cb) => subscribe('sprites:changed', () => cb()),
-  closeCharacterWindow: () => send('character:close'),
 });

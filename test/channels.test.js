@@ -4,7 +4,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const { CHANNELS } = require('../src/shared/channels');
+const { CHANNELS, MAIN_TO_RENDERER } = require('../src/shared/channels');
 
 const preload = fs.readFileSync(path.join(__dirname, '..', 'src', 'preload', 'index.js'), 'utf8');
 const ipc = fs.readFileSync(path.join(__dirname, '..', 'src', 'main', 'ipc.js'), 'utf8');
@@ -16,12 +16,10 @@ test('preload only uses channels declared in src/shared/channels.js', () => {
   for (const channel of used) assert.ok(declared.has(channel), `undeclared channel ${channel}`);
 });
 
-test('every renderer->main channel is used by preload and handled in ipc.js', () => {
-  const outbound = Object.entries(CHANNELS).filter(
-    ([key]) => !['REMINDER_SHOW', 'SPRITES_CHANGED'].includes(key),
-  );
-  for (const [key, channel] of outbound) {
+test('every channel is used by preload, and renderer->main ones are handled in ipc.js', () => {
+  for (const [key, channel] of Object.entries(CHANNELS)) {
     assert.ok(preload.includes(`'${channel}'`), `preload never uses ${channel}`);
+    if (MAIN_TO_RENDERER.includes(key)) continue;
     assert.ok(ipc.includes(`CHANNELS.${key}`), `ipc.js never handles ${key}`);
   }
 });

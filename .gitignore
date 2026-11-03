@@ -7,3 +7,12 @@ Thumbs.db
 .vscode/
 .idea/
 .vercel/
+
+# Local design/AI skill tooling: kept on this machine only
+.taste-skill/
+.claude/
+.agents/
+.skills/
+skills/
+.github/hooks/
+.github/skills/

@@ -54,14 +54,16 @@ Save the result as e.g. `drinking.png`.
 
 ## Step 3 — import them into the app
 
-1. Right-click the Pingo **tray icon** → **Change character…**
-2. Under _"or bring your own"_, click **Choose image…** under **Standing pose** and
-   pick `standing.png`, then do the same under **Drinking pose** with `drinking.png`.
-   The app cuts out the background and shows a preview of each.
-3. Click **Use these images**. Your character appears at the next reminder (or
-   right-click the tray icon → **Drink now** to see it straight away).
+1. Right-click the Pingo **tray icon** → **Avatars…**, then **New avatar** (or
+   drop `standing.png` onto the dashed box).
+2. Choose `standing.png` as **Standing** and `drinking.png` as **Celebrating**.
+   The app cuts out the background; move **Strength** if edges look wrong.
+3. Give it a name, set its size, and click **Create avatar**. Make it the default,
+   or pick it for one reminder only in that reminder's **Character** section.
 
-To go back to the bundled character, open **Change character…** and tap **Boy**.
+Any single image works too, and so does an **animated GIF** (it keeps moving;
+use one with a transparent background). To go back, choose **Classic** in
+**Avatars** and press **Make default**.
 
 ---
 

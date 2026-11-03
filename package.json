@@ -1,7 +1,7 @@
 {
   "name": "pingo",
   "productName": "Pingo",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Pingo — a friendly cartoon desktop buddy that walks onto your screen to remind you, starting with drinking water.",
   "main": "src/main/index.js",
   "private": true,

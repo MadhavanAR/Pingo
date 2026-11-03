@@ -4,20 +4,23 @@ const path = require('node:path');
 const { app, Menu, Tray, nativeImage } = require('electron');
 const { APP_NAME, ASSETS_DIR, SCHEDULE } = require('./config');
 
+const clock = (ms) => new Date(ms).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+const duration = (minutes) =>
+  minutes < 60 ? `${minutes} min` : `${minutes / 60} hour${minutes === 60 ? '' : 's'}`;
+
 /**
  * System-tray icon and menu. Owns no state of its own: it renders whatever the
  * controller reports and forwards clicks back to it.
  *
  * @typedef {object} TrayController
- * @property {() => number} getIntervalMin
- * @property {() => boolean} isPaused
- * @property {() => number} minutesUntilNext
+ * @property {() => ({ title: string, at: number, minutes: number } | null)} nextUp
+ * @property {() => number} pausedUntil ms timestamp, Infinity, or 0 when running
  * @property {() => void} remindNow
+ * @property {(route?: string) => void} openApp
  * @property {() => void} openOnboarding
- * @property {() => void} openSettings
- * @property {() => void} openCharacter
- * @property {(minutes: number) => void} setInterval
- * @property {(paused: boolean) => void} setPaused
+ * @property {(minutes: number | 'tomorrow') => void} pause -1 pauses until resumed
+ * @property {() => void} resume
  * @property {() => void} quit
  */
 class AppTray {
@@ -36,46 +39,49 @@ class AppTray {
     this.tray.setToolTip(this.tooltip());
   }
 
-  tooltip() {
+  statusLine() {
     const c = this.controller;
-    if (c.isPaused()) return `${APP_NAME} — paused`;
-    return `${APP_NAME} — next nudge in ~${c.minutesUntilNext()} min`;
+    const until = c.pausedUntil();
+    if (until === Infinity) return 'Paused';
+    if (until) return `Paused until ${clock(until)}`;
+    const next = c.nextUp();
+    if (!next) return 'No reminders on';
+    return `Next: ${next.title} at ${clock(next.at)}`;
+  }
+
+  tooltip() {
+    return `${APP_NAME} — ${this.statusLine()}`;
   }
 
   buildTemplate() {
     const c = this.controller;
-    const intervalMin = c.getIntervalMin();
+    const paused = c.pausedUntil() !== 0;
 
     const template = [
-      { label: 'Remind me now', click: () => c.remindNow() },
+      { label: this.statusLine(), enabled: false },
+      {
+        label: 'Remind me now',
+        enabled: !paused && c.nextUp() !== null,
+        click: () => c.remindNow(),
+      },
       { type: 'separator' },
-      {
-        label: `Reminder every ${intervalMin} min`,
-        submenu: [
-          ...SCHEDULE.INTERVAL_OPTIONS.map((m) => ({
-            label: `${m} minutes`,
-            type: 'radio',
-            checked: intervalMin === m,
-            click: () => c.setInterval(m),
-          })),
-          { type: 'separator' },
-          {
-            label: 'Custom…',
-            type: 'radio',
-            checked: !SCHEDULE.INTERVAL_OPTIONS.includes(intervalMin),
-            click: () => c.openSettings(),
+      { label: `Open ${APP_NAME}…`, click: () => c.openApp('home') },
+      { label: 'New reminder…', click: () => c.openApp('reminders/new') },
+      { label: 'Avatars…', click: () => c.openApp('avatars') },
+      { type: 'separator' },
+      paused
+        ? { label: 'Resume reminders', click: () => c.resume() }
+        : {
+            label: 'Pause',
+            submenu: [
+              ...SCHEDULE.PAUSE_OPTIONS_MIN.map((m) => ({
+                label: `For ${duration(m)}`,
+                click: () => c.pause(m),
+              })),
+              { label: 'Until tomorrow', click: () => c.pause('tomorrow') },
+              { label: 'Until I resume', click: () => c.pause(-1) },
+            ],
           },
-        ],
-      },
-      { label: 'Change character…', click: () => c.openCharacter() },
-      { label: 'Settings…', click: () => c.openSettings() },
-      { label: 'Run setup again…', click: () => c.openOnboarding() },
-      {
-        label: 'Pause reminders',
-        type: 'checkbox',
-        checked: c.isPaused(),
-        click: (item) => c.setPaused(item.checked),
-      },
     ];
 
     // Installed builds get a native "start at login" toggle.
@@ -89,7 +95,11 @@ class AppTray {
       });
     }
 
-    template.push({ type: 'separator' }, { label: `Quit ${APP_NAME}`, click: () => c.quit() });
+    template.push(
+      { label: 'Run setup again…', click: () => c.openOnboarding() },
+      { type: 'separator' },
+      { label: `Quit ${APP_NAME}`, click: () => c.quit() },
+    );
     return template;
   }
 }

@@ -4,7 +4,7 @@ const js = require('@eslint/js');
 const globals = require('globals');
 
 module.exports = [
-  { ignores: ['node_modules/', 'dist/', 'build/', 'coverage/'] },
+  { ignores: ['node_modules/', 'dist/', 'build/', 'coverage/', '.taste-skill/'] },
   js.configs.recommended,
   {
     files: ['**/*.js'],
@@ -22,7 +22,7 @@ module.exports = [
     files: ['src/renderer/**/*.js'],
     languageOptions: {
       sourceType: 'script',
-      globals: { ...globals.browser, renderCharacterCards: 'readonly' },
+      globals: globals.browser,
     },
   },
   {

@@ -6,6 +6,32 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.2.0] - 2026-11-03
+
+### Added
+
+- **Any number of reminders**, each with its own kind (water, stretch, rest your
+  eyes, posture, medicine, custom), message, schedule, days of the week, active
+  hours, snooze length and character.
+- **Set times**: remind at fixed times of day (for example 09:00 and 21:00) as
+  well as every _N_ minutes.
+- **Avatar studio**: make characters from any image or **animated GIF**, with an
+  optional celebration image, background cut-out strength, size, mirroring and a
+  live preview. Keep up to 24.
+- **Appearance**: light, dark or system theme; modern or retro pixel bubble;
+  accent colour; character size; bottom-left or bottom-right corner; main screen
+  or the screen with the pointer; arrival sound; auto-snooze if unanswered.
+- **Control center** window with Home (what's next, today's counts, the week),
+  Reminders, Avatars, Appearance and General.
+- Pause for 30 minutes, 1 or 2 hours, until tomorrow, or until resumed.
+
+### Changed
+
+- The Settings and Change character windows are replaced by the control center,
+  and the setup wizard is redesigned. Existing settings and custom characters
+  carry over.
+- The app uses bundled Instrument Sans and Instrument Serif fonts.
+
 ## [2.1.0] - 2026-11-02
 
 ### Added

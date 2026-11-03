@@ -1,7 +1,7 @@
 'use strict';
 
 const { pathToFileURL } = require('node:url');
-const { ipcMain, dialog } = require('electron');
+const { ipcMain, dialog, BrowserWindow } = require('electron');
 const { CHANNELS } = require('../shared/channels');
 const { RENDERER_DIR, IMAGE_EXTENSIONS } = require('./config');
 const { fileToDataUrl } = require('./characters');
@@ -18,7 +18,7 @@ function isTrustedSender(event) {
 function handle(channel, fn) {
   ipcMain.handle(channel, (event, ...args) => {
     if (!isTrustedSender(event)) throw new Error(`Blocked IPC "${channel}" from untrusted sender`);
-    return fn(...args);
+    return fn(...args, event);
   });
 }
 
@@ -38,38 +38,39 @@ function registerIpc({ pingo }) {
   const { characters, dialogs } = pingo;
 
   // Reminder popup
-  on(CHANNELS.REMINDER_YES, () => pingo.acknowledge());
+  on(CHANNELS.REMINDER_DONE, () => pingo.done());
   on(CHANNELS.REMINDER_SNOOZE, () => pingo.snooze());
   on(CHANNELS.REMINDER_HIDE, () => pingo.hidePet());
 
-  // Settings
-  handle(CHANNELS.SETTINGS_GET, () => pingo.settings);
+  // App state and settings
+  handle(CHANNELS.STATE_GET, () => pingo.state());
   handle(CHANNELS.SETTINGS_SAVE, (patch) => pingo.updateSettings(patch));
-  on(CHANNELS.SETTINGS_CLOSE, () => dialogs.close('settings.html'));
-
+  handle(CHANNELS.PAUSE_SET, (minutes) => pingo.setPaused(minutes));
+  handle(CHANNELS.LOGIN_SET, (enabled) => pingo.setOpenAtLogin(enabled === true));
+  on(CHANNELS.APP_OPEN, (route) => pingo.openApp(typeof route === 'string' ? route : ''));
   on(CHANNELS.ONBOARDING_CLOSE, () => dialogs.close('onboarding.html'));
 
+  // Reminders
+  handle(CHANNELS.REMINDER_SAVE, (reminder) => pingo.saveReminder(reminder));
+  handle(CHANNELS.REMINDER_DELETE, (id) => pingo.deleteReminder(id));
+  handle(CHANNELS.REMINDER_PREVIEW, (draft) => pingo.previewReminder(draft));
+
   // Characters
-  on(CHANNELS.CHARACTER_OPEN, () => pingo.openDialog('character'));
-  handle(CHANNELS.DIALOG_PICK_IMAGE, async () => {
-    const parent = dialogs.get('character.html') ?? undefined;
+  handle(CHANNELS.AVATARS_GET, () => characters.list());
+  handle(CHANNELS.AVATAR_GET, (id) => characters.getCustom(id));
+  handle(CHANNELS.AVATAR_SAVE, (avatar) => pingo.changed(characters.saveCustom(avatar)));
+  handle(CHANNELS.AVATAR_DELETE, (id) => pingo.changed(characters.deleteCustom(id)));
+  handle(CHANNELS.AVATAR_SELECT, (key) => pingo.changed(characters.select(key)));
+  handle(CHANNELS.DIALOG_PICK_IMAGE, async (event) => {
+    const parent = BrowserWindow.fromWebContents(event.sender) ?? undefined;
     const res = await dialog.showOpenDialog(parent, {
-      title: 'Choose a character image',
+      title: 'Choose an image or GIF',
       properties: ['openFile'],
       filters: [{ name: 'Images', extensions: [...IMAGE_EXTENSIONS] }],
     });
     if (res.canceled || !res.filePaths[0]) return null;
     return fileToDataUrl(res.filePaths[0]);
   });
-  handle(CHANNELS.CHARACTER_SAVE, (idle, drinking) =>
-    pingo.afterSpriteChange(characters.saveCustom(idle, drinking)),
-  );
-  handle(CHANNELS.CHARACTER_RESET, () => pingo.afterSpriteChange(characters.resetCustom()));
-  handle(CHANNELS.CHARACTER_SELECT, (key) => pingo.afterSpriteChange(characters.select(key)));
-  handle(CHANNELS.CHARACTER_HAS_CUSTOM, () => characters.hasCustom());
-  handle(CHANNELS.PRESETS_GET, () => characters.presetsInfo());
-  handle(CHANNELS.SPRITES_GET, () => characters.activeSprites());
-  on(CHANNELS.CHARACTER_CLOSE, () => dialogs.close('character.html'));
 }
 
 module.exports = { registerIpc, isTrustedSender };

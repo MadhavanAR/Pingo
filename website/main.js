@@ -31,35 +31,6 @@
   const year = $('[data-year]');
   if (year) year.textContent = new Date().getFullYear();
 
-  // Navigation shadow once the page scrolls
-
-  const nav = $('[data-nav]');
-  const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 8);
-  window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
-
-  // Headline: reveal word by word, keeping styled spans (the gradient accent)
-
-  const headline = $('[data-split]');
-  if (headline && !reducedMotion) {
-    let index = 0;
-    const words = [];
-    for (const node of [...headline.childNodes]) {
-      const className = node.nodeType === Node.ELEMENT_NODE ? node.className : '';
-      for (const text of node.textContent.trim().split(/ +/).filter(Boolean)) {
-        words.push({ text, className });
-      }
-    }
-    headline.textContent = '';
-    words.forEach(({ text, className }, i) => {
-      const span = document.createElement('span');
-      span.className = `word ${className}`.trim();
-      span.style.setProperty('--i', index++);
-      span.textContent = text;
-      headline.append(span, i < words.length - 1 ? ' ' : '');
-    });
-  }
-
   // Scroll reveal, staggered within each group of siblings
 
   const revealables = $$('.reveal');
@@ -72,7 +43,7 @@
           if (!entry.isIntersecting) continue;
           const el = entry.target;
           const siblings = [...el.parentElement.children].filter((c) => c.matches('.reveal'));
-          el.style.setProperty('--delay', `${Math.max(0, siblings.indexOf(el)) * 70}ms`);
+          el.style.setProperty('--delay', `${Math.max(0, siblings.indexOf(el)) * 80}ms`);
           el.classList.add('in');
           observer.unobserve(el);
         }
@@ -82,88 +53,206 @@
     revealables.forEach((el) => observer.observe(el));
   }
 
-  // Interactive cards: a light that follows the cursor, and a gentle tilt
+  // Radio-style segmented controls
 
-  $$('.spot').forEach((card) => {
-    card.addEventListener('pointermove', (event) => {
-      const rect = card.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-      card.style.setProperty('--mx', `${x}px`);
-      card.style.setProperty('--my', `${y}px`);
-      if (card.hasAttribute('data-tilt') && !reducedMotion) {
-        card.style.setProperty('--ry', `${(x / rect.width - 0.5) * 4}deg`);
-        card.style.setProperty('--rx', `${(0.5 - y / rect.height) * 4}deg`);
+  function radios(buttons, onPick) {
+    buttons.forEach((btn) =>
+      btn.addEventListener('click', () => {
+        buttons.forEach((b) => b.setAttribute('aria-checked', String(b === btn)));
+        onPick(btn);
+      }),
+    );
+  }
+
+  // "What should Pingo say?": type a reminder, see it as Pingo would show it
+
+  const sayInput = $('[data-say-input]');
+  if (sayInput) {
+    const typeEl = $('[data-say-type]');
+    const msgEl = $('[data-say-msg]');
+    const whenEl = $('[data-say-when]');
+    const lineEl = $('[data-say-line]');
+    const bubbleEl = $('[data-say-bubble]');
+    const charEl = $('[data-say-char]');
+
+    // Reminder types and the pose the classic character takes for each.
+    const TYPES = [
+      {
+        name: 'Medicine',
+        test: /medic|pill|tablet|vitamin|dose/i,
+        pose: 'point',
+        alt: 'Pingo pointing',
+        when: 'At 09:00 and 21:00',
+      },
+      {
+        name: 'Posture',
+        test: /posture|sit up|straight|shoulder/i,
+        pose: 'think',
+        alt: 'Pingo checking posture',
+        when: 'Every 30 minutes',
+      },
+      {
+        name: 'Rest your eyes',
+        test: /eye|screen|look away/i,
+        pose: 'rest',
+        alt: 'Pingo resting its eyes',
+        when: 'Every 20 minutes',
+      },
+      {
+        name: 'Stretch',
+        test: /stretch|stand|walk|move|back|neck/i,
+        pose: 'stretch',
+        alt: 'Pingo stretching',
+        when: 'Every 60 minutes',
+      },
+      {
+        name: 'Water',
+        test: /water|drink|hydrat|glass/i,
+        pose: 'drink',
+        alt: 'Pingo holding a glass of water',
+        when: 'Every 45 minutes',
+      },
+    ];
+    const CUSTOM = {
+      name: 'Custom',
+      pose: 'point',
+      alt: 'Pingo pointing',
+      when: 'Every 60 minutes',
+    };
+
+    let avatar = 'boy';
+    let pose = 'drink';
+    let alt = TYPES[4].alt;
+
+    const pad = (n) => String(n).padStart(2, '0');
+
+    function parse(raw) {
+      let text = raw.trim();
+      let when = null;
+      const every = text.match(/\bevery\s+(\d{1,3})\s*(m|min|mins|minutes?|h|hr|hrs|hours?)\b/i);
+      if (every) {
+        const n = Number(every[1]);
+        const hours = /^h/i.test(every[2]);
+        when = hours
+          ? `Every ${n} hour${n === 1 ? '' : 's'}`
+          : `Every ${n} minute${n === 1 ? '' : 's'}`;
+        text = text.replace(every[0], '');
       }
-    });
-    card.addEventListener('pointerleave', () => {
-      card.style.setProperty('--rx', '0deg');
-      card.style.setProperty('--ry', '0deg');
-    });
-  });
+      const at = text.match(
+        /\bat\s+(\d{1,2}(?::\d{2})?\s*(?:am|pm)?(?:\s*(?:,|and|&)\s*\d{1,2}(?::\d{2})?\s*(?:am|pm)?)*)/i,
+      );
+      if (at) {
+        const times = at[1]
+          .split(/\s*(?:,|and|&)\s*/i)
+          .map((t) => {
+            const m = t.match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/i);
+            if (!m) return null;
+            let h = Number(m[1]);
+            const min = Number(m[2] || 0);
+            if (m[3] && /pm/i.test(m[3]) && h < 12) h += 12;
+            if (m[3] && /am/i.test(m[3]) && h === 12) h = 0;
+            return h < 24 && min < 60 ? `${pad(h)}:${pad(min)}` : null;
+          })
+          .filter(Boolean);
+        if (times.length) {
+          when = `At ${times.length > 1 ? `${times.slice(0, -1).join(', ')} and ${times.at(-1)}` : times[0]}`;
+          text = text.replace(at[0], '');
+        }
+      }
+      text = text
+        .replace(/\s{2,}/g, ' ')
+        .replace(/[\s,.;:-]+$/, '')
+        .trim();
+      return { text, when };
+    }
 
-  // Showcase: switch characters on click, cycle until the visitor picks one,
-  // and act out each feature row on hover
+    function render() {
+      const { text, when } = parse(sayInput.value);
+      const message = text || 'Drink a glass of water';
+      const type = TYPES.find((t) => t.test.test(message)) || CUSTOM;
+      const clean = message.charAt(0).toUpperCase() + message.slice(1);
+      typeEl.textContent = type.name;
+      msgEl.textContent = clean;
+      whenEl.textContent = when || type.when;
+      lineEl.textContent = `Hey! Time to ${clean.charAt(0).toLowerCase()}${clean.slice(1)}.`;
+      pose = type.pose;
+      alt = type.alt;
+      updateChar();
+    }
 
-  const showcase = $('.showcase');
-  const showcaseImg = $('[data-showcase-img]');
-  const charButtons = $$('[data-char]');
-  if (showcase && showcaseImg && charButtons.length) {
-    const poseSrc = (char, pose) =>
-      // Only the classic character has the full pose set; others use happy.
-      char === 'boy' ? `assets/poses/${pose}.webp` : `assets/poses/${char}-happy.webp`;
-    charButtons.forEach((btn) => (new Image().src = `assets/poses/${btn.dataset.char}-idle.webp`));
-    ['point', 'think', 'happy', 'wave'].forEach(
+    function updateChar() {
+      // Only the classic character has the full pose set.
+      const src =
+        avatar === 'boy' ? `assets/poses/${pose}.webp` : `assets/poses/${avatar}-happy.webp`;
+      if (charEl.getAttribute('src') === src) return;
+      charEl.classList.add('swap');
+      setTimeout(
+        () => {
+          charEl.src = src;
+          charEl.alt = avatar === 'boy' ? alt : 'Pingo, in the chosen avatar style, cheering';
+          charEl.classList.remove('swap');
+        },
+        reducedMotion ? 0 : 180,
+      );
+    }
+
+    ['drink', 'stretch', 'rest', 'think', 'point'].forEach(
       (p) => (new Image().src = `assets/poses/${p}.webp`),
     );
 
-    let current = 0;
-    let hovering = false;
-    const setImage = (src, alt) => {
-      if (showcaseImg.getAttribute('src') === src) return;
-      showcaseImg.classList.add('swap');
-      setTimeout(
-        () => {
-          showcaseImg.src = src;
-          if (alt) showcaseImg.alt = alt;
-          showcaseImg.classList.remove('swap');
-        },
-        reducedMotion ? 0 : 200,
-      );
-    };
-    const show = (i) => {
-      current = i;
-      charButtons.forEach((btn, n) => btn.setAttribute('aria-checked', String(n === i)));
-      const { char, label } = charButtons[i].dataset;
-      setImage(`assets/poses/${char}-idle.webp`, label);
-    };
-
-    let auto = reducedMotion
-      ? null
-      : setInterval(() => {
-          if (!hovering) show((current + 1) % charButtons.length);
-        }, 3200);
-    charButtons.forEach((btn, i) =>
+    sayInput.addEventListener('input', render);
+    $$('[data-example]').forEach((btn) =>
       btn.addEventListener('click', () => {
-        clearInterval(auto);
-        auto = null;
-        show(i);
+        sayInput.value = btn.dataset.example;
+        render();
       }),
     );
-
-    const rows = $$('[data-pose]', showcase);
-    const actOut = (row) => {
-      hovering = Boolean(row);
-      rows.forEach((r) => r.classList.toggle('active', r === row));
-      const { char } = charButtons[current].dataset;
-      setImage(row ? poseSrc(char, row.dataset.pose) : `assets/poses/${char}-idle.webp`);
-    };
-    rows.forEach((row) => {
-      row.addEventListener('pointerenter', () => actOut(row));
-      row.addEventListener('focus', () => actOut(row));
-      row.addEventListener('blur', () => actOut(null));
+    radios($$('[data-avatar]'), (btn) => {
+      avatar = btn.dataset.avatar;
+      updateChar();
     });
-    $('.showcase-list', showcase).addEventListener('pointerleave', () => actOut(null));
+    radios($$('[data-bubble-style]'), (btn) => {
+      bubbleEl.classList.toggle('retro', btn.dataset.bubbleStyle === 'retro');
+    });
+    render();
+  }
+
+  // How it works: a horizontal accordion, one stage open at a time
+
+  const acc = $('[data-acc]');
+  if (acc) {
+    const panels = $$('.acc-panel', acc);
+    panels.forEach((panel) => {
+      const btn = $('h3 button', panel);
+      btn.addEventListener('click', () => {
+        panels.forEach((p) => {
+          const open = p === panel;
+          p.classList.toggle('is-open', open);
+          $('h3 button', p).setAttribute('aria-expanded', String(open));
+        });
+      });
+    });
+  }
+
+  // Closing setup window: the name feeds the greeting, the choice picks the build
+
+  const setupName = $('[data-setup-name]');
+  const setupLine = $('[data-setup-line]');
+  const setupGo = $('[data-download-choice]');
+  if (setupName && setupLine && setupGo) {
+    const greet = () => {
+      const name = setupName.value.trim();
+      setupLine.textContent = `Hey${name ? ` ${name}` : ''}! Time to drink some water.`;
+    };
+    setupName.addEventListener('input', greet);
+    greet();
+    const pick = (arch) => {
+      setupGo.href = `${latest}/Pingo-mac-${arch}.dmg`;
+      setupGo.setAttribute('download', '');
+      setupGo.textContent = arch === 'x64' ? 'Download for Intel Mac' : 'Download for Mac';
+    };
+    radios($$('[data-mac]'), (btn) => pick(btn.dataset.mac));
+    pick('arm64');
   }
 
   // Product demo
@@ -232,7 +321,7 @@
   }
 
   function burst() {
-    const colors = ['#1c1917', '#16a34a', '#a8a29e', '#86efac', '#57534e'];
+    const colors = ['#ffffff', '#ff3b1f', '#0a0a0a', '#050a5c', '#ffffff'];
     for (let i = 0; i < 28; i++) {
       const piece = document.createElement('i');
       piece.style.background = colors[i % colors.length];

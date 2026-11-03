@@ -21,12 +21,21 @@ the corner of your screen with a reminder: drink water by default, or anything
 you write yourself. Press **Done** and it celebrates. Press **Snooze** and it
 comes back later. Then it gets out of your way.
 
-- **Remind you about anything**: water, stretching, medicine, calls.
-- **Your schedule**: any interval from 1 minute to 12 hours, only during the
-  hours you choose, in your own time zone.
-- **Personal**: greets you by name. Pick a bundled character or import your own;
-  the background is removed automatically.
-- **No code needed**: everything is set from the Settings window.
+- **As many reminders as you like**: water, stretching, resting your eyes,
+  posture, medicine, or your own words. Each has its own schedule, days, hours,
+  snooze length and character.
+- **Your schedule**: every _N_ minutes (1 minute to 12 hours) inside the hours you
+  choose, or at set times of day (09:00 and 21:00), on the days you pick.
+- **Your character**: three bundled characters, or make your own from any image
+  or **animated GIF** in the avatar studio. Backgrounds are cut out
+  automatically, with a strength control, size and mirror settings and a live
+  preview.
+- **Your look**: light, dark or match the system; a modern or retro pixel speech
+  bubble; six accent colours; character size; either bottom corner; an optional
+  sound; auto-snooze when you don't answer.
+- **A home for it all**: one window shows what's next, today's done and
+  snoozed counts and the week, and holds every setting. Pause for 30 minutes,
+  an hour or until tomorrow from the tray.
 - **Private**: no accounts, no telemetry, no network access. Settings stay on
   your machine.
 - **Cross-platform**: Windows, macOS and Linux.
@@ -62,37 +71,53 @@ about, how often, and a character.
 
 Right-click the tray icon for:
 
-| Menu item              | Action                                              |
-| ---------------------- | --------------------------------------------------- |
-| Remind me now          | Show a reminder immediately                         |
-| Reminder every _N_ min | Quick interval presets                              |
-| Change character…      | Pick a bundled character or import your own         |
-| Settings…              | Name, reminder text, interval, active hours, snooze |
-| Run setup again…       | Re-open the first-launch wizard                     |
-| Pause reminders        | Stop reminders until unpaused                       |
-| Start at login         | Launch automatically (installed builds)             |
+| Menu item        | Action                                                    |
+| ---------------- | --------------------------------------------------------- |
+| Next: …          | What's coming up (or how long Pingo is paused)            |
+| Remind me now    | Show the next reminder immediately                        |
+| Open Pingo…      | The control center: Home, Reminders, Avatars, Appearance  |
+| New reminder…    | Start a new reminder                                      |
+| Avatars…         | Pick a character or make your own                         |
+| Pause / Resume   | 30 min, 1 hour, 2 hours, until tomorrow, or until resumed |
+| Start at login   | Launch automatically (installed builds)                   |
+| Run setup again… | Re-open the first-launch wizard                           |
 
-### Settings
+### Control center
 
-| Setting         | Default     | Notes                                             |
-| --------------- | ----------- | ------------------------------------------------- |
-| Your name       | blank       | Used in greetings                                 |
-| Remind me to…   | Drink water | Any text up to 120 characters                     |
-| Every           | 45 minutes  | 1 minute to 12 hours                              |
-| Active hours    | 10:00–23:00 | Your computer's time zone; can wrap past midnight |
-| Any time of day | off         | Ignore active hours                               |
-| Snooze for      | 10 minutes  | 1 to 120 minutes                                  |
+| View       | What's there                                                             |
+| ---------- | ------------------------------------------------------------------------ |
+| Home       | What's next, done and snoozed today, the last seven days, pause          |
+| Reminders  | Every reminder with an on/off switch; templates; an editor for each      |
+| Avatars    | Bundled and your own characters; the avatar studio for images and GIFs   |
+| Appearance | Theme, bubble style, accent, size, corner and screen, sound, auto-snooze |
+| General    | Your name, pause, start at login, setup, about                           |
 
-To use your own character, see [Make your own character](docs/make-your-own-character.md).
+Every change saves itself. Each reminder has a **Show it on my screen** button
+that previews it without touching the schedule.
+
+### Reminder defaults
+
+| Setting      | Default          | Notes                                              |
+| ------------ | ---------------- | -------------------------------------------------- |
+| Kind         | Drink water      | Or stretch, eyes, posture, medicine, custom text   |
+| When         | Every 45 minutes | 1 minute to 12 hours, or up to 12 set times a day  |
+| Days         | Every day        | Any combination                                    |
+| Active hours | 10:00–23:00      | Your time zone; can wrap past midnight, or all day |
+| Snooze for   | 10 minutes       | 1 to 120 minutes                                   |
+
+Up to 50 reminders and 24 custom avatars. To draw your own character with an AI
+image tool, see [Make your own character](docs/make-your-own-character.md).
 
 ## Troubleshooting
 
-- **The character never appears.** Reminders only show during your active hours
-  (10:00 to 23:00 by default). Check **Settings…**, or use **Remind me now** to test.
+- **The character never appears.** Every-few-minutes reminders only show during
+  their active hours (10:00 to 23:00 by default) and on their days. Check the
+  reminder in **Open Pingo… → Reminders**, or press **Show it on my screen**.
 - **No welcome screen after upgrading.** Your settings were kept. Use **Run setup
   again…** from the tray.
 - **An imported character shows as a rectangle.** The source image needs a plain,
-  solid-colour background.
+  solid-colour background; raise **Strength** in the avatar studio. GIFs are kept
+  as they are, so use one with a transparent background.
 - **Start at login when running from source (Windows).** Run
   `npm run autostart:enable`, or `npm run autostart:disable` to undo.
 
@@ -107,24 +132,26 @@ npm install
 npm start
 ```
 
-| Command              | Purpose                                     |
-| -------------------- | ------------------------------------------- |
-| `npm start`          | Run the app from source                     |
-| `npm run check`      | Lint, format check and unit tests (CI gate) |
-| `npm test`           | Unit tests only                             |
-| `npm run lint:fix`   | Auto-fix lint issues                        |
-| `npm run format`     | Format all files with Prettier              |
-| `npm run dist:win`   | Build the Windows installer into `dist/`    |
-| `npm run dist:mac`   | Build the macOS DMG (run on macOS)          |
-| `npm run dist:linux` | Build AppImage and .deb                     |
+| Command                            | Purpose                                     |
+| ---------------------------------- | ------------------------------------------- |
+| `npm start`                        | Run the app from source                     |
+| `PINGO_USER_DATA=/tmp/p npm start` | Run from source with a throwaway profile    |
+| `npm run check`                    | Lint, format check and unit tests (CI gate) |
+| `npm test`                         | Unit tests only                             |
+| `npm run lint:fix`                 | Auto-fix lint issues                        |
+| `npm run format`                   | Format all files with Prettier              |
+| `npm run dist:win`                 | Build the Windows installer into `dist/`    |
+| `npm run dist:mac`                 | Build the macOS DMG (run on macOS)          |
+| `npm run dist:linux`               | Build AppImage and .deb                     |
 
 The codebase layout and design decisions are described in
 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ### Defaults
 
-Defaults and limits for user settings live in
-[`src/main/settings.js`](src/main/settings.js). Fixed timings, such as the poll
+Defaults and limits live in [`src/main/settings.js`](src/main/settings.js)
+(appearance and name) and [`src/main/reminders.js`](src/main/reminders.js)
+(each reminder). Fixed timings, such as the poll
 interval, are in [`src/main/config.js`](src/main/config.js).
 
 ## Releasing

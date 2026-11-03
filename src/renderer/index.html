@@ -9,14 +9,20 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div id="stage">
+    <div id="stage" class="modern">
       <div id="confetti"></div>
 
-      <div id="bubble" class="hidden">
-        <p id="bubble-text">Time to drink water to keep your skin glowing!</p>
+      <div
+        id="bubble"
+        class="hidden"
+        role="dialog"
+        aria-live="polite"
+        aria-labelledby="bubble-text"
+      >
+        <p id="bubble-text"></p>
         <div id="buttons">
-          <button id="yes-btn" class="btn btn-yes">YES, I DRANK</button>
-          <button id="snooze-btn" class="btn btn-snooze">SNOOZE</button>
+          <button id="yes-btn" class="btn btn-yes">Done</button>
+          <button id="snooze-btn" class="btn btn-snooze">Snooze</button>
         </div>
         <div id="bubble-tail"></div>
       </div>
@@ -34,6 +40,7 @@
       </div>
     </div>
 
+    <script src="common.js"></script>
     <script src="renderer.js"></script>
   </body>
 </html>
