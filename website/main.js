@@ -64,6 +64,35 @@
     );
   }
 
+  // The app window: switch the screenshot's theme, and let it rise into place
+
+  const appWindow = $('[data-window]');
+  if (appWindow) {
+    radios($$('[data-shot-theme]'), (btn) => {
+      appWindow.dataset.themeShot = btn.dataset.shotTheme;
+    });
+
+    if (!reducedMotion) {
+      let ticking = false;
+      const update = () => {
+        ticking = false;
+        const rect = appWindow.getBoundingClientRect();
+        // 0 when the window's top enters at the bottom, 1 once it reaches mid-screen.
+        const t = Math.min(1, Math.max(0, (innerHeight - rect.top) / (innerHeight * 0.5)));
+        appWindow.style.transform = `scale(${0.92 + 0.08 * t})`;
+      };
+      addEventListener(
+        'scroll',
+        () => {
+          if (!ticking) requestAnimationFrame(update);
+          ticking = true;
+        },
+        { passive: true },
+      );
+      update();
+    }
+  }
+
   // "What should Pingo say?": type a reminder, see it as Pingo would show it
 
   const sayInput = $('[data-say-input]');

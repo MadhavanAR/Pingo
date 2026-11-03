@@ -96,6 +96,18 @@
             </div>
           </div>
 
+          <!-- Your screen: the real Reminders list, with Pingo walking on in front of it. -->
+          <figure class="hero-window">
+            <div class="window-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+            <img
+              src="assets/app/reminders-light.webp"
+              width="2160"
+              height="1480"
+              alt="Pingo&rsquo;s Reminders list: drink water every 45 minutes, stretch every hour on weekdays, rest your eyes every 20 minutes, vitamin D at 09:00 and 21:00."
+              fetchpriority="high"
+            />
+          </figure>
+
           <!-- The scripted demo: walk in, remind, Done, celebrate, walk off. -->
           <div
             class="demo"
@@ -119,6 +131,51 @@
             <div class="toast" data-ui data-toast aria-hidden="true">
               <svg viewBox="0 0 20 20"><path d="M5 10.5l3 3 7-7" /></svg>
               <span data-toast-text>Done. Next reminder in 45 min</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- The real app, straddling the hero's blue: every pixel is a screenshot. -->
+      <section class="screen" id="app" aria-labelledby="screen-title">
+        <div class="frame">
+          <figure class="window" data-window data-theme-shot="light">
+            <div class="window-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+            <div class="window-body">
+              <img
+                class="shot-light"
+                src="assets/app/home-light.webp"
+                width="2160"
+                height="1960"
+                alt="Pingo&rsquo;s Home view: Good afternoon, Priya. Next: Rest your eyes at 15:25. 7 done and 2 snoozed today, 4 of 5 reminders on, 52 done this week, the next four reminders and a bar chart of the last seven days."
+              />
+              <img
+                class="shot-dark"
+                src="assets/app/home-dark.webp"
+                width="2160"
+                height="1960"
+                alt=""
+                loading="lazy"
+              />
+            </div>
+          </figure>
+          <div class="screen-foot">
+            <h2 class="reveal" id="screen-title">Everything in one window.</h2>
+            <div class="screen-note">
+              <p class="reveal">
+                Home shows what&rsquo;s next, what you&rsquo;ve done today and how your week went.
+                Every reminder, avatar and colour is one click away.
+              </p>
+              <div class="seg-wrap" data-ui>
+                <div class="seg" role="radiogroup" aria-label="Show the screenshot in">
+                  <button type="button" role="radio" aria-checked="true" data-shot-theme="light">
+                    Light
+                  </button>
+                  <button type="button" role="radio" aria-checked="false" data-shot-theme="dark">
+                    Dark
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -237,31 +294,18 @@
           </div>
 
           <div class="tile t-home c-blue reveal">
-            <div class="crop crop-tr" data-ui>
-              <div class="cc">
-                <aside class="cc-side">
-                  <span class="cc-nav is-on">Home</span>
-                  <span class="cc-nav">Reminders</span>
-                  <span class="cc-nav">Avatars</span>
-                  <span class="cc-nav">Appearance</span>
-                  <span class="cc-nav">General</span>
-                </aside>
-                <div class="cc-main">
-                  <p class="cc-hello">Good afternoon, Priya</p>
-                  <div class="cc-stats">
-                    <div><b>6</b><span>done today</span></div>
-                    <div><b>1</b><span>snoozed</span></div>
-                  </div>
-                  <p class="cc-label">Up next</p>
-                  <div class="cc-row is-next"><span>Stretch your back</span><time>15:30</time></div>
-                  <div class="cc-row"><span>Drink water</span><time>16:00</time></div>
-                  <div class="cc-row"><span>Rest your eyes</span><time>16:20</time></div>
-                </div>
-              </div>
+            <div class="shot-crop shot-list">
+              <img
+                src="assets/app/reminders-light.webp"
+                width="2160"
+                height="1480"
+                alt="The Reminders list: drink water every 45 minutes, stretch every hour on weekdays, rest your eyes every 20 minutes, vitamin D at 09:00 and 21:00, and posture switched off."
+                loading="lazy"
+              />
             </div>
             <div class="cap">
-              <h3>A control center</h3>
-              <p>Home shows today’s done and snoozed count, and what comes next.</p>
+              <h3>As many reminders as you like</h3>
+              <p>Each with its own words, schedule, days and character. Switch any off.</p>
             </div>
           </div>
 
@@ -277,8 +321,8 @@
               </div>
             </div>
             <div class="cap">
-              <h3>Unlimited reminders</h3>
-              <p>Each with its own message and type.</p>
+              <h3>Six kinds to start from</h3>
+              <p>Or write your own.</p>
             </div>
           </div>
 
@@ -291,18 +335,14 @@
           </div>
 
           <div class="tile t-studio c-navy reveal">
-            <div class="studio" data-ui>
+            <div class="shot-crop shot-avatars">
               <img
-                src="assets/poses/boy-sticker-idle.webp"
-                alt="A sticker-style character in the avatar studio preview"
-                width="292"
-                height="360"
+                src="assets/app/avatars-light.webp"
+                width="2160"
+                height="1480"
+                alt="The Avatars view with three bundled characters and a drop zone for your own image or GIF."
                 loading="lazy"
               />
-              <div class="slider">
-                <span class="slider-label">Cut-out</span>
-                <span class="slider-track"><i></i></span>
-              </div>
             </div>
             <div class="cap">
               <h3>Avatar studio</h3>
@@ -311,13 +351,14 @@
           </div>
 
           <div class="tile t-look c-grey reveal">
-            <div class="crop crop-tl" data-ui>
-              <div class="retro">
-                <p>Time to stretch!</p>
-              </div>
-              <div class="theme-seg">
-                <span>Light</span><span class="is-on">Dark</span><span>System</span>
-              </div>
+            <div class="shot-crop shot-look">
+              <img
+                src="assets/app/appearance-light.webp"
+                width="2160"
+                height="1480"
+                alt="Appearance settings: theme, a modern or retro pixel speech bubble, and six accent colours."
+                loading="lazy"
+              />
             </div>
             <div class="cap">
               <h3>Appearance</h3>
