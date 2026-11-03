@@ -50,9 +50,6 @@
   const bubbleText = $('[data-bubble-text]');
   const bubbleButtons = $('[data-bubble-buttons]');
   const confetti = $('[data-confetti]');
-  const hint = $('[data-hint]');
-  const ask = $('[data-ask]');
-  const askInput = $('[data-ask-input]');
 
   // Only the classic character has a full set of poses; the others stand or cheer.
   const CHARACTERS = {
@@ -77,6 +74,8 @@
     },
     medicine: { text: 'Time for your vitamins.', pose: 'point', cheer: 'Taken care of!' },
   };
+
+  const ORDER = Object.keys(REMINDERS);
 
   let onStage = false;
   let current = null; // the reminder on screen
@@ -105,10 +104,6 @@
   async function call(reminder) {
     const me = ++act;
     current = reminder;
-    hint?.classList.add('is-gone');
-    $$('.app').forEach((a) =>
-      a.classList.toggle('is-running', a.dataset.reminder === reminder.key),
-    );
     bubble.classList.remove('is-shown');
     if (!onStage) {
       onStage = true;
@@ -128,8 +123,12 @@
     await wait(150);
     if (me !== act) return;
     onStage = false;
-    $$('.app').forEach((a) => a.classList.remove('is-running'));
     await walk('0 0', '160% 0', false, 1100, EASE_IN_OUT);
+    // A moment later Pingo is back with the next reminder, so the desk never sits empty.
+    await wait(2600);
+    if (me !== act) return;
+    const next = ORDER[(ORDER.indexOf(current?.key) + 1) % ORDER.length];
+    call({ key: next, ...REMINDERS[next] });
   }
 
   function burst() {
@@ -169,27 +168,6 @@
     leave(me, 1500);
   });
 
-  $$('[data-reminder]').forEach((app) =>
-    app.addEventListener('click', () => {
-      ask.hidden = true;
-      call({ key: app.dataset.reminder, ...REMINDERS[app.dataset.reminder] });
-    }),
-  );
-
-  // Your own words: a small field grows out of the "+" app.
-  $('[data-own]').addEventListener('click', () => {
-    ask.hidden = !ask.hidden;
-    if (!ask.hidden) askInput.focus();
-  });
-  ask.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const text = askInput.value.trim();
-    if (!text) return;
-    ask.hidden = true;
-    const line = `${text.charAt(0).toUpperCase()}${text.slice(1).replace(/[.!]?$/, '.')}`;
-    call({ key: 'own', text: line, pose: 'point', cheer: 'Nice work!' });
-  });
-
   // Character menu in the menu bar.
   const menu = $('[data-menu]');
   const menuButton = $('[data-menu-button]');
@@ -216,7 +194,6 @@
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
     setMenu(false);
-    ask.hidden = true;
   });
 
   // A live clock, like the real menu bar.
@@ -227,10 +204,10 @@
   tick();
   setInterval(tick, 20_000);
 
-  // If nobody clicks, Pingo shows how it works by itself.
+  // Pingo shows how it works by itself.
   setTimeout(() => {
     if (act === 0) call({ key: 'water', ...REMINDERS.water });
-  }, 1800);
+  }, 1200);
 
   // --- Below the desktop -------------------------------------------------------------------
 
