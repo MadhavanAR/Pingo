@@ -3,14 +3,14 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Pingo: reminders that walk onto your screen</title>
+    <title>Pingo: a little character who reminds you</title>
     <meta
       name="description"
-      content="Pingo is a free, open-source Mac app. A little character walks onto the corner of your screen to remind you to drink water, stretch, rest your eyes or take your medicine."
+      content="Pingo is a free Mac app. A little character walks onto the corner of your screen to remind you to drink water, stretch, rest your eyes or take your medicine."
     />
-    <meta name="theme-color" content="#ffffff" />
+    <meta name="theme-color" content="#e6dbc7" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Pingo: reminders that walk onto your screen" />
+    <meta property="og:title" content="Pingo: a little character who reminds you" />
     <meta
       property="og:description"
       content="A little character walks onto your screen with your reminder. Free for Mac. No accounts, no telemetry, no network."
@@ -19,682 +19,572 @@
     <link rel="icon" type="image/png" href="assets/icon.png" />
     <link
       rel="preload"
-      href="assets/fonts/BebasNeue.woff2"
+      href="assets/fonts/RedHatDisplay-900.woff2"
       as="font"
       type="font/woff2"
       crossorigin
     />
     <link
       rel="preload"
-      href="assets/fonts/InstrumentSans.woff2"
+      href="assets/fonts/RedHatText-400.woff2"
       as="font"
       type="font/woff2"
       crossorigin
     />
     <link rel="preload" href="assets/poses/walking.webp" as="image" />
+    <script src="boot.js"></script>
+    <link rel="stylesheet" href="vendor/stage.css" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
 
-    <header class="nav" data-nav>
-      <div class="frame nav-inner">
-        <a class="brand" href="./" aria-label="Pingo home">
-          <img src="assets/icon.png" alt="" width="28" height="28" />
-          <span>Pingo</span>
-        </a>
-        <nav class="nav-links" aria-label="Sections">
-          <a href="#features">Features</a>
-          <a href="#how">How it works</a>
-          <a href="#faq">FAQ</a>
-          <a data-repo-link href="#">GitHub</a>
-        </nav>
-        <a class="btn btn-blue btn-sm" data-download href="#"
-          >Download<span class="hide-xs">&nbsp;for Mac</span></a
-        >
-      </div>
+    <header class="nav">
+      <a class="brand" href="./" aria-label="Pingo home">
+        <img src="assets/icon.png" alt="" width="32" height="32" />
+      </a>
+      <nav class="nav-links" aria-label="Sections">
+        <a href="#features">Features</a>
+        <a href="#how">How it works</a>
+        <a href="#questions">Questions</a>
+        <a class="nav-cta" data-download href="#">Download</a>
+      </nav>
     </header>
 
     <main id="main">
-      <!-- Hero: two flat fields meet at a waterline. Pingo walks into the
-           bottom-right corner of the first screen, the way Pingo walks onto yours. -->
-      <section class="hero" data-stage aria-labelledby="hero-title">
-        <div class="frame hero-sky">
-          <h1 class="headline lines" id="hero-title">
-            <span class="hl-copy">
-              <span class="line"><span data-line class="l0">Reminders that</span></span>
-              <span class="line"><span data-line class="l1">walk in.</span></span>
-            </span>
-            <span class="hl-copy hl-under" aria-hidden="true">
-              <span class="line"><span data-line class="l0">Reminders that</span></span>
-              <span class="line"><span data-line class="l1">walk in.</span></span>
-            </span>
-          </h1>
-        </div>
-
-        <div class="hero-sea">
-          <div class="frame hero-inner">
-            <div class="hero-copy">
-              <p class="lead">
-                Pingo is a free Mac app. A little character walks onto the corner of your screen to
-                remind you to drink water, stretch or take your medicine.
+      <!-- Scene 1. The O in the name is the corner of your screen: Pingo stands on it,
+           and scrolling flies through its counter into the real app. -->
+      <section
+        class="scene hero"
+        data-scene="through-the-o"
+        data-options='{"hold": 2}'
+        aria-labelledby="hero-title"
+      >
+        <div class="scene-stage">
+          <div class="fold" data-fold>
+            <div class="hero-corner" data-move data-hero-copy>
+              <p class="hero-line">
+                A little character who walks onto your Mac&rsquo;s screen to remind you to drink
+                water, stretch or take your medicine.
               </p>
               <div class="hero-actions">
-                <a class="btn btn-white btn-lg" data-download href="#">
-                  <svg viewBox="0 0 24 24" aria-hidden="true" class="apple">
-                    <path
-                      d="M16.4 12.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.7 1.3 10.2.9 1.2 1.9 2.6 3.2 2.6 1.3-.1 1.8-.8 3.3-.8 1.6 0 2 .8 3.4.8 1.4 0 2.3-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9-.1 0-2.7-1-2.7-4.1zM13.9 5c.7-.9 1.2-2 1-3.2-1 .1-2.2.7-3 1.6-.6.7-1.2 1.9-1.1 3.1 1.2.1 2.3-.6 3.1-1.5z"
-                    />
-                  </svg>
-                  Download for Mac
-                </a>
-                <p class="platforms">
-                  Free and open source · Apple Silicon ·
-                  <a data-download-intel href="#">Intel Mac</a>
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Your screen: the real Reminders list, with Pingo walking on in front of it. -->
-          <figure class="hero-window">
-            <div class="window-bar" aria-hidden="true"><i></i><i></i><i></i></div>
-            <img
-              src="assets/app/reminders-light.webp"
-              width="2160"
-              height="1480"
-              alt="Pingo&rsquo;s Reminders list: drink water every 45 minutes, stretch every hour on weekdays, rest your eyes every 20 minutes, vitamin D at 09:00 and 21:00."
-              fetchpriority="high"
-            />
-          </figure>
-
-          <!-- The scripted demo: walk in, remind, Done, celebrate, walk off. -->
-          <div
-            class="demo"
-            role="img"
-            aria-label="Pingo walks onto the screen, shows a reminder, celebrates when it is marked done, and walks off"
-          >
-            <div class="bubble" data-ui data-bubble aria-hidden="true">
-              <p data-bubble-text></p>
-              <div class="bubble-actions">
-                <span class="bbtn bbtn-yes" data-done>Done</span>
-                <span class="bbtn">Snooze</span>
-              </div>
-            </div>
-            <div class="pet" data-pet aria-hidden="true">
-              <img data-sprite src="assets/poses/walking.webp" alt="" width="292" height="360" />
-            </div>
-            <div class="confetti" data-confetti aria-hidden="true"></div>
-            <svg class="cursor" data-cursor viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M4 2l16 9-7 2-3 7z" />
-            </svg>
-            <div class="toast" data-ui data-toast aria-hidden="true">
-              <svg viewBox="0 0 20 20"><path d="M5 10.5l3 3 7-7" /></svg>
-              <span data-toast-text>Done. Next reminder in 45 min</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- The real app, straddling the hero's blue: every pixel is a screenshot. -->
-      <section class="screen" id="app" aria-labelledby="screen-title">
-        <div class="frame">
-          <figure class="window" data-window data-theme-shot="light">
-            <div class="window-bar" aria-hidden="true"><i></i><i></i><i></i></div>
-            <div class="window-body">
-              <img
-                class="shot-light"
-                src="assets/app/home-light.webp"
-                width="2160"
-                height="1960"
-                alt="Pingo&rsquo;s Home view: Good afternoon, Priya. Next: Rest your eyes at 15:25. 7 done and 2 snoozed today, 4 of 5 reminders on, 52 done this week, the next four reminders and a bar chart of the last seven days."
-              />
-              <img
-                class="shot-dark"
-                src="assets/app/home-dark.webp"
-                width="2160"
-                height="1960"
-                alt=""
-                loading="lazy"
-              />
-            </div>
-          </figure>
-          <div class="screen-foot">
-            <h2 class="reveal" id="screen-title">Everything in one window.</h2>
-            <div class="screen-note">
-              <p class="reveal">
-                Home shows what&rsquo;s next, what you&rsquo;ve done today and how your week went.
-                Every reminder, avatar and colour is one click away.
-              </p>
-              <div class="seg-wrap" data-ui>
-                <div class="seg" role="radiogroup" aria-label="Show the screenshot in">
-                  <button type="button" role="radio" aria-checked="true" data-shot-theme="light">
-                    Light
-                  </button>
-                  <button type="button" role="radio" aria-checked="false" data-shot-theme="dark">
-                    Dark
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- The live thing: type a reminder, see Pingo say it. -->
-      <section class="say" id="try" aria-labelledby="say-title">
-        <div class="frame">
-          <h2 class="say-title reveal" id="say-title">What should Pingo say?</h2>
-          <div class="say-field reveal" data-ui>
-            <input
-              class="say-input"
-              id="say-input"
-              type="text"
-              value="Drink a glass of water"
-              maxlength="80"
-              autocomplete="off"
-              spellcheck="false"
-              aria-labelledby="say-title"
-              aria-describedby="say-hint"
-              data-say-input
-            />
-          </div>
-          <p class="say-hint" id="say-hint">
-            Type any reminder. Add “every 20 min” or “at 9:00 and 21:00” to set when.
-          </p>
-
-          <div class="say-answer">
-            <div class="rem-card reveal" data-ui aria-live="polite">
-              <div class="rem-top">
-                <span class="rem-type" data-say-type>Water</span>
-                <span class="rem-on">On</span>
-              </div>
-              <p class="rem-msg" data-say-msg>Drink a glass of water</p>
-              <dl class="rem-grid">
-                <div>
-                  <dt>Schedule</dt>
-                  <dd data-say-when>Every 45 minutes</dd>
-                </div>
-                <div>
-                  <dt>Days</dt>
-                  <dd>Every day</dd>
-                </div>
-                <div>
-                  <dt>Active hours</dt>
-                  <dd>09:00 – 22:00</dd>
-                </div>
-                <div>
-                  <dt>Snooze</dt>
-                  <dd>10 minutes</dd>
-                </div>
-              </dl>
-              <div class="rem-controls">
-                <div class="seg" role="radiogroup" aria-label="Avatar">
-                  <button type="button" role="radio" aria-checked="true" data-avatar="boy">
-                    Classic
-                  </button>
-                  <button type="button" role="radio" aria-checked="false" data-avatar="boy-badge">
-                    ID badge
-                  </button>
-                  <button type="button" role="radio" aria-checked="false" data-avatar="boy-sticker">
-                    Sticker
-                  </button>
-                </div>
-                <div class="seg" role="radiogroup" aria-label="Bubble style">
-                  <button type="button" role="radio" aria-checked="true" data-bubble-style="modern">
-                    Modern
-                  </button>
-                  <button type="button" role="radio" aria-checked="false" data-bubble-style="retro">
-                    Retro pixel
-                  </button>
-                </div>
+                <a class="button" data-download href="#">Download for Mac</a>
+                <span class="hero-note">Free &middot; Apple Silicon and Intel</span>
               </div>
             </div>
 
-            <figure class="say-pingo reveal">
-              <div class="say-bubble" data-ui data-say-bubble>
-                <p data-say-line>Hey! Time to drink a glass of water.</p>
-                <div class="bubble-actions">
-                  <span class="bbtn bbtn-yes">Done</span>
-                  <span class="bbtn">Snooze</span>
-                </div>
-              </div>
-              <img
-                class="say-char"
-                data-say-char
-                src="assets/poses/drink.webp"
-                alt="Pingo holding a glass of water"
-                width="292"
-                height="360"
-                loading="lazy"
-              />
-            </figure>
-          </div>
-
-          <div class="say-examples" aria-label="Examples">
-            <button type="button" data-example="Stretch your back every 50 min">
-              Stretch your back every 50 min
-            </button>
-            <button type="button" data-example="Take vitamin D at 9:00">
-              Take vitamin D at 9:00
-            </button>
-            <button type="button" data-example="Rest your eyes every 20 min">
-              Rest your eyes every 20 min
-            </button>
-            <button type="button" data-example="Sit up straight">Sit up straight</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- A board of close-ups: each tile is one real part of the app. -->
-      <section class="board-wrap" id="features" aria-labelledby="features-title">
-        <div class="frame board">
-          <div class="tile t-head reveal">
-            <h2 id="features-title">Set it once.<br />Forget about it.</h2>
-          </div>
-
-          <div class="tile t-home c-blue reveal">
-            <div class="shot-crop shot-list">
-              <img
-                src="assets/app/reminders-light.webp"
-                width="2160"
-                height="1480"
-                alt="The Reminders list: drink water every 45 minutes, stretch every hour on weekdays, rest your eyes every 20 minutes, vitamin D at 09:00 and 21:00, and posture switched off."
-                loading="lazy"
-              />
-            </div>
-            <div class="cap">
-              <h3>As many reminders as you like</h3>
-              <p>Each with its own words, schedule, days and character. Switch any off.</p>
-            </div>
-          </div>
-
-          <div class="tile t-types c-red reveal">
-            <div class="crop crop-tr" data-ui>
-              <div class="chips">
-                <span class="chip is-on">Water</span>
-                <span class="chip">Stretch</span>
-                <span class="chip">Rest your eyes</span>
-                <span class="chip">Posture</span>
-                <span class="chip">Medicine</span>
-                <span class="chip">Custom</span>
-              </div>
-            </div>
-            <div class="cap">
-              <h3>Six kinds to start from</h3>
-              <p>Or write your own.</p>
-            </div>
-          </div>
-
-          <div class="tile t-zero c-black reveal">
-            <div class="zero" data-ui aria-hidden="true">0</div>
-            <div class="cap">
-              <h3>Nothing leaves your Mac</h3>
-              <p>No account, no telemetry, no network.</p>
-            </div>
-          </div>
-
-          <div class="tile t-studio c-navy reveal">
-            <div class="shot-crop shot-avatars">
-              <img
-                src="assets/app/avatars-light.webp"
-                width="2160"
-                height="1480"
-                alt="The Avatars view with three bundled characters and a drop zone for your own image or GIF."
-                loading="lazy"
-              />
-            </div>
-            <div class="cap">
-              <h3>Avatar studio</h3>
-              <p>Any image or animated GIF. The background cuts out by itself.</p>
-            </div>
-          </div>
-
-          <div class="tile t-look c-grey reveal">
-            <div class="shot-crop shot-look">
-              <img
-                src="assets/app/appearance-light.webp"
-                width="2160"
-                height="1480"
-                alt="Appearance settings: theme, a modern or retro pixel speech bubble, and six accent colours."
-                loading="lazy"
-              />
-            </div>
-            <div class="cap">
-              <h3>Appearance</h3>
-              <p>Theme, bubble style, accent colour, size, corner and sound.</p>
-            </div>
-          </div>
-
-          <div class="tile t-days c-red reveal">
-            <div class="crop crop-br" data-ui>
-              <div class="days">
-                <span class="is-on">M</span><span class="is-on">T</span><span class="is-on">W</span
-                ><span class="is-on">T</span><span class="is-on">F</span><span>S</span
-                ><span>S</span>
-              </div>
-              <div class="keys"><kbd>09:00</kbd><kbd>21:00</kbd></div>
-            </div>
-            <div class="cap">
-              <h3>Your days, your hours</h3>
-              <p>Every N minutes or at set times, on the days you pick.</p>
-            </div>
-          </div>
-
-          <div class="tile t-pause c-ink reveal">
-            <div class="crop crop-br" data-ui>
-              <div class="tray">
-                <span>Remind me now</span>
-                <span class="is-hover">Pause for 30 minutes</span>
-                <span>Pause for 1 hour</span>
-                <span>Pause until tomorrow</span>
-              </div>
-            </div>
-            <div class="cap">
-              <h3>Pause from the tray</h3>
-              <p>In a meeting? Pingo waits.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- How it works: a horizontal accordion, dark to light. -->
-      <section class="how frame" id="how" aria-labelledby="how-title">
-        <div class="how-intro">
-          <h2 class="reveal" id="how-title">Running in a minute</h2>
-          <p class="reveal">
-            Pingo lives in your menu bar. Install it once, tell it what to remind you about, and get
-            back to work. Pingo shows up when it’s time.
-          </p>
-        </div>
-
-        <div class="acc" data-acc>
-          <div class="acc-panel p1 is-open">
-            <h3>
-              <button type="button" aria-expanded="true" aria-controls="acc-1">
-                Drag to Applications
-              </button>
-            </h3>
-            <div class="acc-body" id="acc-1">
-              <p>Open the download and drag Pingo into your Applications folder.</p>
-              <div class="acc-art" aria-hidden="true">
-                <div class="mini-window" data-ui>
-                  <div class="drag-scene">
-                    <img class="drag-app" src="assets/icon.png" alt="" width="56" height="56" />
-                    <svg class="drag-arrow" viewBox="0 0 120 24">
-                      <path d="M4 12h104m0 0-8-7m8 7-8 7" />
-                    </svg>
-                    <div class="drag-folder">
-                      <svg viewBox="0 0 48 40">
-                        <path
-                          d="M2 8a4 4 0 0 1 4-4h12l4 5h20a4 4 0 0 1 4 4v21a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4z"
-                        />
-                      </svg>
-                      <span>Applications</span>
-                    </div>
+            <div class="walker" data-walker data-move aria-hidden="true">
+              <div class="walker-inner" data-walker-inner>
+                <div class="walker-bubble" data-walker-bubble>
+                  <p data-walker-text>Time for a glass of water.</p>
+                  <div class="walker-actions">
+                    <span class="is-yes">Done</span><span>Snooze</span>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="acc-panel p2">
-            <h3>
-              <button type="button" aria-expanded="false" aria-controls="acc-2">Open Anyway</button>
-            </h3>
-            <div class="acc-body" id="acc-2">
-              <p>
-                Pingo isn’t code-signed yet, so the first launch takes one extra click: System
-                Settings, Privacy &amp; Security, Open Anyway.
-              </p>
-              <div class="acc-art" aria-hidden="true">
-                <div class="mini-window" data-ui>
-                  <div class="open-scene">
-                    <img class="open-app" src="assets/icon.png" alt="" width="40" height="40" />
-                    <div class="open-text">
-                      <b>Privacy &amp; Security</b>
-                      <small>“Pingo” was blocked</small>
-                    </div>
-                    <span class="open-btn">Open Anyway</span>
-                    <span class="open-check">
-                      <svg viewBox="0 0 20 20"><path d="M5 10.5l3 3 7-7" /></svg>
-                    </span>
-                    <svg class="mini-cursor" viewBox="0 0 24 24">
-                      <path d="M4 2l16 9-7 2-3 7z" />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="acc-panel p3">
-            <h3>
-              <button type="button" aria-expanded="false" aria-controls="acc-3">
-                Add your reminders
-              </button>
-            </h3>
-            <div class="acc-body" id="acc-3">
-              <p>
-                Give each one a message, a type, a schedule, its days and hours, a snooze length and
-                its own avatar.
-              </p>
-              <div class="acc-art" aria-hidden="true">
-                <div class="editor" data-ui>
-                  <p class="ed-title">Edit reminder</p>
-                  <label class="ed-field"><span>Message</span><b>Take your medicine</b></label>
-                  <div class="ed-seg">
-                    <span>Every N minutes</span><span class="is-on">At set times</span>
-                  </div>
-                  <div class="ed-times">
-                    <kbd>09:00</kbd><kbd>21:00</kbd><span>+ Add time</span>
-                  </div>
-                  <div class="ed-row"><span>Snooze</span><b>15 min</b></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="acc-panel p4">
-            <h3>
-              <button type="button" aria-expanded="false" aria-controls="acc-4">
-                Get on with your day
-              </button>
-            </h3>
-            <div class="acc-body" id="acc-4">
-              <p>
-                When it’s time, Pingo walks into your corner. Press Done and it celebrates. Press
-                Snooze and it comes back later.
-              </p>
-              <div class="acc-art">
                 <img
-                  class="acc-char"
-                  src="assets/poses/happy.webp"
-                  alt="Pingo celebrating after a reminder is marked done"
+                  data-walker-sprite
+                  src="assets/poses/walking.webp"
+                  alt=""
                   width="292"
                   height="360"
-                  loading="lazy"
                 />
               </div>
             </div>
+
+            <h1 class="monument" id="hero-title" data-monument data-move>
+              <span>P</span><span>I</span><span>N</span><span>G</span
+              ><span class="o" data-o>O</span>
+            </h1>
+          </div>
+
+          <!-- Through the O: the desktop, and the app on it. -->
+          <div class="through" data-through>
+            <figure class="through-window" data-through-window data-move>
+              <img
+                src="assets/app/home-light.webp"
+                width="2160"
+                height="1960"
+                alt="Pingo&rsquo;s Home window: Good afternoon, Priya. Next: Rest your eyes at 15:25. 7 done and 2 snoozed today, 4 of 5 reminders on, 52 done this week, the next four reminders and the last seven days as bars."
+              />
+            </figure>
+            <div class="through-caption" data-through-caption data-move>
+              <h2>Everything in one window.</h2>
+              <p>What&rsquo;s next, what you&rsquo;ve done today and how your week went.</p>
+            </div>
           </div>
         </div>
       </section>
 
-      <!-- FAQ: the heading holds still while the questions pass. -->
-      <section class="faq frame" id="faq" aria-labelledby="faq-title">
-        <div class="faq-head">
-          <h2 class="reveal" id="faq-title">Fair questions</h2>
+      <!-- The live thing: write a reminder; Pingo says it, and answers Done or Snooze. -->
+      <section class="try" id="try" aria-labelledby="try-title">
+        <div class="try-plate" data-plate>
+          <div class="plate-bubble" data-plate-bubble>
+            <p data-plate-line>Priya, time for a glass of water.</p>
+          </div>
           <img
-            class="faq-char reveal"
-            src="assets/poses/think.webp"
-            alt="Pingo thinking"
+            class="plate-char"
+            data-plate-char
+            src="assets/poses/point.webp"
+            alt="Pingo pointing at the reminder"
             width="292"
             height="360"
             loading="lazy"
           />
+          <div class="confetti" data-confetti aria-hidden="true"></div>
         </div>
-        <div class="faq-list">
-          <details name="faq" open>
-            <summary>Is Pingo really free?</summary>
-            <p>
-              Yes. It is free and open source under the MIT licence. There is no trial, no account
-              and nothing to upgrade to.
-            </p>
-          </details>
-          <details name="faq">
-            <summary>Does it collect any data?</summary>
-            <p>
-              No. Pingo has no accounts, no telemetry and no network access. Your reminders, avatars
-              and settings stay on your Mac.
-            </p>
-          </details>
-          <details name="faq">
-            <summary>Why does macOS block it the first time?</summary>
-            <p>
-              Pingo isn’t code-signed yet. On first launch open System Settings, then Privacy &amp;
-              Security, and choose Open Anyway. You only do this once.
-            </p>
-          </details>
-          <details name="faq">
-            <summary>Apple Silicon or Intel?</summary>
-            <p>
-              Both. The Download button gets the Apple Silicon build; choose Intel Mac under it, or
-              in the setup window at the end of this page, for an older Mac.
-            </p>
-          </details>
-          <details name="faq">
-            <summary>Can I use my own character?</summary>
-            <p>
-              Yes. Upload any image or animated GIF in the avatar studio; GIFs keep animating. The
-              background is cut out for you, with a strength control, and you can set the size,
-              mirror it and add a separate image for celebrating. Each reminder can have its own.
-            </p>
-          </details>
-          <details name="faq">
-            <summary>How many reminders can I have?</summary>
-            <p>
-              As many as you like. Each has its own message, type, schedule, days of the week,
-              active hours, snooze length and avatar.
-            </p>
-          </details>
-          <details name="faq">
-            <summary>I’m in a meeting. Can Pingo wait?</summary>
-            <p>
-              Pause from the tray for 30 minutes, an hour or until tomorrow. Active hours and days
-              keep Pingo quiet at night and at weekends.
-            </p>
-          </details>
-          <details name="faq">
-            <summary>Does it make a sound?</summary>
-            <p>
-              Only if you want one. Pick a sound in Appearance, or none, and turn on auto-dismiss so
-              a reminder you don’t answer quietly goes away.
-            </p>
-          </details>
-          <details name="faq">
-            <summary>What about Windows and Linux?</summary>
-            <p>
-              The Mac comes first. Windows and Linux builds are published on the
-              <a data-repo-path="/releases" href="#">Releases page</a>.
-            </p>
-          </details>
-        </div>
-      </section>
 
-      <!-- Call to action: Pingo's own setup window, already open. -->
-      <section class="cta" id="download" aria-labelledby="cta-title">
-        <div class="frame cta-inner">
-          <div class="cta-copy">
-            <h2 class="reveal" id="cta-title">Say hi<br />to Pingo.</h2>
-            <p class="reveal">
-              Download, drag to Applications, and Pingo asks your name. Then it’s in your menu bar,
-              waiting for the first reminder.
-            </p>
+        <div class="try-side">
+          <div class="tabs" role="tablist" aria-label="Examples">
+            <button
+              type="button"
+              role="tab"
+              aria-selected="true"
+              data-example="Drink a glass of water every 45 min"
+            >
+              Water
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected="false"
+              data-example="Stretch your back every 60 min"
+            >
+              Stretch
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected="false"
+              data-example="Take vitamin D at 9:00 and 21:00"
+            >
+              Medicine
+            </button>
           </div>
 
-          <div class="setup reveal" data-ui>
-            <div class="setup-bar"><i></i><i></i><i></i></div>
-            <div class="setup-body">
-              <div class="setup-hello">
-                <img
-                  src="assets/poses/wave.webp"
-                  alt="Pingo waving hello"
-                  width="292"
-                  height="360"
-                  loading="lazy"
-                />
-                <p class="setup-bubble" data-setup-line>Hey Priya! Time to drink some water.</p>
-              </div>
-              <label class="setup-label" for="setup-name">What should I call you?</label>
+          <div class="try-middle">
+            <h2 class="rise" id="try-title">Try a reminder.</h2>
+            <label class="try-field rise">
+              <span class="sr-only">Your reminder</span>
               <input
-                class="setup-input"
-                id="setup-name"
                 type="text"
-                value="Priya"
-                maxlength="24"
-                autocomplete="given-name"
-                data-setup-name
+                value="Drink a glass of water every 45 min"
+                maxlength="70"
+                autocomplete="off"
+                spellcheck="false"
+                aria-describedby="try-hint try-when"
+                data-try-input
               />
-              <p class="setup-label" id="setup-mac">Your Mac</p>
-              <div class="setup-seg" role="radiogroup" aria-labelledby="setup-mac">
-                <button type="button" role="radio" aria-checked="true" data-mac="arm64">
-                  Apple Silicon
-                </button>
-                <button type="button" role="radio" aria-checked="false" data-mac="x64">
-                  Intel
-                </button>
-              </div>
-              <a class="setup-go" data-download-choice href="#">Download for Mac</a>
-            </div>
+            </label>
+            <p class="try-hint rise" id="try-hint">
+              Add &ldquo;every 20 min&rdquo; or &ldquo;at 9:00 and 21:00&rdquo; to set when.
+            </p>
+            <p class="try-when rise" id="try-when" aria-live="polite" data-try-when>
+              Every 45 minutes, every day
+            </p>
+          </div>
+
+          <div class="try-actions">
+            <button type="button" class="cell cell-ink" data-try-done>Done</button>
+            <button type="button" class="cell cell-tone" data-try-snooze>Snooze</button>
           </div>
         </div>
       </section>
+
+      <!-- Signature move: the reminders themselves, crossing the page. -->
+      <div class="marquee" aria-hidden="true">
+        <div class="marquee-track">
+          <span
+            >Drink water &middot; Stretch your back &middot; Rest your eyes &middot; Take your
+            medicine &middot; Sit up straight &middot;&nbsp;</span
+          >
+          <span
+            >Drink water &middot; Stretch your back &middot; Rest your eyes &middot; Take your
+            medicine &middot; Sit up straight &middot;&nbsp;</span
+          >
+        </div>
+      </div>
+
+      <!-- Features: one size of type, three columns; the fourth shows the real screen. -->
+      <section class="features" id="features" aria-labelledby="features-title">
+        <h2 class="features-title rise" id="features-title">What it does</h2>
+        <div class="features-grid">
+          <div class="group rise" data-group="reminders">
+            <h3>Reminders</h3>
+            <ul>
+              <li tabindex="0" data-tip="Keep up to fifty, each switched on or off on its own.">
+                As many as you like
+              </li>
+              <li tabindex="0" data-tip="Any interval from one minute to twelve hours.">
+                Every few minutes
+              </li>
+              <li tabindex="0" data-tip="Up to twelve times a day, such as 09:00 and 21:00.">
+                At set times
+              </li>
+              <li tabindex="0" data-tip="Weekdays, weekends or any mix of days.">
+                On the days you pick
+              </li>
+              <li tabindex="0" data-tip="Quiet outside your hours; ranges can run past midnight.">
+                Inside your hours
+              </li>
+              <li tabindex="0" data-tip="Five minutes to an hour, set per reminder.">
+                Its own snooze
+              </li>
+              <li
+                tabindex="0"
+                data-tip="Water, stretch, eyes, posture, medicine, or your own words."
+              >
+                Six starting points
+              </li>
+            </ul>
+          </div>
+          <div class="group rise" data-group="characters">
+            <h3>Characters</h3>
+            <ul>
+              <li
+                tabindex="0"
+                data-tip="Classic, ID badge and Sticker, each with a full set of poses."
+              >
+                Three bundled
+              </li>
+              <li tabindex="0" data-tip="Any PNG, JPG or WebP up to 10 MB.">Your own picture</li>
+              <li tabindex="0" data-tip="An animated GIF keeps moving on your screen.">
+                Animated GIFs
+              </li>
+              <li
+                tabindex="0"
+                data-tip="A plain background is cut out for you, with a strength slider."
+              >
+                Background cut-out
+              </li>
+              <li tabindex="0" data-tip="An optional second image for when you press Done.">
+                A celebration pose
+              </li>
+              <li tabindex="0" data-tip="Make it bigger or smaller, or face the other way.">
+                Size and mirror
+              </li>
+              <li tabindex="0" data-tip="Water can be Classic while medicine is your cat.">
+                One per reminder
+              </li>
+            </ul>
+          </div>
+          <div class="group rise" data-group="look">
+            <h3>Look and feel</h3>
+            <ul>
+              <li tabindex="0" data-tip="Light, dark, or whatever your Mac is set to.">
+                Light and dark
+              </li>
+              <li tabindex="0" data-tip="A clean card, or the retro pixel bubble.">
+                Two bubble styles
+              </li>
+              <li
+                tabindex="0"
+                data-tip="Teal, ocean, grass, amber, coral or ink on the Done button."
+              >
+                Six accents
+              </li>
+              <li tabindex="0" data-tip="From 80 to 140 percent, bubble included.">
+                Character size
+              </li>
+              <li
+                tabindex="0"
+                data-tip="Bottom left or bottom right, main screen or the one you are on."
+              >
+                Either corner
+              </li>
+              <li tabindex="0" data-tip="Chime, pop or bell as it arrives, or silence.">
+                A sound, or none
+              </li>
+              <li tabindex="0" data-tip="Snoozes itself and walks off if you are away.">
+                Auto-snooze
+              </li>
+            </ul>
+          </div>
+          <aside class="features-detail" aria-live="polite">
+            <p class="detail-tip" data-detail-tip>
+              Keep up to fifty, each switched on or off on its own.
+            </p>
+            <div class="detail-shot">
+              <img
+                class="is-on"
+                data-shot="reminders"
+                src="assets/app/editor-light.webp"
+                width="2160"
+                height="1480"
+                alt="Editing a reminder: kind, message, every hour, weekdays, and a preview of the bubble."
+                loading="lazy"
+              />
+              <img
+                data-shot="characters"
+                src="assets/app/avatars-light.webp"
+                width="2160"
+                height="1480"
+                alt="The Avatars view: Classic, ID badge, Sticker and a drop zone for your own image or GIF."
+                loading="lazy"
+              />
+              <img
+                data-shot="look"
+                src="assets/app/appearance-light.webp"
+                width="2160"
+                height="1480"
+                alt="Appearance: theme, bubble style, six accent colours and character size."
+                loading="lazy"
+              />
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- Scene 2. Make it yours: the characters change places as you scroll. -->
+      <section
+        class="scene parade"
+        data-scene="parade"
+        data-options='{"hold": 2}'
+        aria-labelledby="parade-title"
+      >
+        <div class="scene-stage">
+          <div class="parade-copy">
+            <h2 id="parade-title">Make Pingo yours.</h2>
+            <p>
+              Pick a character, or drop in any picture or animated GIF. The background cuts out by
+              itself, and each reminder can have its own.
+            </p>
+            <ol class="parade-names" aria-label="Characters">
+              <li data-name>Classic</li>
+              <li data-name>ID badge</li>
+              <li data-name>Sticker</li>
+              <li data-name>Your own</li>
+            </ol>
+          </div>
+          <div class="parade-plate">
+            <img
+              data-card
+              src="assets/poses/boy-idle.webp"
+              alt="Classic: the bundled character in a white polo"
+              width="292"
+              height="360"
+            />
+            <img
+              data-card
+              src="assets/poses/boy-badge-idle.webp"
+              alt="ID badge: the same character wearing a lanyard"
+              width="297"
+              height="360"
+              loading="lazy"
+            />
+            <img
+              data-card
+              src="assets/poses/boy-sticker-idle.webp"
+              alt="Sticker: the character sitting with a laptop"
+              width="318"
+              height="360"
+              loading="lazy"
+            />
+            <img
+              data-card
+              class="parade-shot"
+              src="assets/app/avatars-light.webp"
+              alt="The Avatars view, where you add your own image or GIF"
+              width="2160"
+              height="1480"
+              loading="lazy"
+            />
+          </div>
+        </div>
+      </section>
+
+      <!-- How it works: one reading column with evidence after each stage. -->
+      <section class="how" id="how" aria-labelledby="how-title">
+        <h2 class="rise" id="how-title">From download to first reminder</h2>
+
+        <p class="rise">
+          <b>To begin,</b> download Pingo and drag it into Applications. The first time, macOS asks
+          you to confirm in Privacy &amp; Security. You only do that once.
+        </p>
+        <figure class="evidence rise" data-ui>
+          <div class="dmg">
+            <img src="assets/icon.png" alt="" width="64" height="64" loading="lazy" />
+            <svg viewBox="0 0 120 20" aria-hidden="true">
+              <path d="M2 10h108M100 3l10 7-10 7" />
+            </svg>
+            <span class="folder">Applications</span>
+          </div>
+          <figcaption>Drag the Pingo icon onto Applications.</figcaption>
+        </figure>
+
+        <p class="rise">
+          <b>Next,</b> three quick questions: what to call you, what to remind you about and how
+          often, and who should do the reminding.
+        </p>
+        <figure class="evidence rise">
+          <img
+            src="assets/app/setup.webp"
+            width="1120"
+            height="1224"
+            alt="The setup window asking what Pingo should remind you about, with Drink water and every 30 minutes chosen."
+            loading="lazy"
+            class="evidence-setup"
+          />
+        </figure>
+
+        <p class="rise">
+          <b>After that,</b> Pingo waits in your menu bar. Add more reminders, change characters, or
+          pause it for a meeting.
+        </p>
+        <!-- Labels from src/main/tray.js. -->
+        <figure
+          class="evidence evidence-tray rise"
+          data-ui
+          aria-label="Pingo&rsquo;s menu in the Mac menu bar"
+        >
+          <div class="tray-bar" aria-hidden="true">
+            <img src="assets/icon.png" alt="" width="20" height="20" />
+            <span>Tue 15:05</span>
+          </div>
+          <ul class="tray-menu">
+            <li class="is-dim">Next: Rest your eyes at 15:25</li>
+            <li>Remind me now</li>
+            <li class="sep" aria-hidden="true"></li>
+            <li>Open Pingo&hellip;</li>
+            <li>New reminder&hellip;</li>
+            <li>Avatars&hellip;</li>
+            <li class="sep" aria-hidden="true"></li>
+            <li class="has-sub">Pause</li>
+            <li>Start at login</li>
+            <li class="sep" aria-hidden="true"></li>
+            <li>Quit Pingo</li>
+          </ul>
+        </figure>
+
+        <p class="rise">
+          <b>From then on,</b> Pingo walks onto the corner of your screen when it&rsquo;s time.
+          Press Done and it celebrates. Press Snooze and it comes back later.
+        </p>
+        <figure class="evidence evidence-poses rise">
+          <img
+            src="assets/poses/point.webp"
+            alt="Pingo pointing at the reminder"
+            width="292"
+            height="360"
+            loading="lazy"
+          />
+          <img
+            src="assets/poses/happy.webp"
+            alt="Pingo celebrating after Done"
+            width="292"
+            height="360"
+            loading="lazy"
+          />
+          <img
+            src="assets/poses/think.webp"
+            alt="Pingo thinking after Snooze"
+            width="292"
+            height="360"
+            loading="lazy"
+          />
+        </figure>
+      </section>
+
+      <!-- Questions: large questions, answers beside, all open. -->
+      <section class="faq" id="questions" aria-labelledby="faq-title">
+        <div class="faq-row">
+          <h2 class="faq-q faq-head rise" id="faq-title">Questions</h2>
+        </div>
+        <div class="faq-row rise">
+          <h3 class="faq-q">Is it really free?</h3>
+          <p class="faq-a">
+            Yes. It is free and open source under the MIT licence. There is no trial, no account and
+            nothing to upgrade to.
+          </p>
+        </div>
+        <div class="faq-row rise">
+          <h3 class="faq-q">Does it collect anything?</h3>
+          <p class="faq-a">
+            No. Pingo makes no network requests at all. Your settings, characters and counts stay on
+            your Mac.
+          </p>
+        </div>
+        <div class="faq-row rise">
+          <h3 class="faq-q">How many reminders can I have?</h3>
+          <p class="faq-a">
+            Up to fifty, each with its own words, schedule, days, hours, snooze length and
+            character.
+          </p>
+        </div>
+        <div class="faq-row rise">
+          <h3 class="faq-q">Can I use my own character?</h3>
+          <p class="faq-a">
+            Yes. Any PNG, JPG, WebP or animated GIF. Plain backgrounds are cut out for you, and GIFs
+            keep moving.
+          </p>
+        </div>
+        <div class="faq-row rise">
+          <h3 class="faq-q">Why does macOS stop it the first time?</h3>
+          <p class="faq-a">
+            Pingo isn&rsquo;t notarised by Apple yet. Open System Settings, then Privacy &amp;
+            Security, and choose Open Anyway.
+          </p>
+        </div>
+        <div class="faq-row rise">
+          <h3 class="faq-q">Windows and Linux?</h3>
+          <p class="faq-a">
+            Builds for both are on the
+            <a data-repo-path="/releases/latest" href="#">Releases page</a> on GitHub.
+          </p>
+        </div>
+      </section>
+
+      <!-- The whole band is the download. -->
+      <a class="cta" data-download href="#" aria-label="Download Pingo for Mac">
+        <span class="cta-line">Free for Mac. A short setup, then it waits in your menu bar.</span>
+        <svg class="cta-arrow" viewBox="0 0 48 48" aria-hidden="true">
+          <path d="M12 36L36 12M16 12h20v20" />
+        </svg>
+        <span class="cta-word" aria-hidden="true">Download</span>
+      </a>
     </main>
 
     <footer class="footer">
-      <div class="frame">
-        <div class="mark" aria-hidden="true">
-          <span class="m1">P</span><span class="m2">i</span><span class="m3">n</span
-          ><span class="m4">g</span><span class="m5">o</span>
-        </div>
-
-        <div class="foot-grid">
-          <nav class="foot-col" aria-label="Get Pingo">
+      <p class="footer-name" aria-hidden="true">Pingo</p>
+      <div class="footer-row">
+        <ul class="footer-places">
+          <li><a data-repo-link href="#">GitHub</a></li>
+          <li><a data-repo-path="/releases" href="#">All releases</a></li>
+          <li><a data-repo-path="/issues/new/choose" href="#">Report a bug</a></li>
+        </ul>
+        <div class="footer-links">
+          <div>
             <h2>Get Pingo</h2>
-            <a data-download href="#">Download for Mac</a>
+            <a data-download href="#">Apple Silicon</a>
             <a data-download-intel href="#">Intel Mac</a>
-            <a data-repo-path="/releases" href="#">All releases</a>
-          </nav>
-          <nav class="foot-col" aria-label="Source">
-            <h2>Source</h2>
-            <a data-repo-link href="#">GitHub</a>
-            <a data-repo-path="/blob/main/LICENSE" href="#">MIT License</a>
+          </div>
+          <div>
+            <h2>Project</h2>
+            <a data-repo-link href="#">Source code</a>
+            <a data-repo-path="/blob/main/LICENSE" href="#">MIT licence</a>
             <a data-repo-path="/blob/main/CONTRIBUTING.md" href="#">Contributing</a>
-          </nav>
-          <nav class="foot-col" aria-label="This page">
+          </div>
+          <div>
             <h2>This page</h2>
             <a href="#features">Features</a>
             <a href="#how">How it works</a>
-            <a href="#faq">FAQ</a>
-          </nav>
-          <div class="foot-col foot-note">
-            <p>Made in India.</p>
-            <p>No accounts, no telemetry, no network.</p>
+            <a href="#questions">Questions</a>
           </div>
         </div>
-
-        <div class="foot-last">
-          <span
-            >© <span data-year>2026</span> Pingo · Bebas Neue, Instrument Sans and Press Start 2P
-            under the SIL Open Font License</span
-          >
-          <a class="btn btn-blue btn-sm" data-download href="#">Download</a>
-        </div>
+      </div>
+      <div class="footer-legal">
+        <span
+          >&copy; <span data-year>2026</span> Pingo. No accounts, no telemetry, no network.</span
+        >
+        <a href="#main">Back to top</a>
       </div>
     </footer>
 
     <script src="config.js"></script>
+    <script src="vendor/gsap.min.js"></script>
+    <script src="vendor/ScrollTrigger.min.js"></script>
+    <script src="vendor/lenis.min.js"></script>
+    <script src="vendor/stage.js"></script>
+    <script src="scenes.js"></script>
     <script src="main.js"></script>
   </body>
 </html>

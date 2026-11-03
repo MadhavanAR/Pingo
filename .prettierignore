@@ -6,3 +6,4 @@ assets/
 docs/*.gif
 docs/*.png
 .taste-skill/
+website/vendor/

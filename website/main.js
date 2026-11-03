@@ -1,23 +1,21 @@
 'use strict';
 
-(function () {
-  const root = document.documentElement;
-  root.classList.add('js');
+/* global Stage */
 
+(function () {
   const { repo } = window.PINGO_SITE;
   const repoUrl = `https://github.com/${repo}`;
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const $ = (sel, el = document) => el.querySelector(sel);
   const $$ = (sel, el = document) => [...el.querySelectorAll(sel)];
   const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  const pose = (name) => `assets/poses/${name}.webp`;
 
-  // Links
+  // Links. GitHub serves `releases/latest/download/<file>` as the file itself; the names
+  // must match the mac `artifactName` in package.json.
 
   $$('[data-repo-link]').forEach((a) => (a.href = repoUrl));
   $$('[data-repo-path]').forEach((a) => (a.href = repoUrl + a.dataset.repoPath));
-
-  // Direct downloads. GitHub serves `releases/latest/download/<file>` as the
-  // file itself; names must match the mac `artifactName` in package.json.
   const latest = `${repoUrl}/releases/latest/download`;
   $$('[data-download]').forEach((a) => {
     a.href = `${latest}/Pingo-mac-arm64.dmg`;
@@ -27,133 +25,154 @@
     a.href = `${latest}/Pingo-mac-x64.dmg`;
     a.setAttribute('download', '');
   });
-
   const year = $('[data-year]');
   if (year) year.textContent = new Date().getFullYear();
 
-  // Scroll reveal, staggered within each group of siblings
+  // The name, the closing verb and the footer name each fill their width exactly.
 
-  const revealables = $$('.reveal');
+  function fit(el, width) {
+    el.style.fontSize = '100px';
+    const natural = el.offsetWidth;
+    if (natural) el.style.fontSize = `${(100 * width) / natural}px`;
+  }
+
+  const gutter = () =>
+    parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--m')) || 24;
+
+  function fitAll() {
+    const m = gutter();
+    const fold = $('[data-fold]');
+    const word = $('[data-monument]');
+    if (fold && word) fit(word, fold.clientWidth - 2 * m);
+    const cta = $('.cta');
+    const ctaWord = $('.cta-word');
+    if (cta && ctaWord) fit(ctaWord, cta.clientWidth - 2 * m);
+    const footerName = $('.footer-name');
+    if (footerName) fit(footerName, footerName.parentElement.clientWidth - 2 * m);
+    window.dispatchEvent(new Event('pingo:fit'));
+  }
+
+  // Pingo walks in along the top of the name and stops on the O.
+
+  const walker = $('[data-walker]'); // GSAP fades this one on scroll
+  const walkerInner = $('[data-walker-inner]'); // the walk animates this one
+  const sprite = $('[data-walker-sprite]');
+  const walkerBubble = $('[data-walker-bubble]');
+  const walkerText = $('[data-walker-text]');
+
+  function placeWalker() {
+    const word = $('[data-monument]');
+    const o = $('[data-o]');
+    if (!walker || !word || !o) return;
+    const fontSize = parseFloat(word.style.fontSize) || o.offsetHeight;
+    const centre = word.offsetLeft + o.offsetLeft + o.offsetWidth / 2;
+    const capTop = word.offsetTop + o.offsetTop + fontSize * 0.005;
+    walker.style.left = `${centre - walker.offsetWidth * 0.52}px`;
+    walker.style.top = `${capTop - walker.offsetHeight * 0.985}px`;
+  }
+
+  const LINES = [
+    // Full-body poses only: Pingo is standing on the O.
+    ['Time for a glass of water.', 'drink'],
+    ['Stand up and stretch your back.', 'wave'],
+    ['Look out of the window for 20 seconds.', 'think'],
+    ['Time for your vitamin D.', 'point'],
+  ];
+
+  async function walkIn() {
+    if (!walker) return;
+    placeWalker();
+    const distance = window.innerWidth - walker.offsetLeft + 40;
+    if (!reducedMotion) {
+      walker.classList.add('is-walking', 'is-mirrored');
+      await walkerInner.animate([{ translate: `${distance}px 0` }, { translate: '0 0' }], {
+        duration: 2400,
+        easing: 'cubic-bezier(0.23, 1, 0.32, 1)',
+        fill: 'backwards',
+      }).finished;
+      walker.classList.remove('is-walking', 'is-mirrored');
+    }
+    let i = 0;
+    for (;;) {
+      const [text, name] = LINES[i % LINES.length];
+      sprite.src = pose(name);
+      walkerText.textContent = text;
+      walkerBubble.classList.add('is-shown');
+      await wait(3600);
+      walkerBubble.classList.remove('is-shown');
+      await wait(450);
+      i += 1;
+    }
+  }
+
+  // Entrances: the parts of each section rise in turn as it comes into view.
+
+  const risers = $$('.rise');
+  risers.forEach((el) => {
+    const siblings = [...el.parentElement.children].filter((c) => c.classList.contains('rise'));
+    el.style.setProperty('--i', String(Math.min(siblings.indexOf(el), 5)));
+  });
   if (reducedMotion || !('IntersectionObserver' in window)) {
-    revealables.forEach((el) => el.classList.add('in'));
+    risers.forEach((el) => el.classList.add('is-in'));
   } else {
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           if (!entry.isIntersecting) continue;
-          const el = entry.target;
-          const siblings = [...el.parentElement.children].filter((c) => c.matches('.reveal'));
-          el.style.setProperty('--delay', `${Math.max(0, siblings.indexOf(el)) * 80}ms`);
-          el.classList.add('in');
-          observer.unobserve(el);
+          entry.target.classList.add('is-in');
+          observer.unobserve(entry.target);
         }
       },
-      { rootMargin: '0px 0px -8% 0px', threshold: 0.12 },
+      { rootMargin: '0px 0px -12% 0px' },
     );
-    revealables.forEach((el) => observer.observe(el));
+    risers.forEach((el) => observer.observe(el));
   }
 
-  // Radio-style segmented controls
+  // Try a reminder: type it, Pingo says it; Done celebrates, Snooze thinks it over.
 
-  function radios(buttons, onPick) {
-    buttons.forEach((btn) =>
-      btn.addEventListener('click', () => {
-        buttons.forEach((b) => b.setAttribute('aria-checked', String(b === btn)));
-        onPick(btn);
-      }),
-    );
-  }
+  const input = $('[data-try-input]');
+  if (input) {
+    const line = $('[data-plate-line]');
+    const bubble = $('[data-plate-bubble]');
+    const char = $('[data-plate-char]');
+    const whenEl = $('[data-try-when]');
+    const confetti = $('[data-confetti]');
+    const tabs = $$('.tabs [data-example]');
 
-  // The app window: switch the screenshot's theme, and let it rise into place
-
-  const appWindow = $('[data-window]');
-  if (appWindow) {
-    radios($$('[data-shot-theme]'), (btn) => {
-      appWindow.dataset.themeShot = btn.dataset.shotTheme;
-    });
-
-    if (!reducedMotion) {
-      let ticking = false;
-      const update = () => {
-        ticking = false;
-        const rect = appWindow.getBoundingClientRect();
-        // 0 when the window's top enters at the bottom, 1 once it reaches mid-screen.
-        const t = Math.min(1, Math.max(0, (innerHeight - rect.top) / (innerHeight * 0.5)));
-        appWindow.style.transform = `scale(${0.92 + 0.08 * t})`;
-      };
-      addEventListener(
-        'scroll',
-        () => {
-          if (!ticking) requestAnimationFrame(update);
-          ticking = true;
-        },
-        { passive: true },
-      );
-      update();
-    }
-  }
-
-  // "What should Pingo say?": type a reminder, see it as Pingo would show it
-
-  const sayInput = $('[data-say-input]');
-  if (sayInput) {
-    const typeEl = $('[data-say-type]');
-    const msgEl = $('[data-say-msg]');
-    const whenEl = $('[data-say-when]');
-    const lineEl = $('[data-say-line]');
-    const bubbleEl = $('[data-say-bubble]');
-    const charEl = $('[data-say-char]');
-
-    // Reminder types and the pose the classic character takes for each.
     const TYPES = [
       {
-        name: 'Medicine',
         test: /medic|pill|tablet|vitamin|dose/i,
         pose: 'point',
-        alt: 'Pingo pointing',
         when: 'At 09:00 and 21:00',
+        cheer: 'Taken care of!',
       },
       {
-        name: 'Posture',
         test: /posture|sit up|straight|shoulder/i,
         pose: 'think',
-        alt: 'Pingo checking posture',
         when: 'Every 30 minutes',
+        cheer: 'Standing tall!',
       },
       {
-        name: 'Rest your eyes',
-        test: /eye|screen|look away/i,
+        test: /eye|screen|look away|window/i,
         pose: 'rest',
-        alt: 'Pingo resting its eyes',
         when: 'Every 20 minutes',
+        cheer: 'Eyes refreshed!',
       },
       {
-        name: 'Stretch',
         test: /stretch|stand|walk|move|back|neck/i,
         pose: 'stretch',
-        alt: 'Pingo stretching',
         when: 'Every 60 minutes',
+        cheer: 'Nice stretch!',
       },
       {
-        name: 'Water',
         test: /water|drink|hydrat|glass/i,
         pose: 'drink',
-        alt: 'Pingo holding a glass of water',
         when: 'Every 45 minutes',
+        cheer: 'Hydrated and happy!',
       },
     ];
-    const CUSTOM = {
-      name: 'Custom',
-      pose: 'point',
-      alt: 'Pingo pointing',
-      when: 'Every 60 minutes',
-    };
-
-    let avatar = 'boy';
-    let pose = 'drink';
-    let alt = TYPES[4].alt;
-
-    const pad = (n) => String(n).padStart(2, '0');
+    const CUSTOM = { pose: 'point', when: 'Every 60 minutes', cheer: 'Nice work!' };
+    const pad = (n) => String(n).padStart(2, '0'); // clock times, 09:00
 
     function parse(raw) {
       let text = raw.trim();
@@ -161,8 +180,7 @@
       const every = text.match(/\bevery\s+(\d{1,3})\s*(m|min|mins|minutes?|h|hr|hrs|hours?)\b/i);
       if (every) {
         const n = Number(every[1]);
-        const hours = /^h/i.test(every[2]);
-        when = hours
+        when = /^h/i.test(every[2])
           ? `Every ${n} hour${n === 1 ? '' : 's'}`
           : `Every ${n} minute${n === 1 ? '' : 's'}`;
         text = text.replace(every[0], '');
@@ -195,233 +213,109 @@
       return { text, when };
     }
 
+    let current = TYPES[4];
+    let busy = false;
+
     function render() {
-      const { text, when } = parse(sayInput.value);
+      const { text, when } = parse(input.value);
       const message = text || 'Drink a glass of water';
-      const type = TYPES.find((t) => t.test.test(message)) || CUSTOM;
-      const clean = message.charAt(0).toUpperCase() + message.slice(1);
-      typeEl.textContent = type.name;
-      msgEl.textContent = clean;
-      whenEl.textContent = when || type.when;
-      lineEl.textContent = `Hey! Time to ${clean.charAt(0).toLowerCase()}${clean.slice(1)}.`;
-      pose = type.pose;
-      alt = type.alt;
-      updateChar();
+      current = TYPES.find((t) => t.test.test(message)) ?? CUSTOM;
+      if (!busy) {
+        line.textContent = `${message.charAt(0).toUpperCase()}${message.slice(1)}.`;
+        char.src = pose(current.pose);
+      }
+      whenEl.textContent = `${when ?? current.when}, every day`;
     }
 
-    function updateChar() {
-      // Only the classic character has the full pose set.
-      const src =
-        avatar === 'boy' ? `assets/poses/${pose}.webp` : `assets/poses/${avatar}-happy.webp`;
-      if (charEl.getAttribute('src') === src) return;
-      charEl.classList.add('swap');
-      setTimeout(
-        () => {
-          charEl.src = src;
-          charEl.alt = avatar === 'boy' ? alt : 'Pingo, in the chosen avatar style, cheering';
-          charEl.classList.remove('swap');
-        },
-        reducedMotion ? 0 : 180,
-      );
+    function burst() {
+      if (reducedMotion) return;
+      const colours = ['#e6dbc7', '#ffffff', '#9db4ff', '#d2c3a7'];
+      for (let i = 0; i < 28; i++) {
+        const bit = document.createElement('i');
+        const angle = Math.random() * Math.PI * 2;
+        const reach = 90 + Math.random() * 160;
+        bit.style.background = colours[i % colours.length];
+        bit.style.setProperty('--dx', `${Math.cos(angle) * reach}px`);
+        bit.style.setProperty('--dy', `${Math.sin(angle) * reach - 60}px`);
+        bit.style.setProperty('--r', `${Math.random() * 540 - 270}deg`);
+        bit.style.animationDelay = `${Math.random() * 120}ms`;
+        confetti.append(bit);
+        setTimeout(() => bit.remove(), 1500);
+      }
     }
 
-    ['drink', 'stretch', 'rest', 'think', 'point'].forEach(
-      (p) => (new Image().src = `assets/poses/${p}.webp`),
+    async function answer(text, name, celebrate) {
+      if (busy) return;
+      busy = true;
+      bubble.classList.add('is-swapping');
+      await wait(200);
+      line.textContent = text;
+      char.src = pose(name);
+      bubble.classList.remove('is-swapping');
+      if (celebrate) {
+        burst();
+        if (!reducedMotion) char.classList.add('is-hopping');
+      }
+      await wait(1900);
+      char.classList.remove('is-hopping');
+      bubble.classList.add('is-swapping');
+      await wait(200);
+      busy = false;
+      render();
+      bubble.classList.remove('is-swapping');
+    }
+
+    input.addEventListener('input', render);
+    $('[data-try-done]').addEventListener('click', () => answer(current.cheer, 'happy', true));
+    $('[data-try-snooze]').addEventListener('click', () =>
+      answer('I’ll come back in 10 minutes.', 'think', false),
     );
-
-    sayInput.addEventListener('input', render);
-    $$('[data-example]').forEach((btn) =>
-      btn.addEventListener('click', () => {
-        sayInput.value = btn.dataset.example;
+    tabs.forEach((tab) =>
+      tab.addEventListener('click', () => {
+        tabs.forEach((t) => t.setAttribute('aria-selected', String(t === tab)));
+        input.value = tab.dataset.example;
         render();
       }),
     );
-    radios($$('[data-avatar]'), (btn) => {
-      avatar = btn.dataset.avatar;
-      updateChar();
-    });
-    radios($$('[data-bubble-style]'), (btn) => {
-      bubbleEl.classList.toggle('retro', btn.dataset.bubbleStyle === 'retro');
-    });
     render();
   }
 
-  // How it works: a horizontal accordion, one stage open at a time
+  // Features: hover or focus a capability to read it, and see the screen it lives on.
 
-  const acc = $('[data-acc]');
-  if (acc) {
-    const panels = $$('.acc-panel', acc);
-    panels.forEach((panel) => {
-      const btn = $('h3 button', panel);
-      btn.addEventListener('click', () => {
-        panels.forEach((p) => {
-          const open = p === panel;
-          p.classList.toggle('is-open', open);
-          $('h3 button', p).setAttribute('aria-expanded', String(open));
-        });
-      });
-    });
-  }
-
-  // Closing setup window: the name feeds the greeting, the choice picks the build
-
-  const setupName = $('[data-setup-name]');
-  const setupLine = $('[data-setup-line]');
-  const setupGo = $('[data-download-choice]');
-  if (setupName && setupLine && setupGo) {
-    const greet = () => {
-      const name = setupName.value.trim();
-      setupLine.textContent = `Hey${name ? ` ${name}` : ''}! Time to drink some water.`;
+  const tip = $('[data-detail-tip]');
+  const shots = $$('[data-shot]');
+  $$('.group li').forEach((li) => {
+    const show = () => {
+      $$('.group li.is-on').forEach((x) => x.classList.remove('is-on'));
+      li.classList.add('is-on');
+      tip.textContent = li.dataset.tip;
+      const group = li.closest('[data-group]').dataset.group;
+      shots.forEach((img) => img.classList.toggle('is-on', img.dataset.shot === group));
     };
-    setupName.addEventListener('input', greet);
-    greet();
-    const pick = (arch) => {
-      setupGo.href = `${latest}/Pingo-mac-${arch}.dmg`;
-      setupGo.setAttribute('download', '');
-      setupGo.textContent = arch === 'x64' ? 'Download for Intel Mac' : 'Download for Mac';
-    };
-    radios($$('[data-mac]'), (btn) => pick(btn.dataset.mac));
-    pick('arm64');
-  }
-
-  // Product demo
-
-  const stage = $('[data-stage]');
-  if (!stage) return;
-
-  const pet = $('[data-pet]', stage);
-  const sprite = $('[data-sprite]', stage);
-  const bubble = $('[data-bubble]', stage);
-  const bubbleText = $('[data-bubble-text]', stage);
-  const doneBtn = $('[data-done]', stage);
-  const cursor = $('[data-cursor]', stage);
-  const confetti = $('[data-confetti]', stage);
-  const toast = $('[data-toast]', stage);
-  const toastText = $('[data-toast-text]', stage);
-  const demo = $('.demo', stage);
-
-  const POSES = ['walking', 'point', 'drink', 'happy', 'wave', 'think'];
-  const poseUrl = (pose) => `assets/poses/${pose}.webp`;
-  POSES.forEach((pose) => (new Image().src = poseUrl(pose)));
-  const setPose = (pose) => (sprite.src = poseUrl(pose));
-
-  const SCRIPT = [
-    { text: 'Hey Priya! Time to drink some water.', water: true, next: 45 },
-    { text: 'Hey Arjun! Stand up, stretch and rest your eyes.', next: 60 },
-    { text: 'Hey Meera! Time for your evening medicine.', next: 120 },
-  ];
-
-  if (reducedMotion) {
-    pet.classList.add('in');
-    setPose('point');
-    bubbleText.textContent = SCRIPT[0].text;
-    bubble.classList.add('show', 'typed');
-    return;
-  }
-
-  let visible = false;
-  const visibility = new IntersectionObserver(([entry]) => (visible = entry.isIntersecting), {
-    threshold: 0.25,
+    li.addEventListener('mouseenter', show);
+    li.addEventListener('focus', show);
   });
-  visibility.observe(stage);
+  $('.group li')?.classList.add('is-on');
 
-  async function whenVisible() {
-    while (!visible || document.hidden) await wait(250);
-  }
+  // Start: fit the type once the fonts are in, then walk Pingo on and start the scenes.
 
-  async function type(text) {
-    bubble.classList.remove('typed');
-    bubbleText.textContent = '';
-    for (const char of text) {
-      bubbleText.textContent += char;
-      await wait(char === ' ' ? 24 : 34);
+  const start = () => {
+    fitAll();
+    if (window.Stage) {
+      Stage.smooth();
+      Stage.init();
     }
-    bubble.classList.add('typed');
-  }
+    walkIn();
+  };
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(start);
 
-  function moveCursor(x, y) {
-    cursor.style.transform = `translate(${x}px, ${y}px)`;
-  }
-
-  function pointAt(el) {
-    const box = demo.getBoundingClientRect();
-    const r = el.getBoundingClientRect();
-    moveCursor(r.left - box.left + r.width * 0.45, r.top - box.top + r.height * 0.55);
-  }
-
-  function burst() {
-    const colors = ['#ffffff', '#ff3b1f', '#0a0a0a', '#050a5c', '#ffffff'];
-    for (let i = 0; i < 28; i++) {
-      const piece = document.createElement('i');
-      piece.style.background = colors[i % colors.length];
-      piece.style.setProperty('--dx', `${Math.round((Math.random() - 0.5) * 300)}px`);
-      piece.style.setProperty('--dy', `${Math.round(-60 - Math.random() * 160)}px`);
-      piece.style.setProperty('--r', `${Math.round(Math.random() * 720 - 360)}deg`);
-      piece.style.animationDelay = `${Math.random() * 120}ms`;
-      confetti.append(piece);
-      setTimeout(() => piece.remove(), 1600);
-    }
-  }
-
-  async function play({ text, water, next }) {
-    await whenVisible();
-
-    // Walk in from the right, facing left.
-    setPose('walking');
-    pet.classList.add('walking', 'mirrored');
-    pet.classList.add('in');
-    await wait(1300);
-    pet.classList.remove('walking', 'mirrored');
-
-    // Point at the bubble and type the reminder.
-    setPose('point');
-    bubble.classList.add('show');
-    await wait(250);
-    await type(text);
-    await wait(500);
-
-    // The user's cursor glides over and taps Done.
-    const box = demo.getBoundingClientRect();
-    moveCursor(box.width * 0.3, box.height * 0.9);
-    await wait(50);
-    cursor.classList.add('show');
-    await wait(80);
-    pointAt(doneBtn);
-    await wait(1000);
-    doneBtn.classList.add('pressed');
-    await wait(180);
-    doneBtn.classList.remove('pressed');
-    bubble.classList.remove('show');
-    cursor.classList.remove('show');
-
-    // Celebrate, confirm, and walk off.
-    if (water) {
-      setPose('drink');
-      await wait(900);
-    }
-    setPose('happy');
-    pet.classList.add('hop');
-    burst();
-    toastText.textContent = `Done. Next reminder in ${next} min`;
-    toast.classList.add('show');
-    await wait(1500);
-    pet.classList.remove('hop');
-    setPose('wave');
-    await wait(700);
-
-    setPose('walking');
-    pet.classList.add('walking');
-    pet.classList.remove('in');
-    await wait(1300);
-    pet.classList.remove('walking');
-    toast.classList.remove('show');
-    await wait(900);
-  }
-
-  (async function loop() {
-    await wait(900);
-    for (let i = 0; ; i = (i + 1) % SCRIPT.length) {
-      await play(SCRIPT[i]);
-    }
-  })();
+  let resizeTimer = null;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      fitAll();
+      placeWalker();
+      window.ScrollTrigger?.refresh();
+    }, 150);
+  });
 })();
