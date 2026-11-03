@@ -802,6 +802,7 @@ h2 {
 
 /* Step 1: the app icon glides into Applications. */
 .drag-scene {
+  container-type: inline-size; /* the icon's glide is measured against this width */
   position: relative;
   display: flex;
   align-items: center;
@@ -863,12 +864,12 @@ h2 {
     opacity: 1;
   }
   55% {
-    transform: translateX(170px) scale(0.55);
+    transform: translateX(calc(100cqw - 130px)) scale(0.55);
     opacity: 1;
   }
   62%,
   88% {
-    transform: translateX(170px) scale(0.3);
+    transform: translateX(calc(100cqw - 130px)) scale(0.3);
     opacity: 0;
   }
   100% {
@@ -1303,9 +1304,43 @@ html.js .rise.is-in {
 /* --- Phone -------------------------------------------------------------------------------- */
 
 @media (max-width: 640px) {
-  .menu-button,
-  .clock {
+  /* The words flow from the top and Pingo gets its own stage below them, so the bubble never
+     covers the download buttons. */
+  .desk {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    min-height: 100svh;
+  }
+
+  .desk::after {
+    content: '';
+    flex: 1;
+    min-height: 330px; /* Pingo, the bubble above it, and the dock */
+  }
+
+  .hello {
+    position: relative;
+    inset: auto;
+    place-content: start center;
+    gap: 14px;
+    padding: 76px 20px 0;
+  }
+
+  .hello h1 {
+    font-size: clamp(2.5rem, 1.2rem + 7vw, 3.5rem);
+  }
+
+  .hello .hint {
     display: none;
+  }
+
+  .cta {
+    min-height: 50px;
+  }
+
+  .menubar-left {
+    gap: 10px;
   }
 
   .dock {
@@ -1328,6 +1363,33 @@ html.js .rise.is-in {
     grid-template-columns: 1fr;
   }
 
+  section:not(.desk) {
+    padding: 72px 16px 0;
+  }
+
+  .real {
+    min-height: 0;
+    padding: 48px 16px 0 !important;
+  }
+
+  .app-demo {
+    border-radius: 12px;
+  }
+
+  .step-art {
+    height: 170px;
+    padding: 20px;
+  }
+
+  .step-body {
+    padding: 20px 22px 24px;
+  }
+
+  .footer {
+    margin-top: 72px;
+    padding: 24px 16px;
+  }
+
   .pingo {
     bottom: 76px;
     width: 120px;
@@ -1339,6 +1401,43 @@ html.js .rise.is-in {
 
   .ask {
     bottom: 90px;
+  }
+}
+
+/* A phone on its side: Pingo stands beside the dock, not on it. */
+@media (max-height: 500px) and (orientation: landscape) {
+  .desk {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    min-height: 100svh;
+  }
+
+  .desk::after {
+    content: '';
+    flex: 1;
+    min-height: 320px;
+  }
+
+  .hello {
+    position: relative;
+    inset: auto;
+    place-content: start center;
+    gap: 12px;
+    padding: 64px 24px 0;
+  }
+
+  .hello h1 {
+    font-size: clamp(2.5rem, 1rem + 5vw, 3.5rem);
+  }
+
+  .pingo {
+    bottom: 90px;
+    width: 110px;
+  }
+
+  .hello .hint {
+    display: none;
   }
 }
 
