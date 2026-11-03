@@ -30,7 +30,7 @@ comes back later. Then it gets out of your way.
   or **animated GIF** in the avatar studio. Backgrounds are cut out
   automatically, with a strength control, size and mirror settings and a live
   preview.
-- **Your look**: light, dark or match the system; a modern or retro pixel speech
+- **Your look**: a clean light look; a modern or retro pixel speech
   bubble; six accent colours; character size; either bottom corner; an optional
   sound; auto-snooze when you don't answer.
 - **A home for it all**: one window shows what's next, today's done and
@@ -84,13 +84,13 @@ Right-click the tray icon for:
 
 ### Control center
 
-| View       | What's there                                                             |
-| ---------- | ------------------------------------------------------------------------ |
-| Home       | What's next, done and snoozed today, the last seven days, pause          |
-| Reminders  | Every reminder with an on/off switch; templates; an editor for each      |
-| Avatars    | Bundled and your own characters; the avatar studio for images and GIFs   |
-| Appearance | Theme, bubble style, accent, size, corner and screen, sound, auto-snooze |
-| General    | Your name, pause, start at login, setup, about                           |
+| View       | What's there                                                           |
+| ---------- | ---------------------------------------------------------------------- |
+| Home       | What's next, done and snoozed today, the last seven days, pause        |
+| Reminders  | Every reminder with an on/off switch; templates; an editor for each    |
+| Avatars    | Bundled and your own characters; the avatar studio for images and GIFs |
+| Appearance | Bubble style, accent, size, corner and screen, sound, auto-snooze      |
+| General    | Your name, pause, start at login, setup, about                         |
 
 Every change saves itself. Each reminder has a **Show it on my screen** button
 that previews it without touching the schedule.

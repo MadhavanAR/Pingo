@@ -10,10 +10,10 @@ test('defaults are returned for an empty patch', () => {
 });
 
 test('a patch only changes the fields it contains', () => {
-  const base = normalizeSettings({ name: 'Alex', theme: 'dark' });
+  const base = normalizeSettings({ name: 'Alex', side: 'left' });
   const next = normalizeSettings({ size: 120 }, base);
   assert.equal(next.name, 'Alex');
-  assert.equal(next.theme, 'dark');
+  assert.equal(next.side, 'left');
   assert.equal(next.size, 120);
 });
 
@@ -23,7 +23,7 @@ test('names are cleaned and length-capped', () => {
 });
 
 test('choices outside the allowed set fall back to defaults', () => {
-  const s = normalizeSettings({ theme: 'neon', accent: 'violet', side: 'top', sound: 'airhorn' });
+  const s = normalizeSettings({ theme: 'dark', accent: 'violet', side: 'top', sound: 'airhorn' });
   assert.equal(s.theme, DEFAULTS.theme);
   assert.equal(s.accent, DEFAULTS.accent);
   assert.equal(s.side, DEFAULTS.side);

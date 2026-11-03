@@ -79,4 +79,6 @@ jobs:
         with:
           files: dist/*
           generate_release_notes: true
+          # Point people at the landing page, which picks the right download.
+          body: 'Download Pingo from https://pingo-flax.vercel.app. The files below are for direct installs.'
           fail_on_unmatched_files: true

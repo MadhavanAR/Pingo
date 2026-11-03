@@ -34,6 +34,10 @@
   --faint: #6b6d69;
   --primary: #1f201d;
   --on-primary: #ffffff;
+  /* Primary buttons and selected choices: a quiet grey with bold dark text. */
+  --brand-fill: #e3e4e8;
+  --brand-fill-hover: #d6d7dc;
+  --on-brand: #111210;
   --negative: #b42318;
   --pill-neutral-bg: #eef0ef;
   --pill-neutral-ink: #3d3d3a;
@@ -101,6 +105,9 @@
     --faint: #959795;
     --primary: #f4f5f4;
     --on-primary: #111111;
+    --brand-fill: #3a3a3d;
+    --brand-fill-hover: #47474b;
+    --on-brand: #ffffff;
     --negative: #f0717e;
     --pill-neutral-bg: #262828;
     --pill-neutral-ink: #d6d8d6;
@@ -237,9 +244,10 @@ a:hover,
   cursor: not-allowed;
 }
 .btn.primary {
-  background: var(--primary);
-  border-color: var(--primary);
-  color: var(--on-primary);
+  background: var(--brand-fill);
+  border-color: transparent;
+  color: var(--on-brand);
+  font-weight: 700; /* bold so it reads on the gradient */
 }
 .btn.quiet {
   border-color: transparent;
@@ -264,7 +272,7 @@ a:hover,
     background: var(--surface-2);
   }
   .btn.primary:hover:not(:disabled) {
-    background: color-mix(in srgb, var(--primary) 86%, var(--ground));
+    background: var(--brand-fill-hover);
   }
 }
 
@@ -357,9 +365,10 @@ select.input {
 }
 .chip[aria-pressed='true'],
 .chip[aria-checked='true'] {
-  background: var(--primary);
-  border-color: var(--primary);
-  color: var(--on-primary);
+  background: var(--brand-fill);
+  border-color: transparent;
+  color: var(--on-brand);
+  font-weight: 700;
 }
 @media (hover: hover) and (pointer: fine) {
   .chip:hover:not([aria-pressed='true']):not([aria-checked='true']) {

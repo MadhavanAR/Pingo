@@ -5,6 +5,17 @@
  * column lines: KPIs 12, then 8/4, then 8/4 again.
  */
 
+/* The frame and sidebar sit on the same wallpaper as the website's hero. */
+body {
+  background: #cfe6dd url('../../assets/wallpaper.svg') center / cover fixed;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #07141a url('../../assets/wallpaper-dark.svg') center / cover fixed;
+  }
+}
+
 .shell {
   display: grid;
   grid-template-columns: 224px minmax(0, 1fr);
@@ -68,9 +79,10 @@ body.mac .sidebar button {
 .nav-item:hover {
   text-decoration: none;
   color: var(--text);
+  background: color-mix(in srgb, var(--ground) 35%, transparent);
 }
 .nav-item[aria-current='page'] {
-  background: var(--surface-2);
+  background: color-mix(in srgb, var(--ground) 62%, transparent);
   color: var(--text);
 }
 .nav-item svg {
@@ -553,9 +565,10 @@ h1.greeting {
   transform: scale(0.94);
 }
 .day[aria-pressed='true'] {
-  background: var(--primary);
-  border-color: var(--primary);
-  color: var(--on-primary);
+  background: var(--brand-fill);
+  border-color: transparent;
+  color: var(--on-brand);
+  font-weight: 700;
 }
 
 .avatar-picks {
@@ -602,6 +615,58 @@ h1.greeting {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* "More options": the less-used settings, closed by default. */
+.more {
+  border-top: 1px solid var(--rule);
+  padding: 20px 0 4px;
+}
+
+.more > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  list-style: none;
+}
+
+.more > summary::-webkit-details-marker {
+  display: none;
+}
+
+.more > summary::after {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  rotate: 45deg;
+  translate: 0 -2px;
+  transition: rotate 200ms var(--ease-out);
+}
+
+.more[open] > summary::after {
+  rotate: -135deg;
+  translate: 0 2px;
+}
+
+.more > .hint {
+  margin-top: 4px;
+}
+
+.more[open] > .hint {
+  display: none;
+}
+
+.more .section:first-of-type {
+  padding-top: 16px;
+}
+
+.more + .section {
+  border-top: 1px solid var(--rule);
 }
 
 /* Sticky preview: the setting's result, as it will appear on the desktop. */

@@ -1,7 +1,5 @@
 'use strict';
 
-/* global Stage */
-
 (function () {
   const { repo } = window.PINGO_SITE;
   const repoUrl = `https://github.com/${repo}`;
@@ -9,104 +7,252 @@
   const $ = (sel, el = document) => el.querySelector(sel);
   const $$ = (sel, el = document) => [...el.querySelectorAll(sel)];
   const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-  const pose = (name) => `assets/poses/${name}.webp`;
+  const EASE_OUT = 'cubic-bezier(0.23, 1, 0.32, 1)';
+  const EASE_IN_OUT = 'cubic-bezier(0.77, 0, 0.175, 1)';
 
   // Links. GitHub serves `releases/latest/download/<file>` as the file itself; the names
   // must match the mac `artifactName` in package.json.
 
   $$('[data-repo-link]').forEach((a) => (a.href = repoUrl));
   $$('[data-repo-path]').forEach((a) => (a.href = repoUrl + a.dataset.repoPath));
+  // Downloads. Mac files have fixed names, so `releases/latest/download/<file>` works; the
+  // Windows installer's name carries its version, so it is looked up from GitHub's API
+  // (allowed by the site's connect-src), with the Releases page as the fallback.
   const latest = `${repoUrl}/releases/latest/download`;
-  $$('[data-download]').forEach((a) => {
-    a.href = `${latest}/Pingo-mac-arm64.dmg`;
-    a.setAttribute('download', '');
-  });
-  $$('[data-download-intel]').forEach((a) => {
-    a.href = `${latest}/Pingo-mac-x64.dmg`;
-    a.setAttribute('download', '');
-  });
+  const MAC = `${latest}/Pingo-mac-arm64.dmg`;
+  const MAC_INTEL = `${latest}/Pingo-mac-x64.dmg`;
+  let windowsUrl = `${repoUrl}/releases/latest`;
+  const ua = navigator.userAgentData?.platform || navigator.userAgent;
+  const isWindows = /win/i.test(ua) && !/darwin|mac/i.test(ua);
+  document.documentElement.classList.toggle('is-windows', isWindows);
+
+  function paintDownloads() {
+    $$('[data-download="mac"]').forEach((a) => (a.href = MAC));
+    $$('[data-download="win"]').forEach((a) => {
+      a.href = windowsUrl;
+      a.toggleAttribute('download', windowsUrl.endsWith('.exe'));
+    });
+    $$('[data-download-intel]').forEach((a) => (a.href = MAC_INTEL));
+  }
+  paintDownloads();
+  fetch(`https://api.github.com/repos/${repo}/releases/latest`)
+    .then((r) => (r.ok ? r.json() : null))
+    .then((release) => {
+      const exe = release?.assets?.find((asset) => /\.exe$/i.test(asset.name));
+      if (!exe) return;
+      windowsUrl = exe.browser_download_url;
+      paintDownloads();
+    })
+    .catch(() => {});
+
+  // Install steps: Mac or Windows, starting with the visitor's own.
+  const tabs = $$('[data-os-tab]');
+  function showSteps(os) {
+    tabs.forEach((t) => t.setAttribute('aria-selected', String(t.dataset.osTab === os)));
+    $$('[data-os-steps]').forEach((ol) => {
+      ol.hidden = ol.dataset.osSteps !== os;
+      if (!ol.hidden) $$('.rise', ol).forEach((el) => el.classList.add('is-in'));
+    });
+  }
+  tabs.forEach((t) => t.addEventListener('click', () => showSteps(t.dataset.osTab)));
+  showSteps(isWindows ? 'win' : 'mac');
+
   const year = $('[data-year]');
   if (year) year.textContent = new Date().getFullYear();
 
-  // The name, the closing verb and the footer name each fill their width exactly.
+  // --- The desktop -------------------------------------------------------------------------
 
-  function fit(el, width) {
-    el.style.fontSize = '100px';
-    const natural = el.offsetWidth;
-    if (natural) el.style.fontSize = `${(100 * width) / natural}px`;
+  const pingo = $('[data-pingo]');
+  const sprite = $('[data-sprite]');
+  const bubble = $('[data-bubble]');
+  const bubbleText = $('[data-bubble-text]');
+  const bubbleButtons = $('[data-bubble-buttons]');
+  const confetti = $('[data-confetti]');
+  const hint = $('[data-hint]');
+  const ask = $('[data-ask]');
+  const askInput = $('[data-ask-input]');
+
+  // Only the classic character has a full set of poses; the others stand or cheer.
+  const CHARACTERS = {
+    boy: (p) => p,
+    'boy-badge': (p) => (p === 'happy' ? 'boy-badge-happy' : 'boy-badge-idle'),
+    'boy-sticker': (p) => (p === 'happy' ? 'boy-sticker-happy' : 'boy-sticker-idle'),
+  };
+  let character = 'boy';
+  let currentPose = 'walking';
+  const setPose = (p) => {
+    currentPose = p;
+    sprite.src = `assets/poses/${CHARACTERS[character](p)}.webp`;
+  };
+
+  const REMINDERS = {
+    water: { text: 'Time for a glass of water.', pose: 'drink', cheer: 'Hydrated and happy!' },
+    stretch: { text: 'Stand up and stretch.', pose: 'stretch', cheer: 'Nice stretch!' },
+    eyes: {
+      text: 'Look away from the screen for 20 seconds.',
+      pose: 'rest',
+      cheer: 'Eyes refreshed!',
+    },
+    medicine: { text: 'Time for your vitamins.', pose: 'point', cheer: 'Taken care of!' },
+  };
+
+  let onStage = false;
+  let current = null; // the reminder on screen
+  let act = 0; // bumps on every new action, so a newer click cancels the older sequence
+
+  function showBubble(text, withButtons) {
+    bubbleText.textContent = text;
+    bubbleButtons.hidden = !withButtons;
+    bubble.classList.add('is-shown');
   }
 
-  const gutter = () =>
-    parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--m')) || 24;
-
-  function fitAll() {
-    const m = gutter();
-    const fold = $('[data-fold]');
-    const word = $('[data-monument]');
-    if (fold && word) fit(word, fold.clientWidth - 2 * m);
-    const cta = $('.cta');
-    const ctaWord = $('.cta-word');
-    if (cta && ctaWord) fit(ctaWord, cta.clientWidth - 2 * m);
-    const footerName = $('.footer-name');
-    if (footerName) fit(footerName, footerName.parentElement.clientWidth - 2 * m);
-    window.dispatchEvent(new Event('pingo:fit'));
+  async function walk(from, to, mirrored, ms, easing) {
+    pingo.classList.toggle('is-mirrored', mirrored);
+    if (reducedMotion) {
+      pingo.style.translate = to;
+      return;
+    }
+    pingo.classList.add('is-walking');
+    setPose('walking');
+    const anim = pingo.animate([{ translate: from }, { translate: to }], { duration: ms, easing });
+    await anim.finished.catch(() => {});
+    pingo.style.translate = to;
+    pingo.classList.remove('is-walking', 'is-mirrored');
   }
 
-  // Pingo walks in along the top of the name and stops on the O.
-
-  const walker = $('[data-walker]'); // GSAP fades this one on scroll
-  const walkerInner = $('[data-walker-inner]'); // the walk animates this one
-  const sprite = $('[data-walker-sprite]');
-  const walkerBubble = $('[data-walker-bubble]');
-  const walkerText = $('[data-walker-text]');
-
-  function placeWalker() {
-    const word = $('[data-monument]');
-    const o = $('[data-o]');
-    if (!walker || !word || !o) return;
-    const fontSize = parseFloat(word.style.fontSize) || o.offsetHeight;
-    const centre = word.offsetLeft + o.offsetLeft + o.offsetWidth / 2;
-    const capTop = word.offsetTop + o.offsetTop + fontSize * 0.005;
-    walker.style.left = `${centre - walker.offsetWidth * 0.52}px`;
-    walker.style.top = `${capTop - walker.offsetHeight * 0.985}px`;
+  async function call(reminder) {
+    const me = ++act;
+    current = reminder;
+    hint?.classList.add('is-gone');
+    $$('.app').forEach((a) =>
+      a.classList.toggle('is-running', a.dataset.reminder === reminder.key),
+    );
+    bubble.classList.remove('is-shown');
+    if (!onStage) {
+      onStage = true;
+      await walk('160% 0', '0 0', true, 1400, EASE_OUT);
+    } else {
+      await wait(160);
+    }
+    if (me !== act) return;
+    setPose(reminder.pose);
+    showBubble(reminder.text, true);
   }
 
-  const LINES = [
-    // Full-body poses only: Pingo is standing on the O.
-    ['Time for a glass of water.', 'drink'],
-    ['Stand up and stretch your back.', 'wave'],
-    ['Look out of the window for 20 seconds.', 'think'],
-    ['Time for your vitamin D.', 'point'],
-  ];
+  async function leave(me, delay) {
+    await wait(delay);
+    if (me !== act) return;
+    bubble.classList.remove('is-shown');
+    await wait(150);
+    if (me !== act) return;
+    onStage = false;
+    $$('.app').forEach((a) => a.classList.remove('is-running'));
+    await walk('0 0', '160% 0', false, 1100, EASE_IN_OUT);
+  }
 
-  async function walkIn() {
-    if (!walker) return;
-    placeWalker();
-    const distance = window.innerWidth - walker.offsetLeft + 40;
+  function burst() {
+    if (reducedMotion) return;
+    const colours = ['#0a8a64', '#2f8cf0', '#f39a1e', '#ef5b5b', '#ffffff'];
+    for (let i = 0; i < 34; i++) {
+      const bit = document.createElement('i');
+      const angle = Math.random() * Math.PI * 2;
+      const reach = 90 + Math.random() * 170;
+      bit.style.background = colours[i % colours.length];
+      bit.style.setProperty('--dx', `${Math.cos(angle) * reach}px`);
+      bit.style.setProperty('--dy', `${Math.sin(angle) * reach - 70}px`);
+      bit.style.setProperty('--r', `${Math.random() * 540 - 270}deg`);
+      bit.style.animationDelay = `${Math.random() * 120}ms`;
+      confetti.append(bit);
+      setTimeout(() => bit.remove(), 1500);
+    }
+  }
+
+  $('[data-done]').addEventListener('click', () => {
+    const me = ++act;
+    setPose('happy');
+    showBubble(current?.cheer ?? 'Nice work!', false);
+    burst();
     if (!reducedMotion) {
-      walker.classList.add('is-walking', 'is-mirrored');
-      await walkerInner.animate([{ translate: `${distance}px 0` }, { translate: '0 0' }], {
-        duration: 2400,
-        easing: 'cubic-bezier(0.23, 1, 0.32, 1)',
-        fill: 'backwards',
-      }).finished;
-      walker.classList.remove('is-walking', 'is-mirrored');
+      pingo.classList.remove('is-hopping');
+      void pingo.offsetWidth;
+      pingo.classList.add('is-hopping');
     }
-    let i = 0;
-    for (;;) {
-      const [text, name] = LINES[i % LINES.length];
-      sprite.src = pose(name);
-      walkerText.textContent = text;
-      walkerBubble.classList.add('is-shown');
-      await wait(3600);
-      walkerBubble.classList.remove('is-shown');
-      await wait(450);
-      i += 1;
-    }
-  }
+    leave(me, 1700);
+  });
 
-  // Entrances: the parts of each section rise in turn as it comes into view.
+  $('[data-snooze]').addEventListener('click', () => {
+    const me = ++act;
+    setPose('think');
+    showBubble('Okay! I’ll come back in 10 minutes.', false);
+    leave(me, 1500);
+  });
 
+  $$('[data-reminder]').forEach((app) =>
+    app.addEventListener('click', () => {
+      ask.hidden = true;
+      call({ key: app.dataset.reminder, ...REMINDERS[app.dataset.reminder] });
+    }),
+  );
+
+  // Your own words: a small field grows out of the "+" app.
+  $('[data-own]').addEventListener('click', () => {
+    ask.hidden = !ask.hidden;
+    if (!ask.hidden) askInput.focus();
+  });
+  ask.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const text = askInput.value.trim();
+    if (!text) return;
+    ask.hidden = true;
+    const line = `${text.charAt(0).toUpperCase()}${text.slice(1).replace(/[.!]?$/, '.')}`;
+    call({ key: 'own', text: line, pose: 'point', cheer: 'Nice work!' });
+  });
+
+  // Character menu in the menu bar.
+  const menu = $('[data-menu]');
+  const menuButton = $('[data-menu-button]');
+  const setMenu = (open) => {
+    menu.classList.toggle('is-open', open);
+    menuButton.setAttribute('aria-expanded', String(open));
+  };
+  menuButton.addEventListener('click', (e) => {
+    e.stopPropagation();
+    setMenu(!menu.classList.contains('is-open'));
+  });
+  document.addEventListener('click', (e) => {
+    if (!menu.contains(e.target)) setMenu(false);
+  });
+  $$('[data-character]').forEach((item) =>
+    item.addEventListener('click', () => {
+      character = item.dataset.character;
+      $$('[data-character]').forEach((i) => i.setAttribute('aria-checked', String(i === item)));
+      setMenu(false);
+      setPose(currentPose);
+      if (!onStage) call({ key: 'water', ...REMINDERS.water });
+    }),
+  );
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    setMenu(false);
+    ask.hidden = true;
+  });
+
+  // A live clock, like the real menu bar.
+  const clock = $('[data-clock]');
+  const tick = () => {
+    clock.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+  tick();
+  setInterval(tick, 20_000);
+
+  // If nobody clicks, Pingo shows how it works by itself.
+  setTimeout(() => {
+    if (act === 0) call({ key: 'water', ...REMINDERS.water });
+  }, 1800);
+
+  // --- Below the desktop -------------------------------------------------------------------
+
+  // Sections rise in as they arrive.
   const risers = $$('.rise');
   risers.forEach((el) => {
     const siblings = [...el.parentElement.children].filter((c) => c.classList.contains('rise'));
@@ -127,195 +273,4 @@
     );
     risers.forEach((el) => observer.observe(el));
   }
-
-  // Try a reminder: type it, Pingo says it; Done celebrates, Snooze thinks it over.
-
-  const input = $('[data-try-input]');
-  if (input) {
-    const line = $('[data-plate-line]');
-    const bubble = $('[data-plate-bubble]');
-    const char = $('[data-plate-char]');
-    const whenEl = $('[data-try-when]');
-    const confetti = $('[data-confetti]');
-    const tabs = $$('.tabs [data-example]');
-
-    const TYPES = [
-      {
-        test: /medic|pill|tablet|vitamin|dose/i,
-        pose: 'point',
-        when: 'At 09:00 and 21:00',
-        cheer: 'Taken care of!',
-      },
-      {
-        test: /posture|sit up|straight|shoulder/i,
-        pose: 'think',
-        when: 'Every 30 minutes',
-        cheer: 'Standing tall!',
-      },
-      {
-        test: /eye|screen|look away|window/i,
-        pose: 'rest',
-        when: 'Every 20 minutes',
-        cheer: 'Eyes refreshed!',
-      },
-      {
-        test: /stretch|stand|walk|move|back|neck/i,
-        pose: 'stretch',
-        when: 'Every 60 minutes',
-        cheer: 'Nice stretch!',
-      },
-      {
-        test: /water|drink|hydrat|glass/i,
-        pose: 'drink',
-        when: 'Every 45 minutes',
-        cheer: 'Hydrated and happy!',
-      },
-    ];
-    const CUSTOM = { pose: 'point', when: 'Every 60 minutes', cheer: 'Nice work!' };
-    const pad = (n) => String(n).padStart(2, '0'); // clock times, 09:00
-
-    function parse(raw) {
-      let text = raw.trim();
-      let when = null;
-      const every = text.match(/\bevery\s+(\d{1,3})\s*(m|min|mins|minutes?|h|hr|hrs|hours?)\b/i);
-      if (every) {
-        const n = Number(every[1]);
-        when = /^h/i.test(every[2])
-          ? `Every ${n} hour${n === 1 ? '' : 's'}`
-          : `Every ${n} minute${n === 1 ? '' : 's'}`;
-        text = text.replace(every[0], '');
-      }
-      const at = text.match(
-        /\bat\s+(\d{1,2}(?::\d{2})?\s*(?:am|pm)?(?:\s*(?:,|and|&)\s*\d{1,2}(?::\d{2})?\s*(?:am|pm)?)*)/i,
-      );
-      if (at) {
-        const times = at[1]
-          .split(/\s*(?:,|and|&)\s*/i)
-          .map((t) => {
-            const m = t.match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/i);
-            if (!m) return null;
-            let h = Number(m[1]);
-            const min = Number(m[2] || 0);
-            if (m[3] && /pm/i.test(m[3]) && h < 12) h += 12;
-            if (m[3] && /am/i.test(m[3]) && h === 12) h = 0;
-            return h < 24 && min < 60 ? `${pad(h)}:${pad(min)}` : null;
-          })
-          .filter(Boolean);
-        if (times.length) {
-          when = `At ${times.length > 1 ? `${times.slice(0, -1).join(', ')} and ${times.at(-1)}` : times[0]}`;
-          text = text.replace(at[0], '');
-        }
-      }
-      text = text
-        .replace(/\s{2,}/g, ' ')
-        .replace(/[\s,.;:-]+$/, '')
-        .trim();
-      return { text, when };
-    }
-
-    let current = TYPES[4];
-    let busy = false;
-
-    function render() {
-      const { text, when } = parse(input.value);
-      const message = text || 'Drink a glass of water';
-      current = TYPES.find((t) => t.test.test(message)) ?? CUSTOM;
-      if (!busy) {
-        line.textContent = `${message.charAt(0).toUpperCase()}${message.slice(1)}.`;
-        char.src = pose(current.pose);
-      }
-      whenEl.textContent = `${when ?? current.when}, every day`;
-    }
-
-    function burst() {
-      if (reducedMotion) return;
-      const colours = ['#e6dbc7', '#ffffff', '#9db4ff', '#d2c3a7'];
-      for (let i = 0; i < 28; i++) {
-        const bit = document.createElement('i');
-        const angle = Math.random() * Math.PI * 2;
-        const reach = 90 + Math.random() * 160;
-        bit.style.background = colours[i % colours.length];
-        bit.style.setProperty('--dx', `${Math.cos(angle) * reach}px`);
-        bit.style.setProperty('--dy', `${Math.sin(angle) * reach - 60}px`);
-        bit.style.setProperty('--r', `${Math.random() * 540 - 270}deg`);
-        bit.style.animationDelay = `${Math.random() * 120}ms`;
-        confetti.append(bit);
-        setTimeout(() => bit.remove(), 1500);
-      }
-    }
-
-    async function answer(text, name, celebrate) {
-      if (busy) return;
-      busy = true;
-      bubble.classList.add('is-swapping');
-      await wait(200);
-      line.textContent = text;
-      char.src = pose(name);
-      bubble.classList.remove('is-swapping');
-      if (celebrate) {
-        burst();
-        if (!reducedMotion) char.classList.add('is-hopping');
-      }
-      await wait(1900);
-      char.classList.remove('is-hopping');
-      bubble.classList.add('is-swapping');
-      await wait(200);
-      busy = false;
-      render();
-      bubble.classList.remove('is-swapping');
-    }
-
-    input.addEventListener('input', render);
-    $('[data-try-done]').addEventListener('click', () => answer(current.cheer, 'happy', true));
-    $('[data-try-snooze]').addEventListener('click', () =>
-      answer('I’ll come back in 10 minutes.', 'think', false),
-    );
-    tabs.forEach((tab) =>
-      tab.addEventListener('click', () => {
-        tabs.forEach((t) => t.setAttribute('aria-selected', String(t === tab)));
-        input.value = tab.dataset.example;
-        render();
-      }),
-    );
-    render();
-  }
-
-  // Features: hover or focus a capability to read it, and see the screen it lives on.
-
-  const tip = $('[data-detail-tip]');
-  const shots = $$('[data-shot]');
-  $$('.group li').forEach((li) => {
-    const show = () => {
-      $$('.group li.is-on').forEach((x) => x.classList.remove('is-on'));
-      li.classList.add('is-on');
-      tip.textContent = li.dataset.tip;
-      const group = li.closest('[data-group]').dataset.group;
-      shots.forEach((img) => img.classList.toggle('is-on', img.dataset.shot === group));
-    };
-    li.addEventListener('mouseenter', show);
-    li.addEventListener('focus', show);
-  });
-  $('.group li')?.classList.add('is-on');
-
-  // Start: fit the type once the fonts are in, then walk Pingo on and start the scenes.
-
-  const start = () => {
-    fitAll();
-    if (window.Stage) {
-      Stage.smooth();
-      Stage.init();
-    }
-    walkIn();
-  };
-  (document.fonts ? document.fonts.ready : Promise.resolve()).then(start);
-
-  let resizeTimer = null;
-  window.addEventListener('resize', () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => {
-      fitAll();
-      placeWalker();
-      window.ScrollTrigger?.refresh();
-    }, 150);
-  });
 })();

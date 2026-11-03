@@ -18,7 +18,7 @@ All notable changes to this project are documented here. The format follows
 - **Avatar studio**: make characters from any image or **animated GIF**, with an
   optional celebration image, background cut-out strength, size, mirroring and a
   live preview. Keep up to 24.
-- **Appearance**: light, dark or system theme; modern or retro pixel bubble;
+- **Appearance**: a light look that matches the website; modern or retro pixel bubble;
   accent colour; character size; bottom-left or bottom-right corner; main screen
   or the screen with the pointer; arrival sound; auto-snooze if unanswered.
 - **Control center** window with Home (what's next, today's counts, the week),

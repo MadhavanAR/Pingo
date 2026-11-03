@@ -6,6 +6,9 @@ const path = require('node:path');
 
 const APP_NAME = 'Pingo';
 
+/** The landing page: where people download Pingo and read about it. */
+const WEBSITE_URL = require('../../package.json').homepage;
+
 /** Earlier names' user-data folders, newest first; migrated once on first launch. */
 const LEGACY_USER_DATA_DIRS = Object.freeze(['Nudgy', 'Hydrate Buddy', 'hydrate-buddy']);
 
@@ -76,6 +79,7 @@ const PRESETS = Object.freeze([
 
 module.exports = {
   APP_NAME,
+  WEBSITE_URL,
   LEGACY_USER_DATA_DIRS,
   ROOT_DIR,
   RENDERER_DIR,

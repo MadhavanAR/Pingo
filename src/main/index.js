@@ -3,7 +3,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { app, nativeTheme, powerMonitor } = require('electron');
-const { APP_NAME, LEGACY_USER_DATA_DIRS, MINUTE_MS, SCHEDULE } = require('./config');
+const { APP_NAME, LEGACY_USER_DATA_DIRS, MINUTE_MS, SCHEDULE, WEBSITE_URL } = require('./config');
 const { CHANNELS } = require('../shared/channels');
 const { normalizeSettings, readSettings } = require('./settings');
 const {
@@ -281,6 +281,7 @@ class PingoApp {
     const until = this.scheduler.paused ? this.scheduler.pausedUntil : 0;
     return {
       version: app.getVersion(),
+      website: WEBSITE_URL,
       platform: process.platform,
       isPackaged: app.isPackaged,
       openAtLogin: app.isPackaged ? app.getLoginItemSettings().openAtLogin : false,

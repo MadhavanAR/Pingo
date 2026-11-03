@@ -15,7 +15,7 @@ const LIMITS = Object.freeze({
 });
 
 const CHOICES = Object.freeze({
-  theme: Object.freeze(['system', 'light', 'dark']),
+  theme: Object.freeze(['light']), // light only: the app, its pet and the website match
   bubbleStyle: Object.freeze(['modern', 'pixel']),
   accent: Object.freeze(['teal', 'ocean', 'grass', 'sun', 'coral', 'ink']),
   side: Object.freeze(['right', 'left']),
@@ -25,7 +25,7 @@ const CHOICES = Object.freeze({
 
 const DEFAULTS = Object.freeze({
   name: '',
-  theme: 'system',
+  theme: 'light',
   bubbleStyle: 'modern',
   accent: 'teal',
   size: 100, // percent: scales the character and its bubble together

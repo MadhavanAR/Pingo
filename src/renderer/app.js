@@ -11,7 +11,7 @@
  *   #reminders            every reminder; #reminders/<id> edits one,
  *                         #reminders/new-<type> creates one from a template
  *   #avatars              characters; #avatars/<id> or #avatars/new opens the studio
- *   #appearance           theme, bubble, accent, size, corner, sound
+ *   #appearance           bubble, accent, size, corner, sound
  *   #general              name, pause, start at login, about
  *
  * Every control saves itself (with a quiet "Saved" stamp), except the avatar
@@ -567,7 +567,7 @@ function reminderEditorView(id) {
       });
       return h(
         'section.section',
-        h('h2', 'What'),
+        h('h2', 'Remind me to'),
         chipGroup(
           TYPE_ORDER.map((t) => ({ value: t, label: typeInfo(t).label })),
           draft.type,
@@ -672,7 +672,7 @@ function reminderEditorView(id) {
             );
       return h(
         'section.section',
-        h('h2', 'When'),
+        h('h2', 'How often'),
         segmented(
           [
             { value: 'interval', label: 'Every few minutes' },
@@ -696,7 +696,7 @@ function reminderEditorView(id) {
       };
       return h(
         'section.section',
-        h('h2', 'Days'),
+        h('h2', 'On these days'),
         h(
           'div.days',
           { role: 'group', 'aria-label': 'Days of the week' },
@@ -912,7 +912,22 @@ function reminderEditorView(id) {
     ),
     h(
       'div.editor',
-      h('div.sections', Object.values(sections)),
+      // The essentials up front; the rest waits behind "More options".
+      h(
+        'div.sections',
+        sections.what,
+        sections.when,
+        sections.days,
+        h(
+          'details.more',
+          h('summary', 'More options'),
+          h('p.hint', 'Quiet hours, snooze length and who reminds you.'),
+          sections.hours,
+          sections.snooze,
+          sections.character,
+        ),
+        sections.remove,
+      ),
       h(
         'aside.preview',
         h('div.desk', bubble, h('div.mini-pet', petImg)),
@@ -1472,20 +1487,6 @@ function appearanceView() {
     h(
       'div.settings',
       settingRow(
-        'Theme',
-        'For these windows and the speech bubble.',
-        segmented(
-          [
-            { value: 'system', label: 'Match system' },
-            { value: 'light', label: 'Light' },
-            { value: 'dark', label: 'Dark' },
-          ],
-          s.theme,
-          (theme) => save({ theme }, { rerender: true }),
-          'Theme',
-        ),
-      ),
-      settingRow(
         'Speech bubble',
         'The card Pingo holds up with your reminder.',
         h(
@@ -1677,6 +1678,12 @@ function generalView() {
         h(
           'div.about',
           h('div', `Pingo ${state.version}`),
+          // target=_blank: the window's open handler sends https links to the browser.
+          h(
+            'a',
+            { href: state.website, target: '_blank', rel: 'noopener' },
+            'Updates, help and downloads on the Pingo website',
+          ),
           h(
             'p.muted',
             'Your settings, avatars and counts stay on this computer. Pingo has no accounts and makes no network requests.',

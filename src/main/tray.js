@@ -1,8 +1,8 @@
 'use strict';
 
 const path = require('node:path');
-const { app, Menu, Tray, nativeImage } = require('electron');
-const { APP_NAME, ASSETS_DIR, SCHEDULE } = require('./config');
+const { app, Menu, Tray, nativeImage, shell } = require('electron');
+const { APP_NAME, ASSETS_DIR, SCHEDULE, WEBSITE_URL } = require('./config');
 
 const clock = (ms) => new Date(ms).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
@@ -97,6 +97,7 @@ class AppTray {
 
     template.push(
       { label: 'Run setup again…', click: () => c.openOnboarding() },
+      { label: `${APP_NAME} website…`, click: () => shell.openExternal(WEBSITE_URL) },
       { type: 'separator' },
       { label: `Quit ${APP_NAME}`, click: () => c.quit() },
     );

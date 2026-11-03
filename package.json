@@ -64,6 +64,8 @@
     "files": [
       "src/**/*",
       "assets/tray.png",
+      "assets/wallpaper.svg",
+      "assets/wallpaper-dark.svg",
       "assets/fonts/**/*",
       "assets/characters/**/*",
       "!assets/characters/**/raw/**",
