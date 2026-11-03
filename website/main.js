@@ -1,8 +1,7 @@
 'use strict';
 
 (function () {
-  const { repo } = window.PINGO_SITE;
-  const repoUrl = `https://github.com/${repo}`;
+  const { downloads } = window.PINGO_SITE;
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const $ = (sel, el = document) => el.querySelector(sel);
   const $$ = (sel, el = document) => [...el.querySelectorAll(sel)];
@@ -10,40 +9,21 @@
   const EASE_OUT = 'cubic-bezier(0.23, 1, 0.32, 1)';
   const EASE_IN_OUT = 'cubic-bezier(0.77, 0, 0.175, 1)';
 
-  // Links. GitHub serves `releases/latest/download/<file>` as the file itself; the names
-  // must match the mac `artifactName` in package.json.
-
-  $$('[data-repo-link]').forEach((a) => (a.href = repoUrl));
-  $$('[data-repo-path]').forEach((a) => (a.href = repoUrl + a.dataset.repoPath));
-  // Downloads. Mac files have fixed names, so `releases/latest/download/<file>` works; the
-  // Windows installer's name carries its version, so it is looked up from GitHub's API
-  // (allowed by the site's connect-src), with the Releases page as the fallback.
-  const latest = `${repoUrl}/releases/latest/download`;
-  const MAC = `${latest}/Pingo-mac-arm64.dmg`;
-  const MAC_INTEL = `${latest}/Pingo-mac-x64.dmg`;
-  let windowsUrl = `${repoUrl}/releases/latest`;
+  // Downloads. Every installer has a fixed name (the mac and nsis `artifactName` in
+  // package.json), so each button links straight to its file and the download starts at once.
+  const MAC = `${downloads}/Pingo-mac-arm64.dmg`;
+  const MAC_INTEL = `${downloads}/Pingo-mac-x64.dmg`;
+  const WINDOWS = `${downloads}/Pingo-Setup.exe`;
   const ua = navigator.userAgentData?.platform || navigator.userAgent;
   const isWindows = /win/i.test(ua) && !/darwin|mac/i.test(ua);
   document.documentElement.classList.toggle('is-windows', isWindows);
 
-  function paintDownloads() {
-    $$('[data-download="mac"]').forEach((a) => (a.href = MAC));
-    $$('[data-download="win"]').forEach((a) => {
-      a.href = windowsUrl;
-      a.toggleAttribute('download', windowsUrl.endsWith('.exe'));
-    });
-    $$('[data-download-intel]').forEach((a) => (a.href = MAC_INTEL));
-  }
-  paintDownloads();
-  fetch(`https://api.github.com/repos/${repo}/releases/latest`)
-    .then((r) => (r.ok ? r.json() : null))
-    .then((release) => {
-      const exe = release?.assets?.find((asset) => /\.exe$/i.test(asset.name));
-      if (!exe) return;
-      windowsUrl = exe.browser_download_url;
-      paintDownloads();
-    })
-    .catch(() => {});
+  $$('[data-download="mac"]').forEach((a) => (a.href = MAC));
+  $$('[data-download="win"]').forEach((a) => {
+    a.href = WINDOWS;
+    a.setAttribute('download', '');
+  });
+  $$('[data-download-intel]').forEach((a) => (a.href = MAC_INTEL));
 
   // Install steps: Mac or Windows, starting with the visitor's own.
   const tabs = $$('[data-os-tab]');

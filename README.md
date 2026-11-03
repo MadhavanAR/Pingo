@@ -51,10 +51,10 @@ Press **Done** and it cheers. Press **Snooze** and it comes back later.
 Download from **[pingo-flax.vercel.app](https://pingo-flax.vercel.app)** or the
 [latest release](https://github.com/MadhavanAR/Pingo/releases/latest).
 
-|             | 1                                | 2                                                   |
-| ----------- | -------------------------------- | --------------------------------------------------- |
-| **Mac**     | Drag Pingo into Applications.    | First launch: **Privacy & Security → Open Anyway**. |
-| **Windows** | Run `Pingo-Setup-<version>.exe`. | On the blue warning: **More info → Run anyway**.    |
+|             | 1                             | 2                                                   |
+| ----------- | ----------------------------- | --------------------------------------------------- |
+| **Mac**     | Drag Pingo into Applications. | First launch: **Privacy & Security → Open Anyway**. |
+| **Windows** | Run `Pingo-Setup.exe`.        | On the blue warning: **More info → Run anyway**.    |
 
 Step 2 is needed once, because builds aren't code-signed yet.
 Linux: `.AppImage` or `sudo apt install ./Pingo-*.deb`.

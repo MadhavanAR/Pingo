@@ -89,7 +89,7 @@
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "Pingo",
-      "artifactName": "Pingo-Setup-${version}.${ext}"
+      "artifactName": "Pingo-Setup.${ext}"
     },
     "artifactName": "Pingo-${version}-${os}-${arch}.${ext}",
     "mac": {

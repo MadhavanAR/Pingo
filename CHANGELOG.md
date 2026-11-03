@@ -6,6 +6,11 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- The Windows installer is now always named `Pingo-Setup.exe`, so the website
+  downloads it directly instead of opening GitHub.
+
 ## [2.2.0] - 2026-11-03
 
 ### Added

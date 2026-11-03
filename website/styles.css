@@ -506,6 +506,7 @@ button {
   background: var(--glass-line);
 }
 
+/* One material for every app: a frosted white tile with an ink line icon. */
 .app {
   position: relative;
   display: grid;
@@ -513,44 +514,24 @@ button {
   width: 56px;
   height: 56px;
   border-radius: 14px;
-  color: #fff;
+  background: linear-gradient(180deg, #ffffff 0%, #ececef 100%);
+  color: var(--ink);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 0 0 0.5px rgba(0, 0, 0, 0.1),
+    0 6px 14px -6px rgba(0, 0, 0, 0.28);
   transform-origin: 50% 100%;
   transition: transform 0.2s var(--ease-out);
 }
 
 .app svg {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   fill: none;
   stroke: currentColor;
-  stroke-width: 2;
+  stroke-width: 1.6;
   stroke-linecap: round;
   stroke-linejoin: round;
-}
-
-.app-water {
-  background: #2f8cf0;
-}
-
-.app-water svg,
-.app-stretch circle {
-  fill: currentColor;
-}
-
-.app-stretch {
-  background: #2fb36e;
-}
-
-.app-eyes {
-  background: #f39a1e;
-}
-
-.app-pill {
-  background: #ef5b5b;
-}
-
-.app-own {
-  background: #1d1d1f;
 }
 
 .app:active {
@@ -644,7 +625,13 @@ h2 {
 .footer a {
   color: var(--ink);
   font-weight: 600;
-  text-decoration: none;
+  text-decoration: underline;
+  text-decoration-color: rgba(29, 29, 31, 0.3);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 4px;
+  transition:
+    color 0.15s ease,
+    text-decoration-color 0.15s ease;
 }
 
 .footer-right {
@@ -663,8 +650,8 @@ h2 {
 }
 
 .footer a:hover {
-  text-decoration: underline;
-  text-underline-offset: 4px;
+  color: var(--green);
+  text-decoration-color: currentColor;
 }
 
 /* The real app, recorded. The window always fits the screen with the same margin on all
@@ -1059,15 +1046,29 @@ html.is-windows .cta[data-download='win'] {
   order: 0;
 }
 
+/* Phones: both buttons share one row, named just "Mac" and "Windows". Screen readers still
+   hear "Download for". */
 @media (max-width: 480px) {
   .ctas {
-    flex-direction: column;
-    align-items: stretch;
-    width: min(100%, 300px);
+    flex-wrap: nowrap;
+    gap: 10px;
+    width: min(100%, 340px);
   }
 
   .ctas .cta {
+    flex: 1;
     justify-content: center;
+    gap: 8px;
+    padding: 0 16px;
+  }
+
+  .cta-for {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 }
 
@@ -1355,8 +1356,8 @@ html.js .rise.is-in {
   }
 
   .app svg {
-    width: 24px;
-    height: 24px;
+    width: 23px;
+    height: 23px;
   }
 
   .install-steps {

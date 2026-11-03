@@ -8,14 +8,16 @@ Pingo has two deliverables:
 2. **The website** in `website/`, a static download page. It has no build step,
    no server and no environment variables, so any static host works.
 
-Before deploying a fork, set your repository in `website/config.js`:
+Before deploying, set where the installers live in `website/config.js`:
 
 ```js
-window.PINGO_SITE = { repo: 'your-org/your-repo' };
+window.PINGO_SITE = { downloads: 'https://example.com/pingo/latest' };
 ```
 
-The download button detects the visitor's OS and links to the matching installer
-from the latest release.
+That folder must hold `Pingo-mac-arm64.dmg`, `Pingo-mac-x64.dmg` and
+`Pingo-Setup.exe`, and be public: while the source repo is private, its own
+GitHub Releases links 404 for visitors. Each button links straight to its file,
+with the visitor's OS first.
 
 ## Desktop app (GitHub Releases)
 
@@ -28,7 +30,7 @@ The `Release` workflow verifies the build, then produces:
 
 | Runner  | Artifacts                          |
 | ------- | ---------------------------------- |
-| Windows | `Pingo-Setup-<version>.exe`        |
+| Windows | `Pingo-Setup.exe`                  |
 | macOS   | `.dmg` for Intel and Apple Silicon |
 | Linux   | `.AppImage`, `.deb`                |
 
