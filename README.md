@@ -1,63 +1,95 @@
 <p align="center">
-  <img src="build/icon.png" width="96" alt="Pingo" />
+  <img src="build/icon.png" width="88" alt="Pingo" />
 </p>
 
-<h1 align="center">Pingo</h1>
+<h1 align="center">Reminders that walk in.</h1>
 
 <p align="center">
-  Your desktop reminder buddy. Pingo walks onto your screen, reminds you, and walks off.
+  <b>Pingo</b>, your little buddy for Mac and Windows.
+</p>
+
+<p align="center">
+  <a href="https://pingo-flax.vercel.app"><img src="https://img.shields.io/badge/Download_for_Mac-0a8a64?style=for-the-badge&logo=apple&logoColor=white" alt="Download for Mac" /></a>
+  <a href="https://pingo-flax.vercel.app"><img src="https://img.shields.io/badge/Download_for_Windows-1d1d1f?style=for-the-badge&logo=windows&logoColor=white" alt="Download for Windows" /></a>
 </p>
 
 <p align="center">
   <a href="https://github.com/MadhavanAR/Pingo/actions/workflows/ci.yml"><img src="https://github.com/MadhavanAR/Pingo/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
-  <a href="https://github.com/MadhavanAR/Pingo/releases/latest"><img src="https://img.shields.io/github/v/release/MadhavanAR/Pingo" alt="Latest release" /></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT license" /></a>
+  <a href="https://github.com/MadhavanAR/Pingo/releases/latest"><img src="https://img.shields.io/github/v/release/MadhavanAR/Pingo?color=0a8a64" alt="Latest release" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-0a8a64.svg" alt="MIT license" /></a>
 </p>
+
+<p align="center">
+  <img src="website/assets/poses/wave.webp" height="120" alt="Pingo waving" />
+  <img src="website/assets/poses/drink.webp" height="120" alt="Pingo drinking water" />
+  <img src="website/assets/poses/stretch.webp" height="120" alt="Pingo stretching" />
+  <img src="website/assets/poses/rest.webp" height="120" alt="Pingo resting their eyes" />
+  <img src="website/assets/poses/happy.webp" height="120" alt="Pingo celebrating" />
+</p>
+
+---
+
+A little character walks onto your screen to remind you to drink water, stretch,
+rest your eyes or take your medicine. Press **Done** and it celebrates. Press
+**Snooze** and it comes back later. Then it walks off and gets out of your way.
 
 ![Pingo walks in, reminds you to drink water, celebrates, and walks off](docs/demo.gif)
 
-Pingo lives in your system tray. On your schedule, a cartoon character walks into
-the corner of your screen with a reminder: drink water by default, or anything
-you write yourself. Press **Done** and it celebrates. Press **Snooze** and it
-comes back later. Then it gets out of your way.
+### Water. Stretch. Rest eyes. Medicine. Your own.
 
-- **As many reminders as you like**: water, stretching, resting your eyes,
-  posture, medicine, or your own words. Each has its own schedule, days, hours,
+- **As many reminders as you like.** Each has its own schedule, days, hours,
   snooze length and character.
-- **Your schedule**: every _N_ minutes (1 minute to 12 hours) inside the hours you
-  choose, or at set times of day (09:00 and 21:00), on the days you pick.
-- **Your character**: three bundled characters, or make your own from any image
-  or **animated GIF** in the avatar studio. Backgrounds are cut out
-  automatically, with a strength control, size and mirror settings and a live
-  preview.
-- **Your look**: a clean light look; a modern or retro pixel speech
-  bubble; six accent colours; character size; either bottom corner; an optional
-  sound; auto-snooze when you don't answer.
-- **A home for it all**: one window shows what's next, today's done and
-  snoozed counts and the week, and holds every setting. Pause for 30 minutes,
-  an hour or until tomorrow from the tray.
-- **Private**: no accounts, no telemetry, no network access. Settings stay on
-  your machine.
-- **Cross-platform**: Windows, macOS and Linux.
+- **On your schedule.** Every _N_ minutes (1 minute to 12 hours) inside the
+  hours you choose, or at set times of day, on the days you pick.
+- **Your character.** Classic, ID badge or sticker, or make your own from any
+  image or **animated GIF**. Backgrounds are cut out automatically.
+- **Your look.** A modern or retro pixel speech bubble, six accent colours,
+  character size, either bottom corner, an optional sound, auto-snooze.
+- **A home for it all.** One window shows what's next, today's done and
+  snoozed counts and the week, and holds every setting.
+- **Private.** No accounts, no telemetry, no network access.
+- **Free and open source.** MIT licensed. Also runs on Linux.
+
+<p align="center">
+  <img src="website/assets/demo/app-light-v6.webp" width="720" alt="The Pingo app: opening Reminders, choosing a stretch reminder, changing how often it repeats, adding Saturday, and previewing it" />
+</p>
 
 ## Install
 
-Get it from **[pingo-flax.vercel.app](https://pingo-flax.vercel.app)**, which picks the right
-installer for your OS, or download it directly from the
-[latest release](https://github.com/MadhavanAR/Pingo/releases/latest):
+**Two steps. Thirty seconds.** Get it from
+**[pingo-flax.vercel.app](https://pingo-flax.vercel.app)**, which picks the right
+installer for you, or from the
+[latest release](https://github.com/MadhavanAR/Pingo/releases/latest).
 
-| Platform | File                                                                 |
-| -------- | -------------------------------------------------------------------- |
-| Windows  | `Pingo-Setup-<version>.exe`                                          |
-| macOS    | `Pingo-mac-arm64.dmg` (Apple Silicon) or `Pingo-mac-x64.dmg` (Intel) |
-| Linux    | `.AppImage` or `.deb`                                                |
+<table>
+<tr>
+<th width="50%">Mac</th>
+<th width="50%">Windows</th>
+</tr>
+<tr>
+<td valign="top">
 
-Builds are not code-signed yet, so the first launch needs one extra click:
+**1. Drag to Applications.** Open `Pingo-mac-arm64.dmg` (Apple Silicon) or
+`Pingo-mac-x64.dmg` (Intel) and drag Pingo into Applications.
 
-- **Windows:** on "Windows protected your PC", choose **More info → Run anyway**.
-- **macOS:** open the DMG and drag Pingo into Applications. On first launch, if macOS
-  blocks it, go to **System Settings → Privacy & Security → Open Anyway**.
-- **Linux:** make the AppImage executable, or run `sudo apt install ./Pingo-*.deb`.
+**2. Open Pingo.** First launch only: **System Settings → Privacy & Security →
+Open Anyway**.
+
+</td>
+<td valign="top">
+
+**1. Run the installer.** Open `Pingo-Setup-<version>.exe` from your Downloads
+and click through. It takes a few seconds.
+
+**2. Allow it, once.** If Windows shows a blue warning, click **More info →
+Run anyway**.
+
+</td>
+</tr>
+</table>
+
+Builds are not code-signed yet, which is why step 2 is there. On Linux, make the
+`.AppImage` executable or run `sudo apt install ./Pingo-*.deb`.
 
 On first launch, a short three-step setup asks for your name, what to remind you
 about, how often, and a character.
@@ -169,7 +201,9 @@ The workflow fails if the tag does not match `package.json`. Update
 
 ## Website
 
-`website/` is a static download page with no build step. It deploys to Vercel,
+`website/` is the landing page at
+[pingo-flax.vercel.app](https://pingo-flax.vercel.app): static HTML, CSS and
+vendored GSAP, with no build step. It deploys to Vercel,
 GitHub Pages, Hostinger, AWS S3/CloudFront or any static host. See
 [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
@@ -181,5 +215,10 @@ Contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) and th
 
 ## License
 
-[MIT](LICENSE). The bundled Press Start 2P font is licensed under the
+[MIT](LICENSE). The bundled fonts are licensed under the
 [SIL Open Font License 1.1](assets/fonts/OFL.txt).
+
+<p align="center">
+  <img src="website/assets/poses/walking.webp" height="72" alt="Pingo walking off" /><br />
+  <sub>Designed and built by <a href="https://www.linkedin.com/in/madhavanar/">Madhavan</a>.</sub>
+</p>
