@@ -1140,7 +1140,8 @@ html.js .rise.is-in {
   }
 
   .hello h1 {
-    font-size: clamp(2.5rem, 1.2rem + 7vw, 3.5rem);
+    font-size: clamp(1.75rem, 9.5vw, 3.5rem);
+    white-space: nowrap;
   }
 
   .cta {
