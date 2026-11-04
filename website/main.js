@@ -19,6 +19,11 @@
   const ua = navigator.userAgentData?.platform || navigator.userAgent;
   const isWindows = /win/i.test(ua) && !/darwin|mac/i.test(ua);
   document.documentElement.classList.toggle('is-windows', isWindows);
+  // iPads report themselves as Macs, but they have a touch screen.
+  const isPhone =
+    /android|iphone|ipad|ipod/i.test(navigator.userAgent) ||
+    (/mac/i.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
+  document.documentElement.classList.toggle('is-phone', isPhone);
 
   $$('[data-download="mac"]').forEach((a) => (a.href = MAC));
   $$('[data-download="win"]').forEach((a) => {

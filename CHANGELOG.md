@@ -6,12 +6,7 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
-### Changed
-
-- The Windows installer is now always named `Pingo-Setup.exe`, so the website
-  downloads it directly instead of opening GitHub.
-
-## [2.2.0] - 2026-11-03
+## [2.2.0] - 2026-11-04
 
 ### Added
 
@@ -36,6 +31,25 @@ All notable changes to this project are documented here. The format follows
   and the setup wizard is redesigned. Existing settings and custom characters
   carry over.
 - The app uses bundled Instrument Sans and Instrument Serif fonts.
+- The Windows installer is now always named `Pingo-Setup.exe`, so the website
+  downloads it directly instead of opening GitHub.
+- Left-clicking the tray icon on Windows and Linux now opens the app.
+
+### Fixed
+
+- On a Mac, the first click on **Done** or **Snooze** now counts, opening Pingo
+  again while it runs shows the app, the menu-bar icon has the right size, and
+  windows open with keyboard focus.
+- Reminders now appear over fullscreen apps on a Mac.
+- A pause now survives quitting or restarting Pingo.
+- A crashed reminder window no longer blocks every later reminder.
+- A preview started while Pingo is walking off now appears.
+- A reminder edited just before being deleted no longer comes back.
+- The cut-out strength slider no longer drops out mid-drag.
+- Long unbroken words stay inside the speech bubble, and the setup wizard's
+  set-times step no longer runs under its buttons.
+- The website offers the Intel Mac download, tells phone visitors to use a
+  computer, and has a proper preview image for social links.
 
 ## [2.1.0] - 2026-11-02
 
@@ -93,6 +107,7 @@ All notable changes to this project are documented here. The format follows
 
 - Last release as Hydrate Buddy.
 
-[Unreleased]: https://github.com/MadhavanAR/Pingo/compare/v2.1.0...HEAD
+[Unreleased]: https://github.com/MadhavanAR/Pingo/compare/v2.2.0...HEAD
+[2.2.0]: https://github.com/MadhavanAR/Pingo/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/MadhavanAR/Pingo/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/MadhavanAR/Pingo/compare/v1.0.8...v2.0.0

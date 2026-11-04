@@ -26,7 +26,9 @@ class Store {
       this.data = parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
     } catch (err) {
       if (err.code !== 'ENOENT') this.logger.warn('Config unreadable, using defaults:', err);
-      this.data = {};
+      // Keep what we already have: the next save would otherwise overwrite the
+      // whole config with just that one change.
+      this.data ??= {};
     }
     return this.data;
   }

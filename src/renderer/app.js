@@ -63,10 +63,12 @@ let pendingImage = null;
 
 function debounce(fn, ms) {
   let timer = null;
-  return (...args) => {
+  const debounced = (...args) => {
     clearTimeout(timer);
     timer = setTimeout(() => fn(...args), ms);
   };
+  debounced.cancel = () => clearTimeout(timer);
+  return debounced;
 }
 
 let toastTimer = null;
@@ -163,7 +165,7 @@ function toggle(checked, onChange, label, { disabled = false } = {}) {
   return el;
 }
 
-function rangeInput({ min, max, step = 1, value, label, format, onInput }) {
+function rangeInput({ min, max, step = 1, value, label, format, onInput, onCommit }) {
   const output = h('output', format(value));
   const input = h('input', {
     type: 'range',
@@ -179,8 +181,10 @@ function rangeInput({ min, max, step = 1, value, label, format, onInput }) {
   };
   input.addEventListener('input', () => {
     paint();
-    onInput(Number(input.value));
+    onInput?.(Number(input.value));
   });
+  // Fires on release, for work that would interrupt the drag.
+  if (onCommit) input.addEventListener('change', () => onCommit(Number(input.value)));
   paint();
   return h('div.range-row', input, output);
 }
@@ -438,7 +442,8 @@ function remindersView() {
         tabindex: '0',
         'aria-label': `Edit ${reminderTitle(r)}`,
         onclick: () => go(`reminders/${r.id}`),
-        onkeydown: (e) => e.key === 'Enter' && go(`reminders/${r.id}`),
+        onkeydown: (e) =>
+          e.target === e.currentTarget && e.key === 'Enter' && go(`reminders/${r.id}`),
       },
       toggle(
         r.enabled,
@@ -858,6 +863,7 @@ function reminderEditorView(id) {
               type: 'button',
               onclick: async () => {
                 if (!window.confirm(`Delete “${reminderTitle(draft)}”?`)) return;
+                persist.cancel(); // a pending save would bring the reminder back
                 await api.deleteReminder(draft.id);
                 toast('Reminder deleted');
                 go('reminders');
@@ -1242,7 +1248,8 @@ function avatarStudioView(id) {
                 value: draft.strength,
                 label: 'Cut-out strength',
                 format: (v) => `${v}%`,
-                onInput: (v) => {
+                // On release: reprocessing redraws the form, slider included.
+                onCommit: (v) => {
                   draft.strength = v;
                   for (const s of Object.values(draft.slots)) if (s.original) s.changed = true;
                   reprocess();

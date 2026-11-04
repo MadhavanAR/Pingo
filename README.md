@@ -46,7 +46,7 @@ Press **Done** and it cheers. Press **Snooze** and it comes back later.
   <img src="website/assets/demo/app-light-v6.webp" width="720" alt="The Pingo app: opening Reminders, choosing a stretch reminder, changing how often it repeats, adding Saturday, and previewing it" />
 </p>
 
-## Two steps. Thirty seconds.
+## Install
 
 Download from **[pingo-flax.vercel.app](https://pingo-flax.vercel.app)** or the
 [latest release](https://github.com/MadhavanAR/Pingo/releases/latest).

@@ -32,6 +32,8 @@ const confetti = document.getElementById('confetti');
 /** Pose name -> data URL for multi-pose characters; null for one-image avatars. */
 let poses = null;
 let busy = false;
+/** A reminder that arrived mid-animation; it runs as soon as that ends. */
+let queued = null;
 let autoHideTimer = null;
 let reminder = { type: 'water', message: '', name: '', snoozeMin: 10, look: {} };
 
@@ -148,6 +150,11 @@ async function exclusive(sequence) {
     await sequence();
   } finally {
     busy = false;
+    if (queued) {
+      const next = queued;
+      queued = null;
+      runReminder(next);
+    }
   }
 }
 
@@ -174,6 +181,10 @@ function applyLook(look) {
 }
 
 function runReminder(payload) {
+  if (busy) {
+    queued = payload;
+    return undefined;
+  }
   return exclusive(async () => {
     clearTimeout(autoHideTimer);
     reminder = { ...reminder, ...payload, look: payload.look ?? {} };
@@ -205,7 +216,7 @@ function onYes() {
     setPose('wave');
     await wait(GOODBYE_MS);
     await walkOut('wave');
-    window.pingo.hide();
+    if (!queued) window.pingo.hide();
   });
 }
 
@@ -218,7 +229,7 @@ function onSnooze() {
     showBubble(snoozeMessage(reminder), false);
     await wait(SNOOZE_GOODBYE_MS);
     await walkOut('think');
-    window.pingo.hide();
+    if (!queued) window.pingo.hide();
   });
 }
 

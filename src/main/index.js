@@ -66,7 +66,8 @@ class PingoApp {
   constructor() {
     const userDataDir = app.getPath('userData');
     try {
-      migrateLegacyUserData(userDataDir);
+      // A throwaway profile (PINGO_USER_DATA) must really start empty.
+      if (app.isPackaged || !process.env.PINGO_USER_DATA) migrateLegacyUserData(userDataDir);
     } catch (err) {
       console.warn('Legacy settings migration skipped:', err);
     }
@@ -87,8 +88,22 @@ class PingoApp {
       tickMs: SCHEDULE.TICK_MS,
       isReminderVisible: () => this.pet.isVisible(),
     });
+    // A pause lasts until it ends, even across a restart.
+    const paused = this.store.get('pausedUntil');
+    if (paused === -1) this.scheduler.pauseUntil(Infinity);
+    else if (Number.isFinite(paused) && paused > Date.now()) this.scheduler.pauseUntil(paused);
+
     this.pet = createPetWindow({ shouldHideOnClose: () => !this.quitting });
     this.tray = new AppTray(this.trayController());
+
+    // A crashed page must not leave an invisible window that counts as "on
+    // screen": that would block every later reminder.
+    this.pet.webContents.on('render-process-gone', () => {
+      if (this.quitting || this.pet.isDestroyed()) return;
+      this.pet.hide();
+      this.current = null;
+      this.pet.webContents.reload();
+    });
 
     this.scheduler.on('due', (reminder) => this.show(reminder));
     this.scheduler.on('change', () => this.changed());
@@ -151,7 +166,7 @@ class PingoApp {
     this.pet.showInactive(); // appear without stealing keyboard focus
     this.pet.setAlwaysOnTop(true, 'screen-saver');
     const { name, bubbleStyle, accent, side, size, sound, autoHideMin } = this.settings;
-    this.pet.webContents.send(CHANNELS.REMINDER_SHOW, {
+    this.sendToPet(CHANNELS.REMINDER_SHOW, {
       type: reminder.type,
       message: reminder.message,
       snoozeMin: reminder.snoozeMin,
@@ -168,6 +183,16 @@ class PingoApp {
         dark: nativeTheme.shouldUseDarkColors,
       },
     });
+  }
+
+  /** Send to the pet page, waiting for it if it is still loading. */
+  sendToPet(channel, payload) {
+    const { webContents } = this.pet;
+    if (webContents.isLoading()) {
+      webContents.once('did-finish-load', () => webContents.send(channel, payload));
+    } else {
+      webContents.send(channel, payload);
+    }
   }
 
   /** Show whichever reminder is due soonest, right now. */
@@ -254,6 +279,7 @@ class PingoApp {
    */
   setPaused(minutes) {
     if (minutes === 0) {
+      this.store.set({ pausedUntil: 0 });
       this.scheduler.resume();
     } else {
       let until;
@@ -264,6 +290,7 @@ class PingoApp {
         if (!Number.isFinite(n) || n <= 0) return this.state();
         until = Date.now() + Math.min(n, MAX_PAUSE_MIN) * MINUTE_MS;
       }
+      this.store.set({ pausedUntil: until === Infinity ? -1 : until });
       this.scheduler.pauseUntil(until);
       if (this.current && !this.current.preview) this.hidePet();
     }
@@ -306,6 +333,12 @@ class PingoApp {
     this.dialogs.show(page, { ...spec, hash: route.replace(/[^a-z0-9/-]/gi, '') });
   }
 
+  /** The user launched Pingo again: show setup if it's still open, else the app. */
+  reopen() {
+    if (this.dialogs.get(DIALOGS.onboarding.page)) this.openOnboarding();
+    else this.openApp('home');
+  }
+
   openOnboarding() {
     const { page, ...spec } = DIALOGS.onboarding;
     const onClosed = () => setTimeout(() => this.remindNow(), SCHEDULE.POST_ONBOARDING_DELAY_MS);
@@ -331,6 +364,7 @@ class PingoApp {
       openOnboarding: () => this.openOnboarding(),
       pause: (minutes) => this.setPaused(minutes),
       resume: () => this.setPaused(0),
+      setOpenAtLogin: (enabled) => this.setOpenAtLogin(enabled),
       quit: () => this.quit(),
     };
   }
@@ -357,7 +391,9 @@ function main() {
   }
 
   let pingo = null;
-  app.on('second-instance', () => pingo?.openApp('home'));
+  app.on('second-instance', () => pingo?.reopen());
+  // macOS: opening the app while it runs activates this instance instead.
+  app.on('activate', () => pingo?.reopen());
 
   // Tray-only app: stay alive with no windows open.
   app.on('window-all-closed', () => {});

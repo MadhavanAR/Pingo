@@ -37,6 +37,12 @@ The `Release` workflow verifies the build, then produces:
 | macOS   | `.dmg` for Intel and Apple Silicon |
 | Linux   | `.AppImage`, `.deb`                |
 
+The release is created as a **draft**. Publish it once it holds
+`Pingo-mac-arm64.dmg`, `Pingo-mac-x64.dmg` and `Pingo-Setup.exe`, since the
+website links to those files in the latest release. If a platform's runner never
+starts, re-run that job, or build on your own machine and upload the files with
+`gh release upload`. Then run `gh release edit <tag> --draft=false --latest`.
+
 **Code signing (recommended for production):** add `CSC_LINK` and
 `CSC_KEY_PASSWORD` as repository secrets and remove
 `CSC_IDENTITY_AUTO_DISCOVERY: 'false'` from `release.yml`. macOS notarisation

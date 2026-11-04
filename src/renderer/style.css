@@ -217,6 +217,9 @@ body {
   transform: translateY(8px) scale(0.94);
   pointer-events: none;
 }
+#bubble-text {
+  overflow-wrap: anywhere; /* long unbroken words stay inside the bubble */
+}
 #stage.modern #bubble-text {
   font-family: 'Instrument Sans', system-ui, sans-serif;
   font-size: 17px;

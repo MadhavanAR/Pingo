@@ -1,7 +1,7 @@
 'use strict';
 
 const path = require('node:path');
-const { BrowserWindow, nativeTheme, screen, shell } = require('electron');
+const { app, BrowserWindow, nativeTheme, screen, shell } = require('electron');
 const { PRELOAD_PATH, RENDERER_DIR, PET_WINDOW } = require('./config');
 const { CHANNELS } = require('../shared/channels');
 
@@ -32,6 +32,9 @@ function lockDown(win) {
  */
 function bringToFront(win, { pinned = true } = {}) {
   if (!win || win.isDestroyed()) return;
+  // Without a Dock icon macOS won't activate the app by itself, and the window
+  // would open without keyboard focus.
+  if (process.platform === 'darwin') app.focus({ steal: true });
   win.show();
   win.setAlwaysOnTop(true, 'screen-saver');
   win.focus();
@@ -59,11 +62,19 @@ function createPetWindow({ shouldHideOnClose }) {
     alwaysOnTop: true,
     hasShadow: false,
     fullscreenable: false,
-    webPreferences: SECURE_WEB_PREFERENCES,
+    // The window never takes focus when it appears, so the first click on Done
+    // must count instead of only activating the window.
+    acceptFirstMouse: true,
+    // Keep the walk and the auto-snooze on time behind other windows.
+    webPreferences: { ...SECURE_WEB_PREFERENCES, backgroundThrottling: false },
   });
   lockDown(win);
   win.setAlwaysOnTop(true, 'screen-saver');
-  win.setVisibleOnAllWorkspaces(true);
+  // Also over fullscreen apps, or a due reminder would wait unseen on another space.
+  win.setVisibleOnAllWorkspaces(true, {
+    visibleOnFullScreen: true,
+    skipTransformProcessType: true,
+  });
   win.loadFile(path.join(RENDERER_DIR, 'index.html'));
 
   // Closing the window just hides the character; quitting happens from the tray.
@@ -154,6 +165,8 @@ class DialogManager {
       webPreferences: SECURE_WEB_PREFERENCES,
     });
     lockDown(win);
+    // A dead page is a blank window; close it so the next open starts fresh.
+    win.webContents.on('render-process-gone', () => !win.isDestroyed() && win.destroy());
     win.setMenuBarVisibility(false);
     win.loadFile(path.join(RENDERER_DIR, page), { hash });
     win.once('ready-to-show', () => {

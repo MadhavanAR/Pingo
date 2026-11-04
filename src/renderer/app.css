@@ -390,6 +390,9 @@ h1.greeting {
   background: var(--text);
   opacity: 0.85;
   transform-origin: bottom;
+}
+/* Only on arriving at the view, not on each background refresh. */
+.view.entering .bar {
   animation: grow 520ms var(--ease-out) both;
 }
 .bar.today {

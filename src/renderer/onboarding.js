@@ -21,6 +21,7 @@ let userName = '';
 let reminder = { type: 'water', message: '', mode: 'interval', everyMin: 45, times: ['09:00'] };
 let avatarKey = 'boy';
 let avatars = [];
+let platform = '';
 
 function setHero(key) {
   const a = avatars.find((x) => x.key === key) ?? avatars[0];
@@ -185,6 +186,10 @@ const STEPS = [
           ),
         ),
       ),
+      h(
+        'p.hint',
+        `After this I’ll live in your ${platform === 'darwin' ? 'menu bar' : 'system tray'}. Click my face there for everything else.`,
+      ),
     ];
   },
 ];
@@ -204,10 +209,13 @@ function show(animate = true) {
 
 async function finish() {
   nextBtn.disabled = true;
-  await api.saveSettings({ name: userName });
-  await api.saveReminder(reminder);
-  await api.selectAvatar(avatarKey);
-  api.closeOnboarding();
+  try {
+    await api.saveSettings({ name: userName });
+    await api.saveReminder(reminder);
+    await api.selectAvatar(avatarKey);
+  } finally {
+    api.closeOnboarding(); // setup must never trap someone on its last step
+  }
 }
 
 function next() {
@@ -231,6 +239,7 @@ document.addEventListener('keydown', (e) => {
   avatars = list.avatars;
   avatarKey = list.defaultKey;
   userName = state.settings.name;
+  platform = state.platform;
   const first = state.reminders[0];
   // Re-running setup edits the first reminder rather than adding another.
   if (first) reminder = { ...first, times: [...first.times] };

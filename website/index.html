@@ -3,19 +3,29 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Pingo: your reminder buddy for Mac</title>
+    <title>Pingo: your reminder buddy for Mac and Windows</title>
     <meta
       name="description"
-      content="Pingo is a free Mac app. A little character walks onto your screen to remind you to drink water, stretch, rest your eyes or take your medicine."
+      content="Pingo is a free app for Mac and Windows. A little character walks onto your screen to remind you to drink water, stretch, rest your eyes or take your medicine."
     />
     <meta name="theme-color" content="#cfe6dd" />
+    <link rel="canonical" href="https://pingo-flax.vercel.app/" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Pingo: your reminder buddy for Mac" />
+    <meta property="og:url" content="https://pingo-flax.vercel.app/" />
+    <meta property="og:site_name" content="Pingo" />
+    <meta property="og:title" content="Pingo: your reminder buddy for Mac and Windows" />
     <meta
       property="og:description"
-      content="A little character walks onto your screen to remind you. Free for Mac."
+      content="A little character walks onto your screen to remind you. Free for Mac and Windows."
     />
-    <meta property="og:image" content="assets/icon.png" />
+    <meta property="og:image" content="https://pingo-flax.vercel.app/assets/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Pingo, a cartoon character, walking onto a desktop to remind you to drink water."
+    />
+    <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" type="image/png" href="assets/icon.png" />
     <link rel="preload" href="assets/poses/walking.webp" as="image" />
     <script src="boot.js"></script>
@@ -94,6 +104,13 @@
               <span><span class="cta-for">Download for </span>Windows</span>
             </a>
           </div>
+          <p class="cta-note">
+            <span class="only-phone">Pingo is a desktop app. Open this page on your computer.</span>
+            <span class="only-mac"
+              >Apple Silicon. On an Intel Mac?
+              <a data-download-intel href="#">Get this one</a>.</span
+            >
+          </p>
         </div>
 
         <!-- Pingo, offstage until a reminder is due. -->
@@ -124,8 +141,7 @@
       </section>
 
       <!-- Install: the two steps a new Mac user needs, each shown in motion. -->
-      <section class="install" id="install" aria-labelledby="install-title">
-        <h2 id="install-title" class="rise">Two steps. Thirty seconds.</h2>
+      <section class="install" id="install" aria-label="Install Pingo">
         <div class="os-tabs rise" role="tablist" aria-label="Your computer">
           <button type="button" role="tab" aria-selected="true" data-os-tab="mac">Mac</button>
           <button type="button" role="tab" aria-selected="false" data-os-tab="win">Windows</button>

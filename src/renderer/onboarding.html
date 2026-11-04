@@ -39,7 +39,7 @@
       }
       .hero {
         position: relative;
-        height: 176px;
+        height: 140px;
         border-radius: var(--radius-card);
         background: var(--surface);
         overflow: hidden;
@@ -48,7 +48,7 @@
         position: absolute;
         bottom: 0;
         left: 50%;
-        height: 160px;
+        height: 128px;
         translate: -50% 0;
         object-fit: contain;
         transition:
@@ -63,6 +63,8 @@
         display: grid;
         gap: 16px;
         align-content: start;
+        min-height: 0;
+        overflow-y: auto;
       }
       .step.enter {
         animation: step-in 320ms var(--ease-out) both;
