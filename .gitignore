@@ -10,6 +10,7 @@ Thumbs.db
 
 # Local design/AI skill tooling: kept on this machine only
 .taste-skill/
+.impeccable/
 .claude/
 .agents/
 .skills/
