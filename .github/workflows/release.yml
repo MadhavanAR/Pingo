@@ -64,8 +64,10 @@ jobs:
           path: ${{ matrix.files }}
           if-no-files-found: error
 
-  # Publishes whatever built. A failed platform can be re-run on its own
-  # ("Re-run failed jobs"); its installer is then added to the same release.
+  # Collects whatever built into a draft. A failed platform can be re-run on its
+  # own ("Re-run failed jobs"); its installer is then added to the same draft.
+  # It stays a draft because the website links to releases/latest/download: going
+  # public without every installer would break those download buttons.
   publish:
     needs: build
     if: ${{ !cancelled() }}
@@ -77,6 +79,7 @@ jobs:
           merge-multiple: true
       - uses: softprops/action-gh-release@v2
         with:
+          draft: true
           files: dist/*
           generate_release_notes: true
           # Point people at the landing page, which picks the right download.
