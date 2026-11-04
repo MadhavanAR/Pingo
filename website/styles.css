@@ -857,6 +857,27 @@ html.is-windows .cta[data-download='win'] {
   order: 0;
 }
 
+.hello .cta-note {
+  margin-top: 2px;
+  font-size: 13px;
+  opacity: 0.75;
+}
+
+.cta-note a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.cta-note .only-phone,
+html.is-windows .cta-note .only-mac,
+html.is-phone .cta-note .only-mac {
+  display: none;
+}
+
+html.is-phone .cta-note .only-phone {
+  display: inline;
+}
+
 /* Phones: both buttons share one row, named just "Mac" and "Windows". Screen readers still
    hear "Download for". */
 @media (max-width: 480px) {

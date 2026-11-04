@@ -38,3 +38,19 @@ test('treats corrupt or non-object JSON as empty settings', () => {
     assert.equal(new Store(file, { logger: silent }).get('name', 'fallback'), 'fallback');
   }
 });
+
+test('a failed reload keeps the settings already in memory', (t) => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'pingo-store-'));
+  t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
+  const file = path.join(dir, 'config.json');
+  const store = new Store(file, { logger: { warn() {}, error() {} } });
+  store.set({ name: 'Sam', reminders: [1] });
+  fs.writeFileSync(file, '{ half-written');
+  store.reload();
+  store.set({ stats: {} });
+  assert.deepEqual(JSON.parse(fs.readFileSync(file, 'utf8')), {
+    name: 'Sam',
+    reminders: [1],
+    stats: {},
+  });
+});

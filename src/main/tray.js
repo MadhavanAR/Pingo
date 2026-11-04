@@ -4,6 +4,25 @@ const path = require('node:path');
 const { app, Menu, Tray, nativeImage, shell } = require('electron');
 const { APP_NAME, ASSETS_DIR, SCHEDULE, WEBSITE_URL } = require('./config');
 
+/** Menu-bar icons are sized in points; macOS doesn't shrink a larger image to fit. */
+const MAC_ICON_POINTS = 18;
+
+function loadIcon() {
+  const icon = nativeImage.createFromPath(path.join(ASSETS_DIR, 'tray.png'));
+  if (icon.isEmpty() || process.platform !== 'darwin') return icon;
+  const sized = nativeImage.createEmpty();
+  for (const scaleFactor of [1, 2]) {
+    const size = MAC_ICON_POINTS * scaleFactor;
+    sized.addRepresentation({
+      scaleFactor,
+      width: size,
+      height: size,
+      buffer: icon.resize({ width: size, height: size, quality: 'best' }).toPNG(),
+    });
+  }
+  return sized;
+}
+
 const clock = (ms) => new Date(ms).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
 const duration = (minutes) =>
@@ -21,15 +40,16 @@ const duration = (minutes) =>
  * @property {() => void} openOnboarding
  * @property {(minutes: number | 'tomorrow') => void} pause -1 pauses until resumed
  * @property {() => void} resume
+ * @property {(enabled: boolean) => void} setOpenAtLogin
  * @property {() => void} quit
  */
 class AppTray {
   /** @param {TrayController} controller */
   constructor(controller) {
     this.controller = controller;
-    const icon = nativeImage.createFromPath(path.join(ASSETS_DIR, 'tray.png'));
-    this.tray = new Tray(icon.isEmpty() ? nativeImage.createEmpty() : icon);
-    this.tray.on('click', () => controller.remindNow());
+    this.tray = new Tray(loadIcon());
+    // Windows and Linux: a left click opens the app, a right click the menu.
+    this.tray.on('click', () => controller.openApp('home'));
     this.refresh();
   }
 
@@ -91,7 +111,7 @@ class AppTray {
         label: 'Start at login',
         type: 'checkbox',
         checked: app.getLoginItemSettings().openAtLogin,
-        click: (item) => app.setLoginItemSettings({ openAtLogin: item.checked }),
+        click: (item) => c.setOpenAtLogin(item.checked),
       });
     }
 
